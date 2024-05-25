@@ -1,6 +1,6 @@
 package com.cotato.squadus.entity;
 
-public enum MemberState {
+public enum MemberStatus {
     APPLIED,
     JOINED,
     QUIT
