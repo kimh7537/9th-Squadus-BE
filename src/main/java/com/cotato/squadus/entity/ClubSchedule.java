@@ -27,7 +27,9 @@ public class ClubSchedule {
 
     private LocalDateTime createdAt;
 
-    private String author;
+    @ManyToOne
+    @JoinColumn(name = "club_member_idx")
+    private ClubAdminMember author;
 
     private String location; // 추후에 Address 클래스로 바뀔 여지 있음
 
