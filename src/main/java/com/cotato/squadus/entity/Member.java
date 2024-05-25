@@ -29,5 +29,5 @@ public class Member {
     private MemberRole memberRole;
 
     @OneToMany(mappedBy = "member", fetch = LAZY, cascade = ALL)
-    private List<ClubMember> clubMemberships;
+    private List<ClubMember> clubMemberships; // 가입된 동아리 리스트 확인
 }
