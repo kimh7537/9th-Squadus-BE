@@ -6,7 +6,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -23,11 +23,11 @@ public class Article {
 
     private String type;
 
-    private Date createdDate;
+    private LocalDateTime createdAt;
 
     private String tag;
 
     private String content;
 
-    private Integer views;
+    private Long views;
 }
