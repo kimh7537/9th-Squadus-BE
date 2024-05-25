@@ -3,7 +3,7 @@ package com.cotato.squadus.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -21,7 +21,7 @@ public class ClubApplication {
     @JoinColumn(name = "club_idx")
     private Club club;
 
-    private Date applicationDate;
+    private LocalDateTime appliedAt;
 
     @Enumerated(EnumType.STRING)
     private ApplicationStatus applicationStatus;
