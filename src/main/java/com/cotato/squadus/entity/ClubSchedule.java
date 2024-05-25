@@ -3,7 +3,7 @@ package com.cotato.squadus.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -19,9 +19,21 @@ public class ClubSchedule {
 
     private String title;
 
+    private ScheduleCategory scheduleCategory;
+
     private String content;
 
-    private Date date;
+    private LocalDateTime eventAt;
 
-    private Date time;
+    private LocalDateTime createdAt;
+
+    private String author;
+
+    private String location; // 추후에 Address 클래스로 바뀔 여지 있음
+
+    private String equipment;
+
+//    private List<Vote> votes;
+//    private List<Participant> participants;
+
 }
