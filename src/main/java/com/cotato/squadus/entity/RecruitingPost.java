@@ -3,12 +3,12 @@ package com.cotato.squadus.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Table(name = "club_promotion_post")
-public class ClubPromotionPost {
+@Table(name = "recruiting_post")
+public class RecruitingPost {
 
     @Id @GeneratedValue
     private Long postIdx;
@@ -21,12 +21,12 @@ public class ClubPromotionPost {
 
     @ManyToOne
     @JoinColumn(name = "club_member_idx")
-    private ClubMember author;
+    private ClubAdminMember author;
 
-    private Date createdDate;
+    private LocalDateTime createdAt;
 
-    private Integer views;
+    private Long views;
 
-    private Integer likes;
+    private Long likes;
 
 }
