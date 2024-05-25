@@ -4,8 +4,10 @@ import lombok.Getter;
 
 @Entity
 @Getter
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "member_type")
 @Table(name = "club_member")
-public class ClubMember {
+public abstract class ClubMember {
 
     @Id @GeneratedValue
     private Long clubMemberIdx;
@@ -19,10 +21,7 @@ public class ClubMember {
     private Club club;
 
     @Enumerated(EnumType.STRING)
-    private ClubRole role;
-
-    @Enumerated(EnumType.STRING)
-    private MemberState memberState;
+    private MemberStatus memberStatus;
 
     private Boolean isPaid;
 
