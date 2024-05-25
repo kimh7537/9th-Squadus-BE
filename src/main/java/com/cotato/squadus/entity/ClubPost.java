@@ -4,11 +4,10 @@ import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Getter
-@Table(name = "club_notice")
+@Table(name = "club_post")
 public class ClubPost {
 
     @Id @GeneratedValue
