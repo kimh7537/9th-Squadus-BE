@@ -3,19 +3,20 @@ package com.cotato.squadus.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
 @Getter
 @Table(name = "club_notice")
-public class ClubNotice {
+public class ClubPost {
 
     @Id @GeneratedValue
     private Long postIdx;
 
     @ManyToOne
     @JoinColumn(name = "club_member_idx")
-    private ClubMember author;
+    private ClubAdminMember author;
 
     private String title;
 
@@ -23,9 +24,9 @@ public class ClubNotice {
 
     private String image;
 
-    private Date createdDate;
+    private LocalDateTime createdAt;
 
-    private Integer views;
+    private Long views;
 
-    private Integer likes;
+    private Long likes;
 }
