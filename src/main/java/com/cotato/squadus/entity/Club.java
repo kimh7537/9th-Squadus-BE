@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import java.util.List;
 import static jakarta.persistence.CascadeType.*;
+import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @Getter
@@ -25,6 +26,6 @@ public class Club {
 
     private String logo;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = ALL)
+    @OneToMany(mappedBy = "club", fetch = LAZY, cascade = ALL)
     private List<ClubMember> clubMembers;
 }
