@@ -4,6 +4,10 @@ import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
+import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @Getter
@@ -26,6 +30,9 @@ public class ClubSchedule {
     private LocalDateTime eventAt;
 
     private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "clubSchedule", fetch = LAZY, cascade = ALL)
+    private List<ScheduleComment> scheduleComments;
 
     @ManyToOne
     @JoinColumn(name = "club_member_idx")
