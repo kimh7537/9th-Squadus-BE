@@ -2,6 +2,11 @@ package com.cotato.squadus.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 
+import java.util.List;
+
+import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.FetchType.LAZY;
+
 @Entity
 @Getter
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -26,4 +31,7 @@ public abstract class ClubMember {
     private Boolean isPaid;
 
     private String clubProfileImage;
+
+    @OneToMany(mappedBy = "clubMember", fetch = LAZY, cascade = ALL)
+    private List<ScheduleComment> scheduleComments;
 }
