@@ -2,6 +2,7 @@ package com.cotato.squadus.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -10,6 +11,7 @@ import static jakarta.persistence.FetchType.*;
 
 @Entity
 @Getter
+@Setter
 @Table(name = "member")
 public class Member {
 
