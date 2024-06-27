@@ -1,0 +1,10 @@
+jwt:
+  secret: your_very_long_secret_key_here_base64_encoded
+
+  access:
+    expiration: 80
+    header: Authorization
+
+  refresh:
+    expiration: 90
+    header: Authorization-refresh
