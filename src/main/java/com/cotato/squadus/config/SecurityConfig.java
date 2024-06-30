@@ -1,8 +1,10 @@
 package com.cotato.squadus.config;
 
+import com.cotato.squadus.jwt.CustomLogoutFilter;
 import com.cotato.squadus.jwt.JWTFilter;
 import com.cotato.squadus.jwt.JWTUtil;
 import com.cotato.squadus.jwt.LoginFilter;
+import com.cotato.squadus.repository.RefreshRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +16,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 @Configuration
 @RequiredArgsConstructor
@@ -23,6 +26,8 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
 
     private final JWTUtil jwtUtil;
+
+    private final RefreshRepository refreshRepository;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -63,11 +68,13 @@ public class SecurityConfig {
         //JWTFilter 등록
         http
                 .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
+        http
+                .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRepository), LogoutFilter.class);
 
         //필터 추가 LoginFilter()는 인자를 받음 (AuthenticationManager() 메소드에 authenticationConfiguration 객체를 넣어야 함) 따라서 등록 필요
         //AuthenticationManager()와 JWTUtil 인수 전달
         http
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshRepository), UsernamePasswordAuthenticationFilter.class);
 
         //세션 설정
         http
