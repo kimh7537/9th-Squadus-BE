@@ -1,6 +1,14 @@
 spring:
-  profiles:
-    include: jwt #jwt.yml 불러오기
+  jwt:
+    secret: ${JWT_SECRET}
+
+    access:
+      expiration: 80
+      header: Authorization
+
+    refresh:
+      expiration: 90
+      header: Authorization-refresh
   datasource:
     url: ${DB_URI}
     username: ${DB_USERNAME}
