@@ -26,3 +26,4 @@ public class TestController {
         return articleService.getArticle(articleIdx);
     }
 }
+
