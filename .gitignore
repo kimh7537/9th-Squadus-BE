@@ -37,3 +37,6 @@ out/
 .vscode/
 
 application.yml
+
+# Unignore the resources directory
+!src/main/resources/
