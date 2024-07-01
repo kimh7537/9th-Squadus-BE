@@ -1,9 +1,9 @@
 name: Deploy To EC2
 
 on:
-  pull_request:
+  push:
     branches:
-      - develop
+      - test
 
 jobs:
   deploy:
