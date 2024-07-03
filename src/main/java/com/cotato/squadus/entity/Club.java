@@ -1,6 +1,7 @@
 package com.cotato.squadus.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import java.util.List;
 import static jakarta.persistence.CascadeType.*;
@@ -28,4 +29,12 @@ public class Club {
 
     @OneToMany(mappedBy = "club", fetch = LAZY, cascade = ALL)
     private List<ClubMember> clubMembers;
+
+    @Builder
+    private Club(String clubName, String university, String sportsCategory, String logo) {
+        this.clubName = clubName;
+        this.university = university;
+        this.sportsCategory = sportsCategory;
+        this.logo = logo;
+    }
 }

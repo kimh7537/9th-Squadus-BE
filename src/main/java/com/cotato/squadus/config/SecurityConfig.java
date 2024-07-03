@@ -63,6 +63,7 @@ public class SecurityConfig {
                         .requestMatchers("/login", "/", "/join").permitAll()
                         .requestMatchers("/admin").hasRole("ADMIN")
                         .requestMatchers("/reissue").permitAll()
+                        .requestMatchers("/api/v1/club/create").hasRole("ADMIN")
                         .anyRequest().authenticated());
 
 //        //JWTFilter 등록
