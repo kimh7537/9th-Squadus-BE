@@ -26,7 +26,7 @@ public class MemberController {
     private final RefreshRepository refreshRepository;
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         Member member = memberRepository.findByUsername(loginRequest.getUsername());
 
         if (member == null || !member.getEmail().equals(loginRequest.getEmail())) {
@@ -35,6 +35,7 @@ public class MemberController {
 
         String username = member.getUsername();
         String role = member.getRole();
+        System.out.println("role = " + role);
 
         //토큰 생성
         String access = jwtUtil.createJwt("access", username, role, 600000L);
@@ -46,8 +47,8 @@ public class MemberController {
         response.setHeader("access", access);
         response.setHeader("refresh", refresh);
         response.setStatus(HttpStatus.OK.value());
-        LoginResponse loginResponse = new LoginResponse(access, refresh);
-        return ResponseEntity.ok(loginResponse);
+//        LoginResponse loginResponse = new LoginResponse(access, refresh);
+        return ResponseEntity.ok("Login Success");
     }
 
     private void addRefreshEntity(String username, String refresh, Long expiredMs) {

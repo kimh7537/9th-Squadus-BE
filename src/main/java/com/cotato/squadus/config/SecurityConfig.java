@@ -66,8 +66,8 @@ public class SecurityConfig {
                         .anyRequest().authenticated());
 
 //        //JWTFilter 등록
-//        http
-//                .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
+        http
+                .addFilterBefore(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 //        http
 //                .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRepository), LogoutFilter.class);
 //
