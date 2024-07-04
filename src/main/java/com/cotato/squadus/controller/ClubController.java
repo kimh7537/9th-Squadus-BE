@@ -2,6 +2,8 @@ package com.cotato.squadus.controller;
 
 import com.cotato.squadus.dto.ClubCreateRequest;
 import com.cotato.squadus.dto.ClubCreateResponse;
+import com.cotato.squadus.dto.ClubApplyRequest;
+import com.cotato.squadus.dto.ClubApplyResponse;
 import com.cotato.squadus.service.ClubService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,5 +23,11 @@ public class ClubController {
     public ResponseEntity<ClubCreateResponse> createClub(@RequestBody ClubCreateRequest clubCreateRequest) {
         ClubCreateResponse clubCreateResponse = clubService.createClub(clubCreateRequest);
         return ResponseEntity.ok(clubCreateResponse);
+    }
+
+    @PostMapping("/apply")
+    public ResponseEntity<ClubApplyResponse> joinClub(@RequestBody ClubApplyRequest clubApplyRequest) {
+        ClubApplyResponse clubApplyResponse = clubService.joinClub(clubApplyRequest);
+        return ResponseEntity.ok(clubApplyResponse);
     }
 }
