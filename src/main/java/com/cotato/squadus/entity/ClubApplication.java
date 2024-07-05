@@ -1,6 +1,7 @@
 package com.cotato.squadus.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -25,4 +26,12 @@ public class ClubApplication {
 
     @Enumerated(EnumType.STRING)
     private ApplicationStatus applicationStatus;
+
+    @Builder
+    public ClubApplication(Member member, Club club, LocalDateTime appliedAt, ApplicationStatus applicationStatus) {
+        this.member = member;
+        this.club = club;
+        this.appliedAt = appliedAt;
+        this.applicationStatus = applicationStatus;
+    }
 }
