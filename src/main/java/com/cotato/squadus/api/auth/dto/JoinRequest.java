@@ -1,11 +1,11 @@
-package com.cotato.squadus.dto;
+package com.cotato.squadus.api.auth.dto;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class JoinDTO {
+public class JoinRequest {
 
     private String username;
     private String password;
