@@ -2,8 +2,8 @@ package com.cotato.squadus.domain.auth.service;
 
 
 import com.cotato.squadus.api.auth.dto.JoinRequest;
-import com.cotato.squadus.entity.Member;
-import com.cotato.squadus.repository.MemberRepository;
+import com.cotato.squadus.domain.auth.entity.Member;
+import com.cotato.squadus.domain.auth.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
