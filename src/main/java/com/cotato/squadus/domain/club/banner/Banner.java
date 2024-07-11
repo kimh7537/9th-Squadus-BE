@@ -1,4 +1,4 @@
-package com.cotato.squadus.domain.banner;
+package com.cotato.squadus.domain.club.banner;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
