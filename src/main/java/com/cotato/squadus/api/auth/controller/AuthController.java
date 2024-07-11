@@ -2,12 +2,12 @@ package com.cotato.squadus.api.auth.controller;
 
 import com.cotato.squadus.domain.auth.service.AuthService;
 import com.cotato.squadus.api.auth.dto.JoinRequest;
-import com.cotato.squadus.dto.LoginRequest;
-import com.cotato.squadus.entity.Member;
-import com.cotato.squadus.entity.RefreshEntity;
-import com.cotato.squadus.jwt.JWTUtil;
-import com.cotato.squadus.repository.MemberRepository;
-import com.cotato.squadus.repository.RefreshRepository;
+import com.cotato.squadus.api.auth.dto.LoginRequest;
+import com.cotato.squadus.domain.auth.entity.Member;
+import com.cotato.squadus.common.config.jwt.RefreshEntity;
+import com.cotato.squadus.common.config.jwt.JWTUtil;
+import com.cotato.squadus.domain.auth.repository.MemberRepository;
+import com.cotato.squadus.domain.auth.repository.RefreshRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
