@@ -31,10 +31,10 @@ jobs:
           spring.datasource.username: ${{ secrets.DB_USERNAME }}
           spring.datasource.password: ${{ secrets.DB_PASSWORD }}
           spring.jwt.secretKey: ${{ secrets.JWT_SECRET_KEY}}
-          spring.security.oauth2.client.registration.google.client-id: ${{ GOOGLE_CLIENT_ID }}
-          spring.security.oauth2.client.registration.google.client-secret: ${{ GOOGLE_CLIENT_SECRET }}
-          spring.security.oauth2.client.registration.naver.client-id: ${{ NAVER_CLIENT_ID }}
-          spring.security.oauth2.client.registration.naver.client-secret: ${{ NAVER_CLIENT_ID }}
+          spring.security.oauth2.client.registration.google.client-id: ${{ secrets.GOOGLE_CLIENT_ID }}
+          spring.security.oauth2.client.registration.google.client-secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          spring.security.oauth2.client.registration.naver.client-id: ${{ secrets.NAVER_CLIENT_ID }}
+          spring.security.oauth2.client.registration.naver.client-secret: ${{ secrets.NAVER_CLIENT_ID }}
 #        run: echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/application.yml
 
       - name: gradlew에 실행 권한 부여하기
