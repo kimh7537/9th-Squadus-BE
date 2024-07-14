@@ -16,7 +16,7 @@ public class TestController {
 
     private final ArticleService articleService;
 
-    @GetMapping("/")
+    @GetMapping("/test")
     public String index() {
         log.debug("log 확인");
         return "Hello World";

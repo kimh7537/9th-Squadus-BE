@@ -71,6 +71,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/v1/api/email/**").permitAll()
+                        .requestMatchers("/test").permitAll()
                         .requestMatchers(WHITE_LIST).permitAll()
                         .requestMatchers("/admin").hasRole(AdminStatus.CURRENT.name())
                         .requestMatchers("/reissue").permitAll()
