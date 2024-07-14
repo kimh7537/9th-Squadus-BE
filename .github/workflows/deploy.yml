@@ -2,9 +2,9 @@ name: Deploy To EC2
 
 on:
   push:
-    branches: [ "develop" ]
+    branches: [ "dev" ]
   pull_request:
-    branches: [ "develop" ]
+    branches: [ "dev" ]
 
 env:
   BASE_RESOURCE_PATH: ./src/main/resources/application.yml
