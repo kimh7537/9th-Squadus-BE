@@ -3,6 +3,8 @@ name: Deploy To EC2
 on:
   push:
     branches: [ "develop" ]
+  pull_request:
+    branches: [ "develop" ]
 
 env:
   BASE_RESOURCE_PATH: ./src/main/resources/application.yml
@@ -35,6 +37,8 @@ jobs:
           spring.security.oauth2.client.registration.google.client-secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           spring.security.oauth2.client.registration.naver.client-id: ${{ secrets.NAVER_CLIENT_ID }}
           spring.security.oauth2.client.registration.naver.client-secret: ${{ secrets.NAVER_CLIENT_ID }}
+          spring.mail.username: ${{ secrets.MAIL_ADDRESS }}
+          spring.mail.password: ${{ secrets.APP_PASSWORD }}
 #        run: echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/application.yml
 
       - name: gradlew에 실행 권한 부여하기
