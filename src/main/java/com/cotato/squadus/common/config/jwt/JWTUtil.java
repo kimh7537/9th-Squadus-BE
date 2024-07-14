@@ -1,5 +1,6 @@
 package com.cotato.squadus.common.config.jwt;
 
+import com.cotato.squadus.domain.auth.enums.MemberRole;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -14,8 +15,13 @@ public class JWTUtil {
 
     private SecretKey secretKey;
 
-    public JWTUtil(@Value("${spring.jwt.secret}") String secret) {
+    public JWTUtil(@Value("${spring.jwt.secret}")String secret) {
         secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
+    }
+
+    public String getUniqueId(String token) {
+
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("uniqueId", String.class);
     }
 
     public String getUsername(String token) {
@@ -38,10 +44,11 @@ public class JWTUtil {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
     }
 
-    public String createJwt(String category, String username, String role, Long expiredMs) {
+    public String createJwt(String category, String uniqueId, String username, String role, Long expiredMs) {
 
         return Jwts.builder()
                 .claim("category", category)
+                .claim("uniqueId", uniqueId)
                 .claim("username", username)
                 .claim("role", role)
                 .issuedAt(new Date(System.currentTimeMillis()))
