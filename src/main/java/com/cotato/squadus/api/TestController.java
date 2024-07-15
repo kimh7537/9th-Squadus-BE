@@ -2,6 +2,8 @@ package com.cotato.squadus.api;
 
 import com.cotato.squadus.api.admin.dto.ArticleDto;
 import com.cotato.squadus.domain.club.article.service.ArticleService;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.EntityManager;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,5 +31,6 @@ public class TestController {
     public ArticleDto get(@PathVariable Long articleIdx){
         return articleService.getArticle(articleIdx);
     }
+
 }
 
