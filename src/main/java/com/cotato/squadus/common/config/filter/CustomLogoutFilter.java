@@ -1,7 +1,7 @@
 package com.cotato.squadus.common.config.filter;
 
 import com.cotato.squadus.common.config.jwt.JWTUtil;
-import com.cotato.squadus.domain.auth.repository.RefreshRepository;
+import com.cotato.squadus.common.config.jwt.RefreshRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
