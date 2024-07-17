@@ -1,13 +1,15 @@
 package com.cotato.squadus.common.config.filter;
 
+import com.cotato.squadus.api.auth.dto.LoginRequest;
+import com.cotato.squadus.common.config.auth.CustomOAuth2Member;
 import com.cotato.squadus.common.config.jwt.JWTUtil;
-import com.cotato.squadus.api.auth.dto.CustomUserDetails;
-import com.cotato.squadus.domain.auth.entity.Member;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,26 +18,33 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+@RequiredArgsConstructor
+@Slf4j
 public class JWTFilter extends OncePerRequestFilter {
 
     private final JWTUtil jwtUtil;
 
-    public JWTFilter(JWTUtil jwtUtil) {
-
-        this.jwtUtil = jwtUtil;
-    }
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
+
+        String requestUri = request.getRequestURI();
+        if (requestUri.matches("^\\/login(?:\\/.*)?$")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+        if (requestUri.matches("^\\/oauth2(?:\\/.*)?$")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         // 헤더에서 access키에 담긴 토큰을 꺼냄
         String accessToken = request.getHeader("access");
 
         // 토큰이 없다면 다음 필터로 넘김
         if (accessToken == null) {
-            System.out.println("accessToken is null");
+            log.info("not access token in authorization");
             filterChain.doFilter(request, response);
-
             return;
         }
 
@@ -67,16 +76,16 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
-        // username, role 값을 획득
-        String username = jwtUtil.getUsername(accessToken);
-        String role = jwtUtil.getRole(accessToken);
+        LoginRequest loginRequest = LoginRequest.builder()
+                .uniqueId(jwtUtil.getUniqueId(accessToken))
+                .username(jwtUtil.getUsername(accessToken))
+                .memberRole(jwtUtil.getRole(accessToken))
+                .build();
 
-        Member member = new Member();
-        member.setUsername(username);
-        member.setRole(role);
-        CustomUserDetails customUserDetails = new CustomUserDetails(member);
 
-        Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
+        CustomOAuth2Member customOAuth2Memer = new CustomOAuth2Member(loginRequest);
+
+        Authentication authToken = new UsernamePasswordAuthenticationToken(customOAuth2Memer, null, customOAuth2Memer.getAuthorities());
 
         // 일시적인 세션 생성
         SecurityContextHolder.getContext().setAuthentication(authToken);
