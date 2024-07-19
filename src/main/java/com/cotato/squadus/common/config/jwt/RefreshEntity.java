@@ -1,9 +1,6 @@
 package com.cotato.squadus.common.config.jwt;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,6 +15,8 @@ public class RefreshEntity {
 
     private String uniqueId;
     private String username;
+
+    @Column(nullable = false, length = 2048)
     private String refresh;
     private String expiration;
 }
