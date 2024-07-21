@@ -1,5 +1,6 @@
 package com.cotato.squadus.domain.club.common.entity;
 
+import com.cotato.squadus.domain.club.post.entity.ClubPost;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,6 +33,9 @@ public class Club {
 
     @OneToMany(mappedBy = "club", fetch = LAZY, cascade = ALL)
     private List<ClubMember> clubMembers;
+
+    @OneToMany(mappedBy = "club", fetch = LAZY, cascade = ALL)
+    private List<ClubPost> clubPosts;
 
     @Builder
     private Club(String clubName, String university, String sportsCategory, String logo) {
