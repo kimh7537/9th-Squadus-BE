@@ -5,6 +5,7 @@ import com.cotato.squadus.domain.club.post.entity.ClubPost;
 import java.time.LocalDateTime;
 
 public record ClubPostResponse(
+    Long postId,
     String title,
     String content,
     String image,
@@ -15,6 +16,7 @@ public record ClubPostResponse(
 
     public static ClubPostResponse from(ClubPost clubPost) {
         return new ClubPostResponse(
+                clubPost.getPostId(),
                 clubPost.getTitle(),
                 clubPost.getContent(),
                 clubPost.getImage(),
