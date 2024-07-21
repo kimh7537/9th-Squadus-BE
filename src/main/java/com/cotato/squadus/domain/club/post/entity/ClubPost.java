@@ -1,5 +1,6 @@
 package com.cotato.squadus.domain.club.post.entity;
 
+import com.cotato.squadus.domain.club.common.entity.Club;
 import com.cotato.squadus.domain.club.common.entity.ClubAdminMember;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -17,6 +18,10 @@ public class ClubPost {
     @ManyToOne
     @JoinColumn(name = "club_member_idx")
     private ClubAdminMember author;
+
+    @ManyToOne
+    @JoinColumn(name = "club_idx")
+    private Club club;
 
     private String title;
 
