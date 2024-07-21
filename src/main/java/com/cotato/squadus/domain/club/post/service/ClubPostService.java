@@ -2,6 +2,8 @@ package com.cotato.squadus.domain.club.post.service;
 
 import com.cotato.squadus.api.post.dto.ClubPostListResponse;
 import com.cotato.squadus.api.post.dto.ClubPostResponse;
+import com.cotato.squadus.api.post.dto.ClubPostSummaryListResponse;
+import com.cotato.squadus.api.post.dto.ClubPostSummaryResponse;
 import com.cotato.squadus.domain.club.post.entity.ClubPost;
 import com.cotato.squadus.domain.club.post.repository.ClubPostRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -18,13 +20,24 @@ public class ClubPostService {
 
     private final ClubPostRepository clubPostRepository;
 
+    // 공지 전체 내용 조회
     public ClubPostListResponse findAllClubPostsByClubId(Long clubId) {
         List<ClubPostResponse> clubPostResponses = clubPostRepository.findAllByClub_ClubId(clubId)
-                        .stream()
-                        .map(ClubPostResponse::from)
-                        .toList();
+                .stream()
+                .map(ClubPostResponse::from)
+                .toList();
 
         return ClubPostListResponse.from(clubPostResponses);
+    }
+
+    // id, 제목, 날짜
+    public ClubPostSummaryListResponse findAllClubPostsSummaryByClubId(Long clubId) {
+        List<ClubPostSummaryResponse> clubPostSummaryResponseList = clubPostRepository.findAllByClub_ClubId(clubId)
+                .stream()
+                .map(ClubPostSummaryResponse::from)
+                .toList();
+
+        return ClubPostSummaryListResponse.from(clubPostSummaryResponseList);
     }
 
     public ClubPostResponse findClubPostByPostId(Long postId) {
