@@ -29,6 +29,8 @@ public class SecurityConfig {
     private static final String[] WHITE_LIST = {
             "/v1/api/auth/**",
             "/v1/api/member/**",
+            "/v1/api/clubs/**",
+
     };
 
     private final CustomOAuth2MemberService customOAuth2MemberService;

@@ -25,7 +25,7 @@ public abstract class ClubMember {
     private Member member;
 
     @ManyToOne
-    @JoinColumn(name = "club_idx")
+    @JoinColumn(name = "club_id")
     private Club club;
 
     @Enumerated(EnumType.STRING)
