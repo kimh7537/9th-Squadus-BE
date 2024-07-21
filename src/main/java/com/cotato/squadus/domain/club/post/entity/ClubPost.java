@@ -13,14 +13,14 @@ import java.time.LocalDateTime;
 public class ClubPost {
 
     @Id @GeneratedValue
-    private Long postIdx;
+    private Long postId;
 
     @ManyToOne
     @JoinColumn(name = "club_member_idx")
     private ClubAdminMember author;
 
     @ManyToOne
-    @JoinColumn(name = "club_idx")
+    @JoinColumn(name = "club_id")
     private Club club;
 
     private String title;

@@ -17,7 +17,7 @@ import static jakarta.persistence.FetchType.LAZY;
 public class Club {
 
     @Id @GeneratedValue
-    private Long clubIdx;
+    private Long clubId;
 
     private String clubName;
 

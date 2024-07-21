@@ -43,7 +43,7 @@ public class ClubService {
 
         clubRepository.save(club);
         log.info("Club created");
-        return new ClubCreateResponse(club.getClubIdx());
+        return new ClubCreateResponse(club.getClubId());
     }
 
     /**

@@ -4,9 +4,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ClubPostRepository extends JpaRepository<ClubPost, Long> {
 
-    List<ClubPost> findAllByClub_ClubIdx(Long clubIdx);
+    Optional<ClubPost> findByPostId(Long clubId);
+
+    List<ClubPost> findAllByClub_ClubId(Long clubId);
 }
