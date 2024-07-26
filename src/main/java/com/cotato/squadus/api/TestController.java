@@ -19,7 +19,7 @@ public class TestController {
     @GetMapping("/test")
     public String index() {
         log.debug("log 확인");
-        return "Hello World";
+        return "Hello World!";
     }
 
     @PostMapping

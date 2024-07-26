@@ -21,7 +21,7 @@ public class ClubSchedule {
     private Long scheduleIdx;
 
     @ManyToOne
-    @JoinColumn(name = "club_idx")
+    @JoinColumn(name = "club_id")
     private Club club;
 
     private String title;

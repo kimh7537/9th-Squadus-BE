@@ -37,8 +37,6 @@ jobs:
           spring.security.oauth2.client.registration.google.client-secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           spring.security.oauth2.client.registration.naver.client-id: ${{ secrets.NAVER_CLIENT_ID }}
           spring.security.oauth2.client.registration.naver.client-secret: ${{ secrets.NAVER_CLIENT_ID }}
-          spring.security.oauth2.client.registration.kakao.client-id: ${{ secrets.KAKAO_CLIENT_ID }}
-          spring.security.oauth2.client.registration.kakao.client-secret: ${{ secrets.KAKAO_CLIENT_ID }}
           spring.mail.username: ${{ secrets.MAIL_ADDRESS }}
           spring.mail.password: ${{ secrets.APP_PASSWORD }}
 #        run: echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/application.yml
@@ -47,7 +45,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: 테스트 및 빌드하기
-        run: ./gradlew clean build
+        run: ./gradlew clean build --scan
 
       - name: AWS Resource에 접근할 수 있게 AWS credentials 설정
         uses: aws-actions/configure-aws-credentials@v4
