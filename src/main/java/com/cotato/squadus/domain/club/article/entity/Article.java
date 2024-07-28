@@ -1,21 +1,21 @@
 package com.cotato.squadus.domain.club.article.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.cotato.squadus.common.entity.BaseTimeEntity;
+import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Table(name = "article")
-public class Article {
+@EntityListeners(AuditingEntityListener.class)
+public class Article extends BaseTimeEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long articleIdx;
 
     private String title;
@@ -24,8 +24,6 @@ public class Article {
 
     private String type;
 
-    private LocalDateTime createdAt;
-
     private String tag;
 
     private String content;
@@ -33,11 +31,10 @@ public class Article {
     private Long views;
 
     @Builder
-    public Article(String title, String subtitle, String type, LocalDateTime createdAt, String tag, String content, Long views) {
+    public Article(String title, String subtitle, String type, String tag, String content, Long views) {
         this.title = title;
         this.subtitle = subtitle;
         this.type = type;
-        this.createdAt = createdAt;
         this.tag = tag;
         this.content = content;
         this.views = views;
@@ -45,4 +42,9 @@ public class Article {
 
     public Article() {
     }
+
+    public void setViews(Long views) {
+        this.views = views;
+    }
+
 }

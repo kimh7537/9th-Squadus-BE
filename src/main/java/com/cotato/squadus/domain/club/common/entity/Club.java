@@ -1,9 +1,13 @@
 package com.cotato.squadus.domain.club.common.entity;
 
+import com.cotato.squadus.common.entity.BaseTimeEntity;
+import com.cotato.squadus.domain.club.post.entity.ClubPost;
+import com.cotato.squadus.domain.club.schedule.entity.ClubSchedule;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.List;
 import static jakarta.persistence.CascadeType.*;
@@ -13,10 +17,12 @@ import static jakarta.persistence.FetchType.LAZY;
 @Getter
 @NoArgsConstructor
 @Table(name = "club")
-public class Club {
+@EntityListeners(AuditingEntityListener.class)
+public class Club extends BaseTimeEntity {
 
-    @Id @GeneratedValue
-    private Long clubIdx;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long clubId;
 
     private String clubName;
 
@@ -30,8 +36,14 @@ public class Club {
 
     private String logo;
 
-    @OneToMany(mappedBy = "club", fetch = LAZY, cascade = ALL)
+    @OneToMany(mappedBy = "club", cascade = ALL)
+    private List<ClubSchedule> clubSchedules;
+
+    @OneToMany(mappedBy = "club", cascade = ALL)
     private List<ClubMember> clubMembers;
+
+    @OneToMany(mappedBy = "club", fetch = LAZY, cascade = ALL)
+    private List<ClubPost> clubPosts;
 
     @Builder
     private Club(String clubName, String university, String sportsCategory, String logo) {

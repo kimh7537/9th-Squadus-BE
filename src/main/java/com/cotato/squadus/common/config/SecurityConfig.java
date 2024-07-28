@@ -28,6 +28,10 @@ public class SecurityConfig {
 
     private static final String[] WHITE_LIST = {
             "/v1/api/auth/**",
+            "/v1/api/member/**",
+            "/v1/api/clubs/**",
+            "/v1/api/articles/**",
+            "/swagger-ui.html"
     };
 
     private final CustomOAuth2MemberService customOAuth2MemberService;
@@ -77,8 +81,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/club/create").hasRole(MemberRole.CERTIFIED_MEMBER.name())
                         .anyRequest().authenticated());
 
-//        http
-//                .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRepository), LogoutFilter.class);
+        http
+                .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRepository), LogoutFilter.class);
 //
 //        //필터 추가 LoginFilter()는 인자를 받음 (AuthenticationManager() 메소드에 authenticationConfiguration 객체를 넣어야 함) 따라서 등록 필요
 //        //AuthenticationManager()와 JWTUtil 인수 전달

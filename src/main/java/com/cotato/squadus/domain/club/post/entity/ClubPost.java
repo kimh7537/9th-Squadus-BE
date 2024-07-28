@@ -1,5 +1,6 @@
 package com.cotato.squadus.domain.club.post.entity;
 
+import com.cotato.squadus.domain.club.common.entity.Club;
 import com.cotato.squadus.domain.club.common.entity.ClubAdminMember;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -12,11 +13,15 @@ import java.time.LocalDateTime;
 public class ClubPost {
 
     @Id @GeneratedValue
-    private Long postIdx;
+    private Long postId;
 
     @ManyToOne
     @JoinColumn(name = "club_member_idx")
     private ClubAdminMember author;
+
+    @ManyToOne
+    @JoinColumn(name = "club_id")
+    private Club club;
 
     private String title;
 
