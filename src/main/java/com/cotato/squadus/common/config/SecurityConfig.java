@@ -30,7 +30,8 @@ public class SecurityConfig {
             "/v1/api/auth/**",
             "/v1/api/member/**",
             "/v1/api/clubs/**",
-
+            "/v1/api/articles/**",
+            "/swagger-ui.html"
     };
 
     private final CustomOAuth2MemberService customOAuth2MemberService;
@@ -74,7 +75,6 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/v1/api/email/**").permitAll()
-                        .requestMatchers("/test").permitAll()
                         .requestMatchers(WHITE_LIST).permitAll()
                         .requestMatchers("/admin").hasRole(AdminStatus.CURRENT.name())
                         .requestMatchers("/reissue").permitAll()
