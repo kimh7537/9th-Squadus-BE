@@ -56,7 +56,7 @@ public class Member {
         this.refreshToken = null;
     }
 
-    @OneToMany(mappedBy = "member", fetch = LAZY, cascade = ALL)
+    @OneToMany(mappedBy = "member", cascade = ALL)
     private List<ClubMember> clubMemberships; // 가입된 동아리 리스트 확인
 
 
