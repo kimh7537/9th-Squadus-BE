@@ -17,15 +17,16 @@ import static jakarta.persistence.FetchType.LAZY;
 @Table(name = "club_member")
 public abstract class ClubMember {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long clubMemberIdx;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_idx")
     private Member member;
 
-    @ManyToOne
-    @JoinColumn(name = "club_idx")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "club_id")
     private Club club;
 
     @Enumerated(EnumType.STRING)
@@ -33,8 +34,9 @@ public abstract class ClubMember {
 
     private Boolean isPaid;
 
+    //s3로 이미지 url 저장
     private String clubProfileImage;
 
-    @OneToMany(mappedBy = "clubMember", fetch = LAZY, cascade = ALL)
+    @OneToMany(mappedBy = "clubMember", cascade = ALL)
     private List<ScheduleComment> scheduleComments;
 }
