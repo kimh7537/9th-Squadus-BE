@@ -26,6 +26,6 @@ public class ClubPostComment extends BaseTimeEntity {
     private ClubMember clubMember;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "club_schedule")
+    @JoinColumn(name = "post_id")
     private ClubPost clubPost;
 }
