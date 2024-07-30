@@ -1,7 +1,6 @@
 package com.cotato.squadus.api.auth.controller;
 
 import com.cotato.squadus.common.config.jwt.JWTUtil;
-import com.cotato.squadus.common.config.jwt.RefreshEntity;
 import com.cotato.squadus.common.config.jwt.RefreshRepository;
 import com.cotato.squadus.domain.auth.service.RefreshService;
 import io.jsonwebtoken.ExpiredJwtException;
