@@ -8,7 +8,8 @@ public record ClubPostCommentResponse(
         String clubMemberName,
         String content,
         LocalDateTime createdDate,
-        String profileImgUrl
+        String profileImgUrl,
+        Long likes
 
 ) {
 
@@ -18,7 +19,8 @@ public record ClubPostCommentResponse(
                 clubPostComment.getClubMember().getMember().getUsername(),
                 clubPostComment.getContent(),
                 clubPostComment.getCreatedAt(),
-                clubPostComment.getClubMember().getClubProfileImage()
+                clubPostComment.getClubMember().getClubProfileImage(),
+                clubPostComment.getLikes()
         );
     }
 }

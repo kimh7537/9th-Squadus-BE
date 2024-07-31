@@ -3,12 +3,15 @@ package com.cotato.squadus.domain.club.post.entity;
 import com.cotato.squadus.common.entity.BaseTimeEntity;
 import com.cotato.squadus.domain.club.common.entity.ClubMember;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Getter
 @Table(name = "club_post_comment")
+@NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class ClubPostComment extends BaseTimeEntity {
 
@@ -28,4 +31,15 @@ public class ClubPostComment extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private ClubPost clubPost;
+
+    @Builder
+    public ClubPostComment(String content, ClubMember clubMember, ClubPost clubPost) {
+        this.content = content;
+        this.clubMember = clubMember;
+        this.clubPost = clubPost;
+    }
+
+    public void increaseLikes() {
+        this.likes++;
+    }
 }
