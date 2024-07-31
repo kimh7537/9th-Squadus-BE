@@ -49,4 +49,8 @@ public class ClubPost extends BaseTimeEntity {
         this.likes += 1L;
         return this;
     }
+
+    public void increaseViews() {
+        this.views += 1L;
+    }
 }

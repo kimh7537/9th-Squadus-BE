@@ -37,9 +37,13 @@ public class ClubPostService {
         return ClubPostSummaryListResponse.from(clubPostSummaryResponseList);
     }
 
+    @Transactional
     public ClubPostResponse findClubPostByPostId(Long postId) {
         ClubPost clubPost = clubPostRepository.findByPostId(postId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 고유번호를 가진 동아리 공지를 찾을 수 없습니다."));
+        clubPost.increaseViews();
+        clubPostRepository.save(clubPost);
+        log.info("조회수 증가, 조회수 : {}", clubPost.getViews());
         ClubPostResponse clubPostResponse = ClubPostResponse.from(clubPost);
         return clubPostResponse;
     }
@@ -64,6 +68,5 @@ public class ClubPostService {
         ClubPost likesIncreasedPost = clubPost.increaseLikes();
         ClubPost updated = clubPostRepository.save(likesIncreasedPost);
         return new ClubPostLikesResponse(updated.getLikes());
-
     }
 }
