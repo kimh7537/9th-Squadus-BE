@@ -45,4 +45,8 @@ public class ClubPost extends BaseTimeEntity {
         this.likes = likes;
     }
 
+    public ClubPost increaseLikes() {
+        this.likes += 1L;
+        return this;
+    }
 }

@@ -42,4 +42,12 @@ public class ClubPostController {
         log.info("동아리 공지 작성, postId: {} ", clubPostCreateResponse);
         return ResponseEntity.ok(clubPostCreateResponse);
     }
+
+    @PatchMapping("{postId}/like")
+    public ResponseEntity<ClubPostLikesResponse> increaseClubPostLikes(@PathVariable Long postId) {
+        ClubPostLikesResponse clubPostLikesResponse = clubPostService.increaseClubPostLikes(postId);
+        log.info("동아리 공지 좋아요, likes: {} ", clubPostLikesResponse);
+        return ResponseEntity.ok(clubPostLikesResponse);
+
+    }
 }

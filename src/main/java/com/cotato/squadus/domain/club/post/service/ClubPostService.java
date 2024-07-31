@@ -56,4 +56,14 @@ public class ClubPostService {
         ClubPost savedClubPost = clubPostRepository.save(clubPost);
         return new ClubPostCreateResponse(savedClubPost.getPostId());
     }
+
+    @Transactional
+    public ClubPostLikesResponse increaseClubPostLikes(Long postId) {
+        ClubPost clubPost = clubPostRepository.findByPostId(postId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 고유번호를 가진 동아리 공지를 찾을 수 없습니다."));
+        ClubPost likesIncreasedPost = clubPost.increaseLikes();
+        ClubPost updated = clubPostRepository.save(likesIncreasedPost);
+        return new ClubPostLikesResponse(updated.getLikes());
+
+    }
 }
