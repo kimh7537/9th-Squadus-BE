@@ -53,7 +53,9 @@ public class ClubPostCommentService {
                 .content(clubPostCommentCreateRequest.content())
                 //멤버 추가해야함
                 .clubPost(clubPost)
+                .likes(0L)
                 .build();
+
         ClubPostComment save = clubPostCommentRepository.save(clubPostComment);
         return new ClubPostCommentCreateResponse(save.getId());
 

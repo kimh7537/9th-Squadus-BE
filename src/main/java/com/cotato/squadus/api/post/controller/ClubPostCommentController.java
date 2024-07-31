@@ -34,7 +34,7 @@ public class ClubPostCommentController {
         return ResponseEntity.ok(clubPostCommentCreateResponse);
     }
 
-    @PatchMapping("/{commentId}")
+    @PatchMapping("/{commentId}/like")
     public ResponseEntity<ClubPostCommentLikeResponse> increaseClubPostCommentLike(@PathVariable Long clubId, @PathVariable Long postId, @PathVariable Long commentId) {
 
         ClubPostCommentLikeResponse clubPostCommentLikeResponse = clubPostCommentService.increaseClubPostCommentLike(commentId);

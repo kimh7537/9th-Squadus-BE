@@ -33,13 +33,14 @@ public class ClubPostComment extends BaseTimeEntity {
     private ClubPost clubPost;
 
     @Builder
-    public ClubPostComment(String content, ClubMember clubMember, ClubPost clubPost) {
+    public ClubPostComment(String content, ClubMember clubMember, ClubPost clubPost, Long likes) {
         this.content = content;
         this.clubMember = clubMember;
         this.clubPost = clubPost;
+        this.likes = likes;
     }
 
     public void increaseLikes() {
-        this.likes++;
+        this.likes += 1L;
     }
 }
