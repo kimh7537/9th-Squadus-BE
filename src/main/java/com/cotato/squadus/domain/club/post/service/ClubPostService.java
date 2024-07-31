@@ -1,9 +1,6 @@
 package com.cotato.squadus.domain.club.post.service;
 
-import com.cotato.squadus.api.post.dto.ClubPostListResponse;
-import com.cotato.squadus.api.post.dto.ClubPostResponse;
-import com.cotato.squadus.api.post.dto.ClubPostSummaryListResponse;
-import com.cotato.squadus.api.post.dto.ClubPostSummaryResponse;
+import com.cotato.squadus.api.post.dto.*;
 import com.cotato.squadus.domain.club.post.entity.ClubPost;
 import com.cotato.squadus.domain.club.post.repository.ClubPostRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -47,4 +44,16 @@ public class ClubPostService {
         return clubPostResponse;
     }
 
+    @Transactional
+    public ClubPostCreateResponse createClubPost(ClubPostCreateRequest clubPostCreateRequest) {
+        ClubPost clubPost = ClubPost.builder()
+                .title(clubPostCreateRequest.title())
+                .content(clubPostCreateRequest.content())
+                .image(clubPostCreateRequest.imageUrl())
+                .views(0L)
+                .likes(0L)
+                .build();
+        ClubPost savedClubPost = clubPostRepository.save(clubPost);
+        return new ClubPostCreateResponse(savedClubPost.getPostId());
+    }
 }
