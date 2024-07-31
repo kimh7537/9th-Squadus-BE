@@ -69,8 +69,6 @@ public class ClubScheduleService {
         return ClubScheduleResponse.from(schedule);
     }
 
-
-
     @Transactional
     public void deleteSchedule(Long clubId, Long scheduleId) {
         ClubSchedule schedule = clubScheduleRepository.findByScheduleIdxAndClubClubId(scheduleId, clubId)
@@ -81,6 +79,7 @@ public class ClubScheduleService {
 
         clubScheduleRepository.delete(schedule);
     }
+
 
     @Transactional
     public ClubScheduleResponse updateSchedule(Long clubId, Long scheduleId, ClubScheduleRequest scheduleRequest) {
