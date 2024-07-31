@@ -28,6 +28,7 @@ public class SecurityConfig {
             "/v1/api/member/**",
             "/v1/api/clubs/**",
             "/v1/api/articles/**",
+            "/v1/api/email/**",
             "/swagger-ui.html"
     };
 
