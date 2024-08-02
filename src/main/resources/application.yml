@@ -1,6 +1,6 @@
 spring:
   jwt:
-    secret: ${ JWT_SECRET }
+    secret: ${JWT_SECRET}
 
 #    access:
 #      expiration: 80
@@ -71,7 +71,7 @@ spring:
             scope:
               - name
               - email
-    data:
-      redis:
-        host: localhost
-        port: 6379
+  data:
+    redis:
+      host: localhost
+      port: 6379

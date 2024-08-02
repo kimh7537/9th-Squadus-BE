@@ -1,8 +1,6 @@
 package com.cotato.squadus.api.post.controller;
 
-import com.cotato.squadus.api.post.dto.ClubPostListResponse;
-import com.cotato.squadus.api.post.dto.ClubPostResponse;
-import com.cotato.squadus.api.post.dto.ClubPostSummaryListResponse;
+import com.cotato.squadus.api.post.dto.*;
 import com.cotato.squadus.domain.club.post.service.ClubPostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,4 +36,18 @@ public class ClubPostController {
         return ResponseEntity.ok(clubPostByPostId);
     }
 
+    @PostMapping("")
+    public ResponseEntity<ClubPostCreateResponse> createClubPost(@RequestBody ClubPostCreateRequest clubPostCreateRequest) {
+        ClubPostCreateResponse clubPostCreateResponse = clubPostService.createClubPost(clubPostCreateRequest);
+        log.info("동아리 공지 작성, postId: {} ", clubPostCreateResponse);
+        return ResponseEntity.ok(clubPostCreateResponse);
+    }
+
+    @PatchMapping("{postId}/like")
+    public ResponseEntity<ClubPostLikesResponse> increaseClubPostLikes(@PathVariable Long postId) {
+        ClubPostLikesResponse clubPostLikesResponse = clubPostService.increaseClubPostLikes(postId);
+        log.info("동아리 공지 좋아요, likes: {} ", clubPostLikesResponse);
+        return ResponseEntity.ok(clubPostLikesResponse);
+
+    }
 }
