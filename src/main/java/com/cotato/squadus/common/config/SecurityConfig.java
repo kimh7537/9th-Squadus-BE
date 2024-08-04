@@ -29,7 +29,8 @@ public class SecurityConfig {
             "/v1/api/clubs/**",
             "/v1/api/articles/**",
             "/v1/api/email/**",
-            "/swagger-ui.html"
+            "/swagger-ui/**",
+            "/v3/api-docs/**"
     };
 
     private final CustomOAuth2MemberService customOAuth2MemberService;
@@ -72,8 +73,8 @@ public class SecurityConfig {
         //경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/v1/api/email/**").permitAll()
                         .requestMatchers(WHITE_LIST).permitAll()
+                        .requestMatchers("/v1/api/email/**").permitAll()
                         .requestMatchers("/admin").hasRole(AdminStatus.CURRENT.name())
                         .requestMatchers("/reissue").permitAll()
                         .anyRequest().authenticated());

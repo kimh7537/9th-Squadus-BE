@@ -4,6 +4,8 @@ import com.cotato.squadus.common.config.jwt.JWTUtil;
 import com.cotato.squadus.common.config.jwt.RefreshRepository;
 import com.cotato.squadus.domain.auth.service.RefreshService;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Date;
 import java.util.Map;
 
+@Tag(name = "토큰 재발급", description = "Access Token 재발급 관련 API")
 @RestController
 @Slf4j
 @RequiredArgsConstructor
@@ -28,6 +31,7 @@ public class ReissueController {
 
 
     @PostMapping("/reissue")
+    @Operation(summary = "Access token 재발급", description = "Refresh token을 바탕으로 Access token을 재발급합니다")
     public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
 
         //get refresh token
