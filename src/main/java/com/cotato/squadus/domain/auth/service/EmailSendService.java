@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 public class EmailSendService {
+
     @Autowired private JavaMailSender javaMailSender;
     @Autowired private RedisConfig redisConfig;
     private int authNumber;
