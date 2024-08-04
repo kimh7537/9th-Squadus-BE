@@ -18,15 +18,15 @@ public class ClubController {
 
     private final ClubService clubService;
 
-    @PostMapping("/create")
+    @PostMapping()
     public ResponseEntity<ClubCreateResponse> createClub(@RequestBody ClubCreateRequest clubCreateRequest) {
         ClubCreateResponse clubCreateResponse = clubService.createClub(clubCreateRequest);
         return ResponseEntity.ok(clubCreateResponse);
     }
 
-    @PostMapping("/apply")
-    public ResponseEntity<ClubApplyResponse> joinClub(@RequestBody ClubApplyRequest clubApplyRequest) {
-        ClubApplyResponse clubApplyResponse = clubService.joinClub(clubApplyRequest);
+    @PostMapping("/{clubId}")
+    public ResponseEntity<ClubApplyResponse> joinClub(@PathVariable Long clubId, @RequestBody ClubApplyRequest clubApplyRequest) {
+        ClubApplyResponse clubApplyResponse = clubService.joinClub(clubId, clubApplyRequest);
         return ResponseEntity.ok(clubApplyResponse);
     }
 }
