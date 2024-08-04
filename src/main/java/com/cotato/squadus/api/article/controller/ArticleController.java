@@ -5,6 +5,8 @@ import com.cotato.squadus.api.article.dto.ArticleRequest;
 import com.cotato.squadus.api.article.dto.ArticleResponse;
 import com.cotato.squadus.api.article.dto.ArticleSummaryResponse;
 import com.cotato.squadus.domain.club.article.service.ArticleService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -12,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -31,8 +34,19 @@ public class ArticleController {
     }
 
     @PostMapping
-    public ResponseEntity<ArticleResponse> createArticle(@RequestBody ArticleRequest articleRequest) {
-        ArticleResponse article = articleService.createArticle(articleRequest);
+    public ResponseEntity<ArticleResponse> createArticle(
+            @RequestPart("articleRequest") String articleRequestString,
+            @RequestPart("image") MultipartFile imageFile) {
+        // JSON String을 객체로 변환
+        ObjectMapper objectMapper = new ObjectMapper();
+        ArticleRequest articleRequest;
+        try {
+            articleRequest = objectMapper.readValue(articleRequestString, ArticleRequest.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Invalid JSON format", e);
+        }
+
+        ArticleResponse article = articleService.createArticle(articleRequest, imageFile);
         log.info("새 기사 생성 : {} ", article);
         return ResponseEntity.ok(article);
     }

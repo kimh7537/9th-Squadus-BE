@@ -12,6 +12,7 @@ public record ArticleResponse(
         String tag,
         String content,
         Long views,
+        String imageUrl,
         LocalDateTime createdAt,
         LocalDateTime modifiedAt
 ) {
@@ -25,6 +26,7 @@ public record ArticleResponse(
                 article.getTag(),
                 article.getContent(),
                 article.getViews(),
+                article.getImageUrl(),
                 article.getCreatedAt(),
                 article.getModifiedAt()
         );
