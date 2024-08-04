@@ -34,6 +34,7 @@ public class Club extends BaseTimeEntity {
 
     private String sportsCategory; // 이 부분 바꿔야할 듯
 
+    //s3로 이미지 저장
     private String logo;
 
     @OneToMany(mappedBy = "club", cascade = ALL)
@@ -46,9 +47,11 @@ public class Club extends BaseTimeEntity {
     private List<ClubPost> clubPosts;
 
     @Builder
-    private Club(String clubName, String university, String sportsCategory, String logo) {
+    private Club(String clubName, String university, String clubTier, Integer clubRank, String sportsCategory, String logo) {
         this.clubName = clubName;
         this.university = university;
+        this.clubTier = clubTier;
+        this.clubRank = clubRank;
         this.sportsCategory = sportsCategory;
         this.logo = logo;
     }

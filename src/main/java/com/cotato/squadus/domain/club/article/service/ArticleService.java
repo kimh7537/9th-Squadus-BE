@@ -3,7 +3,7 @@ package com.cotato.squadus.domain.club.article.service;
 import com.cotato.squadus.api.article.dto.ArticleRequest;
 import com.cotato.squadus.api.article.dto.ArticleResponse;
 import com.cotato.squadus.api.article.dto.ArticleSummaryResponse;
-import com.cotato.squadus.domain.S3ImageService;
+import com.cotato.squadus.common.s3.S3ImageService;
 import com.cotato.squadus.domain.club.article.entity.Article;
 import com.cotato.squadus.domain.club.article.repository.ArticleRepository;
 import jakarta.persistence.EntityNotFoundException;

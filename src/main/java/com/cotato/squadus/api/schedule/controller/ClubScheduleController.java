@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 
 @Slf4j
@@ -34,6 +35,14 @@ public class ClubScheduleController {
         return ResponseEntity.ok(ClubScheduleListResponse.from(schedules));
     }
 
+    @GetMapping("/month")
+    public ResponseEntity<ClubScheduleListResponse> getSchedulesByMonth(@PathVariable Long clubId,
+                                                                        @RequestParam int year,
+                                                                        @RequestParam int month) {
+        List<ClubScheduleResponse> schedules = clubScheduleService.findSchedulesByYearMonth(clubId, year, month);
+        return ResponseEntity.ok(ClubScheduleListResponse.from(schedules));
+    }
+
     @PostMapping
     public ResponseEntity<ClubScheduleResponse> createSchedule(@PathVariable Long clubId, @RequestBody ClubScheduleRequest scheduleRequest) {
         ClubScheduleResponse schedule = clubScheduleService.createSchedule(clubId, scheduleRequest);
@@ -41,8 +50,8 @@ public class ClubScheduleController {
     }
 
     @DeleteMapping("/{scheduleId}")
-    public ResponseEntity<Void> deleteSchedule(@PathVariable Long clubId, @PathVariable Long scheduleId) {
-        clubScheduleService.deleteSchedule(clubId, scheduleId);
+    public ResponseEntity<Void> deleteSchedule(@PathVariable Long clubId, @PathVariable Long scheduleId, @RequestParam Long adminId) {
+        clubScheduleService.deleteSchedule(clubId, scheduleId, adminId);
         return ResponseEntity.noContent().build();
     }
 

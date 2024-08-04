@@ -1,6 +1,5 @@
-package com.cotato.squadus.api;
+package com.cotato.squadus.common.s3;
 
-import com.cotato.squadus.domain.S3ImageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
