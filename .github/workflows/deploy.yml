@@ -9,7 +9,11 @@ on:
 env:
   BASE_RESOURCE_PATH: ./src/main/resources/application.yml
 
-permissions: write-all
+permissions:
+  id-token: write
+  contents: write
+  actions: write
+  write-all: write
 
 jobs:
   deploy:
