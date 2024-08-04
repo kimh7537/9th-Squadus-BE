@@ -1,9 +1,6 @@
 package com.cotato.squadus.domain.club.post.service;
 
-import com.cotato.squadus.api.post.dto.ClubPostListResponse;
-import com.cotato.squadus.api.post.dto.ClubPostResponse;
-import com.cotato.squadus.api.post.dto.ClubPostSummaryListResponse;
-import com.cotato.squadus.api.post.dto.ClubPostSummaryResponse;
+import com.cotato.squadus.api.post.dto.*;
 import com.cotato.squadus.domain.club.post.entity.ClubPost;
 import com.cotato.squadus.domain.club.post.repository.ClubPostRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -40,11 +37,36 @@ public class ClubPostService {
         return ClubPostSummaryListResponse.from(clubPostSummaryResponseList);
     }
 
+    @Transactional
     public ClubPostResponse findClubPostByPostId(Long postId) {
         ClubPost clubPost = clubPostRepository.findByPostId(postId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 고유번호를 가진 동아리 공지를 찾을 수 없습니다."));
+        clubPost.increaseViews();
+        clubPostRepository.save(clubPost);
+        log.info("조회수 증가, 조회수 : {}", clubPost.getViews());
         ClubPostResponse clubPostResponse = ClubPostResponse.from(clubPost);
         return clubPostResponse;
     }
 
+    @Transactional
+    public ClubPostCreateResponse createClubPost(ClubPostCreateRequest clubPostCreateRequest) {
+        ClubPost clubPost = ClubPost.builder()
+                .title(clubPostCreateRequest.title())
+                .content(clubPostCreateRequest.content())
+                .image(clubPostCreateRequest.imageUrl())
+                .views(0L)
+                .likes(0L)
+                .build();
+        ClubPost savedClubPost = clubPostRepository.save(clubPost);
+        return new ClubPostCreateResponse(savedClubPost.getPostId());
+    }
+
+    @Transactional
+    public ClubPostLikesResponse increaseClubPostLikes(Long postId) {
+        ClubPost clubPost = clubPostRepository.findByPostId(postId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 고유번호를 가진 동아리 공지를 찾을 수 없습니다."));
+        ClubPost likesIncreasedPost = clubPost.increaseLikes();
+        ClubPost updated = clubPostRepository.save(likesIncreasedPost);
+        return new ClubPostLikesResponse(updated.getLikes());
+    }
 }
