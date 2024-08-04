@@ -14,5 +14,7 @@ public interface ClubScheduleRepository extends JpaRepository<ClubSchedule, Long
 
     List<ClubSchedule> findByClubClubIdAndDate(Long clubId, LocalDate date);
 
+    List<ClubSchedule> findByClubClubIdAndDateBetween(Long clubId, LocalDate startDate, LocalDate endDate);
+
     Optional<ClubSchedule> findByScheduleIdxAndClubClubId(Long scheduleId, Long clubId);
 }

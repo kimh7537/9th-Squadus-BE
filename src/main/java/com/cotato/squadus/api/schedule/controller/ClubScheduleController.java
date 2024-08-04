@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 
 @Tag(name = "동아리 일정", description = "동아리 일정 관련 API")
@@ -39,6 +40,14 @@ public class ClubScheduleController {
         return ResponseEntity.ok(ClubScheduleListResponse.from(schedules));
     }
 
+    @GetMapping("/month")
+    public ResponseEntity<ClubScheduleListResponse> getSchedulesByMonth(@PathVariable Long clubId,
+                                                                        @RequestParam int year,
+                                                                        @RequestParam int month) {
+        List<ClubScheduleResponse> schedules = clubScheduleService.findSchedulesByYearMonth(clubId, year, month);
+        return ResponseEntity.ok(ClubScheduleListResponse.from(schedules));
+    }
+
     @PostMapping
     @Operation(summary = "동아리 일정 단건 생성", description = "clubId와 일정에 대한 정보를 바탕으로 동아리 일정을 생성합니다")
     public ResponseEntity<ClubScheduleResponse> createSchedule(@PathVariable Long clubId, @RequestBody ClubScheduleRequest scheduleRequest) {
@@ -48,8 +57,8 @@ public class ClubScheduleController {
 
     @DeleteMapping("/{scheduleId}")
     @Operation(summary = "동아리 일정 단건 삭제", description = "clubId와 scheduleId를 바탕으로 동아리 일정을 삭제합니다")
-    public ResponseEntity<Void> deleteSchedule(@PathVariable Long clubId, @PathVariable Long scheduleId) {
-        clubScheduleService.deleteSchedule(clubId, scheduleId);
+    public ResponseEntity<Void> deleteSchedule(@PathVariable Long clubId, @PathVariable Long scheduleId, @RequestParam Long adminId) {
+        clubScheduleService.deleteSchedule(clubId, scheduleId, adminId);
         return ResponseEntity.noContent().build();
     }
 

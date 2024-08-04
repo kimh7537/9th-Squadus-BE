@@ -3,6 +3,7 @@ package com.cotato.squadus.api.schedule.dto;
 import com.cotato.squadus.domain.club.schedule.entity.ClubSchedule;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 public record ClubScheduleResponse(
         Long scheduleIdx,
@@ -12,7 +13,9 @@ public record ClubScheduleResponse(
         Long authorId,
         String location,
         String equipment,
-        LocalDate date
+        LocalDate date,
+        LocalTime startTime,
+        LocalTime endTime
 ) {
     public static ClubScheduleResponse from(ClubSchedule schedule) {
         return new ClubScheduleResponse(
@@ -23,7 +26,9 @@ public record ClubScheduleResponse(
                 schedule.getAuthor().getClubMemberIdx(),
                 schedule.getLocation(),
                 schedule.getEquipment(),
-                schedule.getDate()
+                schedule.getDate(),
+                schedule.getStartTime(),
+                schedule.getEndTime()
         );
     }
 }
