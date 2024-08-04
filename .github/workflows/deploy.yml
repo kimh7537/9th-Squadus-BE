@@ -13,7 +13,6 @@ permissions:
   id-token: write
   contents: write
   actions: write
-  write-all: write
 
 jobs:
   deploy:
