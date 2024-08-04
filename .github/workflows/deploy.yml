@@ -46,7 +46,7 @@ jobs:
           spring.mail.password: ${{ secrets.APP_PASSWORD }}
           cloud.aws.credentials.accessKey: ${{ secrets.S3_ACCESS_KEY }}
           cloud.aws.credentials.secretKey: ${{ secrets.S3_SECRET_KEY }}
-          cloud.aws.s3.bucketName: ${{ secrets.S3_BUCKET_NAMED }}
+          cloud.aws.s3.bucketName: ${{ secrets.S3_BUCKET_NAME }}
 #        run: echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/application.yml
 
       - name: gradlew에 실행 권한 부여하기
