@@ -30,7 +30,7 @@ public class ClubController {
     }
 
     @PostMapping("/apply")
-    @Operation(summary = "동아리 가입 신청", description = "유저의 id, 동아리의 id를 통해 동아리에 가입을 신청합니다.")
+    @Operation(summary = "동아리 가입 신청", description = "유저의 id, 동아리의 id를 통해 동아리에 가입을 신청합니다")
     public ResponseEntity<ClubApplyResponse> joinClub(@RequestBody ClubApplyRequest clubApplyRequest) {
         ClubApplyResponse clubApplyResponse = clubService.joinClub(clubApplyRequest);
         return ResponseEntity.ok(clubApplyResponse);
