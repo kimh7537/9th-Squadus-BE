@@ -1,6 +1,8 @@
 package com.cotato.squadus.domain.club.common.service;
 
 import com.cotato.squadus.domain.auth.repository.MemberRepository;
+import com.cotato.squadus.domain.club.common.enums.ClubTier;
+import com.cotato.squadus.domain.club.common.enums.SportsCategory;
 import com.cotato.squadus.domain.club.common.repository.ClubApplicationRepository;
 import com.cotato.squadus.domain.club.common.repository.ClubRepository;
 import com.cotato.squadus.api.club.dto.ClubCreateRequest;
@@ -11,6 +13,7 @@ import com.cotato.squadus.domain.auth.enums.ApplicationStatus;
 import com.cotato.squadus.domain.club.common.entity.Club;
 import com.cotato.squadus.domain.club.common.entity.ClubApplication;
 import com.cotato.squadus.domain.auth.entity.Member;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,13 +40,14 @@ public class ClubService {
         Club club = Club.builder()
                 .clubName(clubCreateRequest.getClubName())
                 .university(clubCreateRequest.getUniversity())
-                .sportsCategory(clubCreateRequest.getSportsCategory())
+                .sportsCategory(SportsCategory.valueOf(clubCreateRequest.getSportsCategory()))
                 .logo(clubCreateRequest.getLogo())
+                .clubTier(ClubTier.BRONZE)
                 .build();
 
-        clubRepository.save(club);
-        log.info("Club created");
-        return new ClubCreateResponse(club.getClubId());
+        Club savedClub = clubRepository.save(club);
+        log.info("Club created : {}", savedClub);
+        return new ClubCreateResponse(savedClub.getClubId());
     }
 
     /**
@@ -54,9 +58,11 @@ public class ClubService {
      * 초기에는 상태 PENDING으로 설정되고 나중에 동아리장이 가입 승인하면 바뀜
      */
     @Transactional
-    public ClubApplyResponse joinClub(ClubApplyRequest clubApplyRequest) {
-        Club club = clubRepository.findById(clubApplyRequest.getClubIdx()).get();
-        Member member = memberRepository.findById(clubApplyRequest.getMemberIdx()).get();
+    public ClubApplyResponse joinClub(Long clubId, ClubApplyRequest clubApplyRequest) {
+        Club club = clubRepository.findById(clubId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 고유번호를 가진 동아리를 찾을 수 없습니다."));
+        Member member = memberRepository.findById(clubApplyRequest.getMemberIdx())
+                .orElseThrow(() -> new EntityNotFoundException("해당 고유번호를 가진 회원을 찾을 수 없습니다."));
         ClubApplication clubApplication = ClubApplication.builder()
                 .member(member)
                 .club(club)
