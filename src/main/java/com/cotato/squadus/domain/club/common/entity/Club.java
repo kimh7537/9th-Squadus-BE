@@ -37,6 +37,7 @@ public class Club extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private SportsCategory sportsCategory;
 
+    //s3로 이미지 저장
     private String logo;
 
     @OneToMany(mappedBy = "club", cascade = ALL)

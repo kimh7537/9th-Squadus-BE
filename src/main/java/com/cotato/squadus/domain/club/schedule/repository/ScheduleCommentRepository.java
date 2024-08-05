@@ -8,5 +8,5 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface ScheduleCommentRepository extends JpaRepository<ScheduleComment, Long> {
-
+    List<ScheduleComment> findByClubScheduleScheduleIdx(Long scheduleIdx);
 }

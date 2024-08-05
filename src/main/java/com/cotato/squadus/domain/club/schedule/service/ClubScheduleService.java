@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,6 +46,17 @@ public class ClubScheduleService {
                 .collect(Collectors.toList());
     }
 
+    // club의 특정 연도와 월의 schedule들을 가져옴
+    public List<ClubScheduleResponse> findSchedulesByYearMonth(Long clubId, int year, int month) {
+        YearMonth yearMonth = YearMonth.of(year, month);
+        LocalDate startDate = yearMonth.atDay(1);
+        LocalDate endDate = yearMonth.atEndOfMonth();
+        List<ClubSchedule> schedules = clubScheduleRepository.findByClubClubIdAndDateBetween(clubId, startDate, endDate);
+        return schedules.stream()
+                .map(ClubScheduleResponse::from)
+                .collect(Collectors.toList());
+    }
+
 
     @Transactional
     public ClubScheduleResponse createSchedule(Long clubId, ClubScheduleRequest scheduleRequest) {
@@ -63,32 +75,41 @@ public class ClubScheduleService {
                 .location(scheduleRequest.getLocation())
                 .equipment(scheduleRequest.getEquipment())
                 .date(scheduleRequest.getDate())
+                .startTime(scheduleRequest.getStartTime())
+                .endTime(scheduleRequest.getEndTime())
                 .build();
 
         clubScheduleRepository.save(schedule);
         return ClubScheduleResponse.from(schedule);
     }
 
-
-
     @Transactional
-    public void deleteSchedule(Long clubId, Long scheduleId) {
+    public void deleteSchedule(Long clubId, Long scheduleId, Long adminId) {
         ClubSchedule schedule = clubScheduleRepository.findByScheduleIdxAndClubClubId(scheduleId, clubId)
                 .orElseThrow(() -> new EntityNotFoundException("Schedule not found with id: " + scheduleId));
 
-        ClubAdminMember adminMember = clubAdminMemberRepository.findByClubMemberIdxAndAdminStatus(schedule.getAuthor().getClubMemberIdx(), AdminStatus.CURRENT)
-                .orElseThrow(() -> new EntityNotFoundException("Admin member not found with id: " + schedule.getAuthor().getClubMemberIdx()));
+        ClubAdminMember adminMember = clubAdminMemberRepository.findByClubMemberIdxAndAdminStatus(adminId, AdminStatus.CURRENT)
+                .orElseThrow(() -> new EntityNotFoundException("Admin member not found or not CURRENT with id: " + adminId));
+
+        if (!schedule.getAuthor().getClubMemberIdx().equals(adminMember.getClubMemberIdx())) {
+            throw new IllegalArgumentException("You do not have permission to delete this schedule.");
+        }
 
         clubScheduleRepository.delete(schedule);
     }
+
 
     @Transactional
     public ClubScheduleResponse updateSchedule(Long clubId, Long scheduleId, ClubScheduleRequest scheduleRequest) {
         ClubSchedule schedule = clubScheduleRepository.findByScheduleIdxAndClubClubId(scheduleId, clubId)
                 .orElseThrow(() -> new EntityNotFoundException("Schedule not found with id: " + scheduleId));
 
-        ClubAdminMember adminMember = clubAdminMemberRepository.findByClubMemberIdxAndAdminStatus(schedule.getAuthor().getClubMemberIdx(), AdminStatus.CURRENT)
-                .orElseThrow(() -> new EntityNotFoundException("Admin member not found with id: " + schedule.getAuthor().getClubMemberIdx()));
+        ClubAdminMember adminMember = clubAdminMemberRepository.findByClubMemberIdxAndAdminStatus(scheduleRequest.getAuthorId(), AdminStatus.CURRENT)
+                .orElseThrow(() -> new EntityNotFoundException("Admin member not found or not CURRENT with id: " + scheduleRequest.getAuthorId()));
+
+        if (!schedule.getAuthor().getClubMemberIdx().equals(adminMember.getClubMemberIdx())) {
+            throw new IllegalArgumentException("You do not have permission to update this schedule.");
+        }
 
         schedule.update(
                 scheduleRequest.getTitle(),
@@ -96,7 +117,9 @@ public class ClubScheduleService {
                 scheduleRequest.getContent(),
                 scheduleRequest.getLocation(),
                 scheduleRequest.getEquipment(),
-                scheduleRequest.getDate()
+                scheduleRequest.getDate(),
+                scheduleRequest.getStartTime(),
+                scheduleRequest.getEndTime()
         );
 
         clubScheduleRepository.save(schedule);
