@@ -1,6 +1,10 @@
 package com.cotato.squadus.domain.club.post.service;
 
 import com.cotato.squadus.api.post.dto.*;
+import com.cotato.squadus.common.error.ErrorCode;
+import com.cotato.squadus.common.error.exception.AppException;
+import com.cotato.squadus.domain.auth.service.ClubMemberService;
+import com.cotato.squadus.domain.club.common.entity.ClubMember;
 import com.cotato.squadus.domain.club.post.entity.ClubPost;
 import com.cotato.squadus.domain.club.post.repository.ClubPostRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -16,9 +20,15 @@ import java.util.List;
 public class ClubPostService {
 
     private final ClubPostRepository clubPostRepository;
+    private final ClubMemberService clubMemberService;
 
     // 공지 전체 내용 조회
     public ClubPostListResponse findAllClubPostsByClubId(Long clubId) {
+        ClubMember clubMember = clubMemberService.findClubMemberBySecurityContextHolder();
+        log.info("clubId: {} ", clubMember.getClub().getClubId());
+        if(!clubMember.getClub().getClubId().equals(clubId)) {
+            throw new AppException(ErrorCode.CLUB_ACCESS_DENIED);
+        }
         List<ClubPostResponse> clubPostResponses = clubPostRepository.findAllByClub_ClubId(clubId)
                 .stream()
                 .map(ClubPostResponse::from)
