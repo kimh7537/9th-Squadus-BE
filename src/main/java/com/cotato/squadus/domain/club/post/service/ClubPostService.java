@@ -1,6 +1,8 @@
 package com.cotato.squadus.domain.club.post.service;
 
 import com.cotato.squadus.api.post.dto.*;
+import com.cotato.squadus.common.error.ErrorCode;
+import com.cotato.squadus.common.error.exception.AppException;
 import com.cotato.squadus.domain.auth.service.ClubMemberService;
 import com.cotato.squadus.domain.club.post.entity.ClubPost;
 import com.cotato.squadus.domain.club.post.repository.ClubPostRepository;
@@ -65,10 +67,21 @@ public class ClubPostService {
 
     @Transactional
     public ClubPostLikesResponse increaseClubPostLikes(Long postId) {
+        if(isClubPostAuthor(postId)) {
+            throw new AppException(ErrorCode.CLUB_POST_AUTHOR);
+        }
         ClubPost clubPost = clubPostRepository.findByPostId(postId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 고유번호를 가진 동아리 공지를 찾을 수 없습니다."));
         ClubPost likesIncreasedPost = clubPost.increaseLikes();
         ClubPost updated = clubPostRepository.save(likesIncreasedPost);
         return new ClubPostLikesResponse(updated.getLikes());
+    }
+
+    private Boolean isClubPostAuthor(Long postId) {
+        Long clubMemberId = clubMemberService.findClubMemberBySecurityContextHolder().getClubMemberIdx();
+        ClubPost clubPost = clubPostRepository.findById(postId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 아이디를 가진 동아리 공지가 존재하지 않습니다."));
+        Long clubMemberIdFromClubPost = clubPost.getAuthor().getClubMemberIdx();
+        return clubMemberIdFromClubPost.equals(clubMemberId);
     }
 }

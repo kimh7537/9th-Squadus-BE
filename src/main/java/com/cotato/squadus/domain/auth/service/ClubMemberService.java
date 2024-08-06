@@ -32,7 +32,7 @@ public class ClubMemberService {
         }
     }
 
-     private ClubMember findClubMemberBySecurityContextHolder() {
+     public ClubMember findClubMemberBySecurityContextHolder() {
         CustomOAuth2Member oAuth2Member = (CustomOAuth2Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Member member = memberService.findMemberByUniqueId(oAuth2Member.getUniqueId());
         ClubMember clubMember = clubMemberRepository.findClubMemberByMember_MemberIdx(member.getMemberIdx())
