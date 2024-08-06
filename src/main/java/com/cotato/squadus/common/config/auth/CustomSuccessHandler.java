@@ -51,9 +51,10 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         log.info("access: {} refresh: {}", access, refresh);
 
-        response.setHeader("access", access);
-        response.addCookie(refreshService.createCookie("refresh", refresh));
-        response.sendRedirect("http://localhost:3000");
+//        response.setHeader("access", access);
+//        response.addCookie(refreshService.createCookie("refresh", refresh));
+        String redirectUrl = String.format("http://localhost:3000/callback?access_token=%s&refresh_token=%s", access, refresh);
+        response.sendRedirect(redirectUrl);
     }
 
 }

@@ -83,9 +83,9 @@ public class JWTFilter extends OncePerRequestFilter {
                 .build();
 
 
-        CustomOAuth2Member customOAuth2Memer = new CustomOAuth2Member(loginRequest);
+        CustomOAuth2Member customOAuth2Member = new CustomOAuth2Member(loginRequest);
 
-        Authentication authToken = new UsernamePasswordAuthenticationToken(customOAuth2Memer, null, customOAuth2Memer.getAuthorities());
+        Authentication authToken = new UsernamePasswordAuthenticationToken(customOAuth2Member, null, customOAuth2Member.getAuthorities());
 
         // 일시적인 세션 생성
         SecurityContextHolder.getContext().setAuthentication(authToken);

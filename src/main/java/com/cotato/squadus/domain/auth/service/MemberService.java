@@ -25,4 +25,10 @@ public class MemberService {
                 .orElseThrow(() -> new EntityNotFoundException("해당 고유번호를 가진 회원을 찾을 수 없습니다."));
         return MemberInfoResponse.from(findMember);
     }
+
+    public Member findMemberByUniqueId(String uniqueId) {
+        Member member = memberRepository.findByUniqueId(uniqueId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 uniqueId를 가진 회원이 존재하지 않습니다."));
+        return member;
+    }
 }
