@@ -45,6 +45,9 @@ public enum ErrorCode {
 
     // 동아리 관련
     CLUB_ACCESS_DENIED(HttpStatus.FORBIDDEN, "C-001", "해당 동아리에 접근할 수 있는 권한이 없습니다."),
+    CLUB_POST_COMMENT_ACCESS_DENIED(HttpStatus.FORBIDDEN, "C-002", "해당 동아리 공지에 접근할 수 있는 권한이 없습니다."),
+    CLUB_POST_AUTHOR(HttpStatus.BAD_REQUEST, "C-003", "자신의 글은 좋아요할 수 없습니다."),
+    CLUB_POST_COMMENT_AUTHOR(HttpStatus.BAD_REQUEST, "C-004", "자신의 댓글은 좋아요할 수 없습니다."),
 
     // 기수 운영 (세션 -> 출석)
     INVALID_DATE(HttpStatus.BAD_REQUEST, "G-101", "시작날짜가 끝 날짜보다 뒤입니다"),
@@ -64,9 +67,9 @@ public enum ErrorCode {
     CONTENT_IS_ALREADY_ANSWER(HttpStatus.BAD_REQUEST, "Q-303", "이미 정답인 답을 추가했습니다"),
     QUIZ_ACCESS_DENIED(HttpStatus.BAD_REQUEST, "Q-401", "해당 퀴즈는 아직 접근할 수 없습니다."),
     QUIZ_TYPE_NOT_MATCH(HttpStatus.BAD_REQUEST, "Q-402", "주관식 정답만 추가 가능합니다."),
-    
+
     KING_MEMBER_EXIST(HttpStatus.CONFLICT, "K-301", "이미 킹킹 멤버가 존재합니다"),
-  
+
     SUBJECT_INVALID(HttpStatus.BAD_REQUEST, "E-000", "교육 주제는 NULL이거나 비어있을 수 없습니다."),
 
     PROCESSING(HttpStatus.CONFLICT, "D-999", "해당 키의 요청은 아직 처리 중 입니다."),
