@@ -1,14 +1,20 @@
 package com.cotato.squadus.domain.auth.service;
 
+import com.cotato.squadus.api.member.dto.MemberClubListResponse;
+import com.cotato.squadus.api.member.dto.MemberClubResponse;
 import com.cotato.squadus.api.member.dto.MemberInfoResponse;
+import com.cotato.squadus.common.config.auth.CustomOAuth2Member;
 import com.cotato.squadus.common.config.jwt.JWTUtil;
 import com.cotato.squadus.domain.auth.entity.Member;
 import com.cotato.squadus.domain.auth.repository.MemberRepository;
+import com.cotato.squadus.domain.club.common.entity.ClubMember;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -30,5 +36,16 @@ public class MemberService {
         Member member = memberRepository.findByUniqueId(uniqueId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 uniqueId를 가진 회원이 존재하지 않습니다."));
         return member;
+    }
+
+    public MemberClubListResponse findJoinedClubs(CustomOAuth2Member customOAuth2Member) {
+        Member member = memberRepository.findByUniqueId(customOAuth2Member.getUniqueId())
+                .orElseThrow(() -> new EntityNotFoundException("해당 uniqueId를 가진 회원이 존재하지 않습니다."));
+        List<ClubMember> clubMemberships = member.getClubMemberships();
+        List<MemberClubResponse> memberClubResponseList = clubMemberships.stream()
+                .map(MemberClubResponse::from)
+                .toList();
+
+        return MemberClubListResponse.from(memberClubResponseList);
     }
 }
