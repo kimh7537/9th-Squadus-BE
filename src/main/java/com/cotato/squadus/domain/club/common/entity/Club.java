@@ -30,9 +30,20 @@ public class Club extends BaseTimeEntity {
 
     private String university;
 
+    @Enumerated(EnumType.STRING)
     private ClubTier clubTier;
 
     private Integer clubRank;
+
+    @Lob
+    private String clubMessage;
+
+    private Long maxMembers;
+
+    private Integer numberOfMembers;
+
+    @ElementCollection
+    private List<String> tags; // 별도의 테이블을 생성하여 컬렉션의 데이터를 저장
 
     @Enumerated(EnumType.STRING)
     private SportsCategory sportsCategory;
@@ -50,12 +61,23 @@ public class Club extends BaseTimeEntity {
     private List<ClubPost> clubPosts;
 
     @Builder
-    private Club(String clubName, String university, SportsCategory sportsCategory, String logo, ClubTier clubTier, Integer clubRank) {
+    private Club(String clubName, String university, SportsCategory sportsCategory, String logo, ClubTier clubTier, Integer clubRank, String clubMessage, Long maxMembers) {
         this.clubName = clubName;
         this.university = university;
         this.sportsCategory = sportsCategory;
         this.logo = logo;
         this.clubTier = clubTier;
         this.clubRank = clubRank;
+        this.clubMessage = clubMessage;
+        this.maxMembers = maxMembers;
+        this.numberOfMembers = 0;
+    }
+
+    public void addClubMember(ClubMember clubMember) {
+        this.clubMembers.add(clubMember);
+    }
+
+    public void addNumberOfMembers() {
+        this.numberOfMembers++;
     }
 }

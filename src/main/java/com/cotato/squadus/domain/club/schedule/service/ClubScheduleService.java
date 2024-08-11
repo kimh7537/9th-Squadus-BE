@@ -15,6 +15,8 @@ import com.cotato.squadus.domain.club.schedule.repository.ClubScheduleRepository
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -125,4 +127,14 @@ public class ClubScheduleService {
         clubScheduleRepository.save(schedule);
         return ClubScheduleResponse.from(schedule);
     }
+
+    public List<ClubScheduleResponse> findTopUpcomingSchedules(Long clubId, int limit) {
+
+        Pageable pageable = PageRequest.of(0, limit);
+        return clubScheduleRepository.findByClubClubIdOrderByDateAscStartTimeAsc(clubId, pageable)
+                .stream()
+                .map(ClubScheduleResponse::from)
+                .toList();
+    }
+
 }
