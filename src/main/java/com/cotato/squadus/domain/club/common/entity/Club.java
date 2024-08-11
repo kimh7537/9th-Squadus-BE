@@ -30,6 +30,7 @@ public class Club extends BaseTimeEntity {
 
     private String university;
 
+    @Enumerated(EnumType.STRING)
     private ClubTier clubTier;
 
     private Integer clubRank;
