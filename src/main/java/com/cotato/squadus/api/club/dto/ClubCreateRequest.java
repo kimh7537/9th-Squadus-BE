@@ -1,5 +1,6 @@
 package com.cotato.squadus.api.club.dto;
 
+import com.cotato.squadus.domain.club.common.enums.SportsCategory;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,7 +12,7 @@ public class ClubCreateRequest {
 
     private String university;
 
-    private String sportsCategory;
+    private SportsCategory sportsCategory;
 
     private String logo;
 }

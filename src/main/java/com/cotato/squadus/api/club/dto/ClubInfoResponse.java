@@ -1,6 +1,7 @@
 package com.cotato.squadus.api.club.dto;
 
 import com.cotato.squadus.domain.club.common.entity.Club;
+import com.cotato.squadus.domain.club.common.enums.SportsCategory;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,7 +12,7 @@ public record ClubInfoResponse(
         String university,
         String clubTier,
         Integer clubRank,
-        String sportsCategory,
+        SportsCategory sportsCategory,
         String logo,
         Integer numberOfMembers,
         Long maxMembers,
@@ -26,7 +27,7 @@ public record ClubInfoResponse(
                 club.getUniversity(),
                 club.getClubTier().name(),
                 club.getClubRank(),
-                club.getSportsCategory().name(),
+                club.getSportsCategory(),
                 club.getLogo(),
                 club.getClubMembers() != null ? club.getClubMembers().size() : 0,
                 club.getMaxMembers(),

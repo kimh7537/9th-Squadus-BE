@@ -37,7 +37,7 @@ public class ClubService {
         Club club = Club.builder()
                 .clubName(clubCreateRequest.getClubName())
                 .university(clubCreateRequest.getUniversity())
-                .sportsCategory(SportsCategory.valueOf(clubCreateRequest.getSportsCategory()))
+                .sportsCategory(clubCreateRequest.getSportsCategory())
                 .logo(clubCreateRequest.getLogo())
                 .clubTier(ClubTier.BRONZE)
                 .clubMessage(clubCreateRequest.getClubName() + "입니다.")
