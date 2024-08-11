@@ -68,4 +68,12 @@ public class ClubScheduleController {
         ClubScheduleResponse schedule = clubScheduleService.updateSchedule(clubId, scheduleId, scheduleRequest);
         return ResponseEntity.ok(schedule);
     }
+
+    @GetMapping("/upcoming")
+    @Operation(summary = "임박한 일정 조회", description = "clubId를 바탕으로 임박한 일정 3개(변경 가능)를 조회합니다")
+    public ResponseEntity<ClubScheduleListResponse> getUpcomingSchedules(@PathVariable Long clubId, @RequestParam(defaultValue = "3") int limit) {
+        List<ClubScheduleResponse> schedules = clubScheduleService.findTopUpcomingSchedules(clubId, limit);
+        return ResponseEntity.ok(ClubScheduleListResponse.from(schedules));
+    }
+
 }
