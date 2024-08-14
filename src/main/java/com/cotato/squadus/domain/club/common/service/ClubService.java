@@ -8,7 +8,6 @@ import com.cotato.squadus.domain.auth.repository.MemberRepository;
 import com.cotato.squadus.domain.auth.service.ClubMemberService;
 import com.cotato.squadus.domain.club.common.entity.ClubAdminMember;
 import com.cotato.squadus.domain.club.common.enums.ClubTier;
-import com.cotato.squadus.domain.club.common.enums.SportsCategory;
 import com.cotato.squadus.domain.club.common.repository.ClubApplicationRepository;
 import com.cotato.squadus.domain.club.common.repository.ClubRepository;
 import com.cotato.squadus.domain.auth.enums.ApplicationStatus;
