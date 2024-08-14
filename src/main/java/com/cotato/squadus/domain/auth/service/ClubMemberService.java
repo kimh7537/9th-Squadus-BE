@@ -23,6 +23,13 @@ public class ClubMemberService {
     private final MemberService memberService;
 
 
+    @Transactional
+    public ClubMember saveClubMember(ClubMember clubMember) {
+        ClubMember savedClubMember = clubMemberRepository.save(clubMember);
+        return savedClubMember;
+    }
+
+
     // 임시 세션 정보를 통해 회원이 속한 동아리인지 검증
     public void validateClubMember(Long clubId) {
         ClubMember clubMember = findClubMemberBySecurityContextHolder();

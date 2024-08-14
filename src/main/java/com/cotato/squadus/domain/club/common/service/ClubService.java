@@ -1,7 +1,12 @@
 package com.cotato.squadus.domain.club.common.service;
 
 import com.cotato.squadus.api.club.dto.*;
+import com.cotato.squadus.common.config.auth.CustomOAuth2Member;
+import com.cotato.squadus.domain.auth.enums.AdminStatus;
+import com.cotato.squadus.domain.auth.enums.Membership;
 import com.cotato.squadus.domain.auth.repository.MemberRepository;
+import com.cotato.squadus.domain.auth.service.ClubMemberService;
+import com.cotato.squadus.domain.club.common.entity.ClubAdminMember;
 import com.cotato.squadus.domain.club.common.enums.ClubTier;
 import com.cotato.squadus.domain.club.common.enums.SportsCategory;
 import com.cotato.squadus.domain.club.common.repository.ClubApplicationRepository;
@@ -26,6 +31,7 @@ public class ClubService {
     private final ClubRepository clubRepository;
     private final MemberRepository memberRepository;
     private final ClubApplicationRepository clubApplicationRepository;
+    private final ClubMemberService clubMemberService;
 
     /**
      *
@@ -33,16 +39,34 @@ public class ClubService {
      * @return ClubCreateResponse 생성된 동아리 id
      */
     @Transactional
-    public ClubCreateResponse createClub(ClubCreateRequest clubCreateRequest) {
+    public ClubCreateResponse createClub(CustomOAuth2Member customOAuth2Member, ClubCreateRequest clubCreateRequest) {
         Club club = Club.builder()
                 .clubName(clubCreateRequest.getClubName())
                 .university(clubCreateRequest.getUniversity())
+                .clubCategory(clubCreateRequest.getClubCategory())
                 .sportsCategory(clubCreateRequest.getSportsCategory())
                 .logo(clubCreateRequest.getLogo())
                 .clubTier(ClubTier.BRONZE)
                 .clubMessage(clubCreateRequest.getClubName() + "입니다.")
-                .maxMembers(40L)
+                .maxMembers(clubCreateRequest.getMaxMembers())
                 .build();
+
+
+        Member member = memberRepository.findByUniqueId(customOAuth2Member.getUniqueId())
+                .orElseThrow(() -> new EntityNotFoundException("해당 uniqueId를 가진 회원이 존재하지 않습니다."));
+
+        ClubAdminMember clubAdminMember = ClubAdminMember.builder()
+                .member(member)
+                .club(club)
+                .membership(Membership.JOINED)
+                .clubProfileImage("default.jpg")
+                .adminStatus(AdminStatus.CURRENT)
+                .isPaid(false)
+                .build();
+
+        clubMemberService.saveClubMember(clubAdminMember);
+
+        club.addClubMember(clubAdminMember);
 
         Club savedClub = clubRepository.save(club);
         log.info("동아리 생성됨, clubId : {}", savedClub.getClubId());
