@@ -1,18 +1,15 @@
 package com.cotato.squadus.domain.auth.entity;
 
-import com.cotato.squadus.domain.club.common.entity.ClubAdminMember;
 import com.cotato.squadus.domain.club.common.entity.ClubMember;
 import com.cotato.squadus.domain.auth.enums.MemberRole;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.List;
 
 import static jakarta.persistence.CascadeType.*;
-import static jakarta.persistence.FetchType.*;
 
 @Entity
 @Getter
@@ -26,14 +23,7 @@ public class Member {
 
     private String uniqueId;
 
-//    private String memberId;
-
     private String username; // 임시로 생성
-
-//    private String password; // 임시로 생성
-
-//    private String role; // 임시로 생성
-
 
     private String email;
 
@@ -72,6 +62,11 @@ public class Member {
     public Member update(String email, String username) {
         this.email = email;
         this.username = username;
+        return this;
+    }
+
+    public Member updateUniversity(String university) {
+        this.university = university;
         return this;
     }
 

@@ -30,8 +30,8 @@ public class MemberController {
     @GetMapping("/info")
     @Operation(summary = "유저 정보 조회", description = "Access Token을 통해 유저에 대한 정보를 조회합니다")
     public MemberInfoResponse findMemberInfo(
-            @RequestHeader("access") String accessToken) {
-        MemberInfoResponse memberInfo = memberService.findMemberInfo(accessToken);
+            @AuthenticationPrincipal CustomOAuth2Member customOAuth2Member) {
+        MemberInfoResponse memberInfo = memberService.findMemberInfo(customOAuth2Member);
         return memberInfo;
     }
 

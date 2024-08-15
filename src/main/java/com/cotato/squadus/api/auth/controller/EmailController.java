@@ -2,11 +2,13 @@ package com.cotato.squadus.api.auth.controller;
 
 import com.cotato.squadus.api.auth.dto.EmailRequestDto;
 import com.cotato.squadus.api.auth.dto.EmailResponseDto;
+import com.cotato.squadus.common.config.auth.CustomOAuth2Member;
 import com.cotato.squadus.domain.auth.service.EmailSendService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -41,8 +43,8 @@ public class EmailController {
     /* Email Auth: 인증번호 입력 후 인증 버튼 click */
     @PostMapping("/signup/emailAuth")
     @Operation(summary = "이메일 인증 인증번호 확인", description = "이메일 주소로 받은 인증 번호와 이메일 주소를 통해 학교인증을 완료합니다")
-    public String authCheck(@RequestBody @Valid EmailResponseDto emailResponseDto) {
-        Boolean checked = emailSendService.checkAuthNum(emailResponseDto.getEmail(), emailResponseDto.getAuthNum());
+    public String authCheck(@AuthenticationPrincipal CustomOAuth2Member customOAuth2Member, @RequestBody @Valid EmailResponseDto emailResponseDto) {
+        Boolean checked = emailSendService.checkAuthNum(emailResponseDto.getEmail(), emailResponseDto.getAuthNum(), customOAuth2Member);
         if (checked) {
             return "이메일 인증 성공!";
         }

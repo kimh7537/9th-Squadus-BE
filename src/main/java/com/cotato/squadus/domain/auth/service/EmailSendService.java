@@ -1,20 +1,27 @@
 package com.cotato.squadus.domain.auth.service;
 
 import com.cotato.squadus.common.config.RedisConfig;
+import com.cotato.squadus.common.config.auth.CustomOAuth2Member;
+import com.cotato.squadus.domain.auth.entity.Member;
+import com.cotato.squadus.domain.auth.enums.SchoolDomain;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 @Service
+@Slf4j
 public class EmailSendService {
 
     @Autowired private JavaMailSender javaMailSender;
@@ -24,6 +31,8 @@ public class EmailSendService {
     /* 이메일 인증에 필요한 정보 */
     @Value("${spring.mail.username}")
     private String serviceName;
+    @Autowired
+    private MemberService memberService;
 
     /* 랜덤 인증번호 생성 */
     public void makeRandomNum() {
@@ -69,13 +78,52 @@ public class EmailSendService {
         return Integer.toString(authNumber);
     }
 
-    /* 인증번호 확인 */
-    public Boolean checkAuthNum(String email, String authNum) {
+    @Transactional
+    /* 인증번호 확인 및 이메일 도메인 검증 */
+    public Boolean checkAuthNum(String email, String authNum, @AuthenticationPrincipal CustomOAuth2Member customOauth2Member) {
+        // 이메일 도메인이 유효한지 확인
+        if (!isValidSchoolEmail(email)) {
+            throw new IllegalArgumentException("유효하지 않은 학교 이메일 도메인입니다.");
+        }
+
+        // Redis에서 인증번호 확인
         ValueOperations<String, String> valOperations = redisConfig.redisTemplate().opsForValue();
         String code = valOperations.get(email);
-        if (Objects.equals(code, authNum)) {
-            return true;
-        } else return false;
+
+        boolean isAuthSuccessful = Objects.equals(code, authNum);
+
+        if (isAuthSuccessful) {
+            String domain = email.substring(email.indexOf("@") + 1);
+            String universityName = SchoolDomain.getUniversityByDomain(domain);
+
+            // 회원의 university 필드를 업데이트
+            Member memberByUniqueId = memberService.findMemberByUniqueId(customOauth2Member.getUniqueId());
+            memberByUniqueId.updateUniversity(universityName);
+            memberService.saveMember(memberByUniqueId);
+            log.info("사용자 {}의 university 필드가 {}로 업데이트 되었습니다.", memberByUniqueId.getUsername(), universityName);
+        }
+
+        return isAuthSuccessful;
+    }
+
+    private boolean isValidSchoolEmail(String email) {
+        if (email == null || !email.contains("@")) {
+            return false;
+        }
+
+        // 이메일 주소에서 도메인 부분 추출
+        String domain = email.substring(email.indexOf("@") + 1);
+
+        // 도메인에 해당하는 학교 이름이 있는지 확인
+        for (SchoolDomain schoolDomain : SchoolDomain.values()) {
+            if (domain.endsWith(schoolDomain.getDomain())) {
+                log.info("이메일 인증 학교 : {}", schoolDomain.getUniversityName());
+                return true;
+            }
+        }
+
+        log.info("이메일 인증 실패: 도메인이 일치하지 않습니다.");
+        return false;
     }
 
 }
