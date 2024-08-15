@@ -65,4 +65,9 @@ public class Member {
         return this;
     }
 
+    public Member updateUniversity(String university) {
+        this.university = university;
+        return this;
+    }
+
 }
