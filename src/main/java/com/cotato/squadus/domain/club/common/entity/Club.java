@@ -86,4 +86,10 @@ public class Club extends BaseTimeEntity {
     public void addNumberOfMembers() {
         this.numberOfMembers++;
     }
+
+    public Club updateClub(String logo, String clubMessage) {
+        this.logo = logo;
+        this.clubMessage = clubMessage;
+        return this;
+    }
 }
