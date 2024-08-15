@@ -25,14 +25,14 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final JWTUtil jwtUtil;
 
+    @Transactional
     public Long saveMember(Member member) {
         Member save = memberRepository.save(member);
         return save.getMemberIdx();
     }
 
     public MemberInfoResponse findMemberInfo(CustomOAuth2Member customOAuth2Member) {
-        String uniqueId = jwtUtil.getUniqueId(customOAuth2Member.getUniqueId());
-        Member findMember = memberRepository.findByUniqueId(uniqueId)
+        Member findMember = memberRepository.findByUniqueId(customOAuth2Member.getUniqueId())
                 .orElseThrow(() -> new EntityNotFoundException("해당 고유번호를 가진 회원을 찾을 수 없습니다."));
         return MemberInfoResponse.from(findMember);
     }

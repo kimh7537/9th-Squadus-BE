@@ -3,6 +3,7 @@ package com.cotato.squadus.common.config.filter;
 import com.cotato.squadus.api.auth.dto.LoginRequest;
 import com.cotato.squadus.common.config.auth.CustomOAuth2Member;
 import com.cotato.squadus.common.config.jwt.JWTUtil;
+import com.cotato.squadus.domain.auth.enums.MemberRole;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -79,10 +80,8 @@ public class JWTFilter extends OncePerRequestFilter {
         LoginRequest loginRequest = LoginRequest.builder()
                 .uniqueId(jwtUtil.getUniqueId(accessToken))
                 .username(jwtUtil.getUsername(accessToken))
-                .memberRole(jwtUtil.getRole(accessToken))
+                .memberRole(MemberRole.valueOf(jwtUtil.getRole(accessToken)))
                 .build();
-
-
         CustomOAuth2Member customOAuth2Member = new CustomOAuth2Member(loginRequest);
 
         Authentication authToken = new UsernamePasswordAuthenticationToken(customOAuth2Member, null, customOAuth2Member.getAuthorities());
