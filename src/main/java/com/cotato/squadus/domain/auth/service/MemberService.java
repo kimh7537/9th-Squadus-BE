@@ -25,6 +25,11 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final JWTUtil jwtUtil;
 
+    public Long saveMember(Member member) {
+        Member save = memberRepository.save(member);
+        return save.getMemberIdx();
+    }
+
     public MemberInfoResponse findMemberInfo(CustomOAuth2Member customOAuth2Member) {
         String uniqueId = jwtUtil.getUniqueId(customOAuth2Member.getUniqueId());
         Member findMember = memberRepository.findByUniqueId(uniqueId)
