@@ -6,6 +6,7 @@ import com.cotato.squadus.domain.auth.enums.AdminStatus;
 import com.cotato.squadus.domain.auth.enums.Membership;
 import com.cotato.squadus.domain.auth.repository.MemberRepository;
 import com.cotato.squadus.domain.auth.service.ClubMemberService;
+import com.cotato.squadus.domain.club.admin.service.ClubAdminService;
 import com.cotato.squadus.domain.club.common.entity.ClubAdminMember;
 import com.cotato.squadus.domain.club.common.enums.ClubTier;
 import com.cotato.squadus.domain.club.common.repository.ClubApplicationRepository;
@@ -31,6 +32,7 @@ public class ClubService {
     private final MemberRepository memberRepository;
     private final ClubApplicationRepository clubApplicationRepository;
     private final ClubMemberService clubMemberService;
+    private final ClubAdminService clubAdminService;
 
     /**
      *
@@ -102,6 +104,24 @@ public class ClubService {
 
         ClubInfoResponse clubInfoResponse = ClubInfoResponse.from(club);
         return clubInfoResponse;
+    }
+
+
+    @Transactional
+    public ClubUpdateResponse updateClub(CustomOAuth2Member customOAuth2Member, Long clubId, ClubUpdateRequest clubUpdateRequest) {
+        clubAdminService.validateAdminMember(clubId);
+
+        Club club = clubRepository.findById(clubId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 clubId를 가진 동아리가 존재하지 않습니다."));
+
+        Club updateClub = club.updateClub(
+                clubUpdateRequest.logo(),
+                clubUpdateRequest.clubMessage()
+        );
+
+        Club savedClub = clubRepository.save(updateClub);
+
+        return new ClubUpdateResponse(savedClub.getClubId());
     }
 
 }

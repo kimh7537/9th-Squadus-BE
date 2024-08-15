@@ -51,10 +51,12 @@ public class Member {
 
 
     @Builder
-    public Member(String uniqueId, String username, String email, String memberRole) {
+    public Member(String uniqueId, String username, String email, String memberRole, String profileImage, String university) {
         this.uniqueId = uniqueId;
         this.username = username;
         this.email = email;
+        this.profileImage = profileImage;
+        this.university = university;
         if (memberRole.equals("MEMBER")) this.memberRole = MemberRole.MEMBER;
         else if(memberRole.equals("CERTIFIED_MEMBER")) this.memberRole = MemberRole.CERTIFIED_MEMBER;
     }

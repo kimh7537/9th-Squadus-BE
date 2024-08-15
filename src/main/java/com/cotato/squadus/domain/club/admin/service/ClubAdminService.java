@@ -60,9 +60,9 @@ public class ClubAdminService {
         clubRepository.save(club);
     }
 
-    private void validateAdminMember(Long clubId) {
+    public void validateAdminMember(Long clubId) {
         ClubMember clubMember = clubMemberService.findClubMemberBySecurityContextHolder();
-        if (clubMember.getMemberType().equals(MemberType.MEMBER)) {
+        if (!clubMember.getMemberType().equals(MemberType.ADMIN)) {
             throw new AppException(ErrorCode.MEMBER_TYPE_IS_NOT_ADMIN);
         }
     }
