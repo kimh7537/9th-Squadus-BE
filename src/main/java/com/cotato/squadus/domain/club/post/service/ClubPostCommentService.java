@@ -39,11 +39,11 @@ public class ClubPostCommentService {
     }
 
     @Transactional
-    public ClubPostCommentLikeResponse increaseClubPostCommentLike(Long commentId) {
-        if(isClubPostCommentAuthor(commentId)) {
+    public ClubPostCommentLikeResponse increaseClubPostCommentLike(Long clubId, Long commentId) {
+        if(isClubPostCommentAuthor(clubId, commentId)) {
             throw new AppException(ErrorCode.CLUB_POST_COMMENT_AUTHOR);
         }
-        ClubMember clubMember = clubMemberService.findClubMemberBySecurityContextHolder();
+//        ClubMember clubMember = clubMemberService.findClubMemberBySecurityContextHolder();
 
         ClubPostComment clubPostComment = clubPostCommentRepository.findById(commentId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 아이디를 가진 댓글이 존재하지 않습니다."));
@@ -58,7 +58,7 @@ public class ClubPostCommentService {
         ClubPost clubPost = clubPostRepository.findByPostId(postId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 아이디를 가진 동아리 공지가 존재하지 않습니다"));
 
-        ClubMember clubMember = clubMemberService.findClubMemberBySecurityContextHolder();
+        ClubMember clubMember = clubMemberService.findClubMemberBySecurityContextHolder(clubId);
 
         ClubPostComment clubPostComment = ClubPostComment.builder()
                 .content(clubPostCommentCreateRequest.content())
@@ -72,8 +72,8 @@ public class ClubPostCommentService {
 
     }
 
-    private Boolean isClubPostCommentAuthor(Long postId) {
-        Long clubMemberId = clubMemberService.findClubMemberBySecurityContextHolder().getClubMemberIdx();
+    private Boolean isClubPostCommentAuthor(Long clubId, Long postId) {
+        Long clubMemberId = clubMemberService.findClubMemberBySecurityContextHolder(clubId).getClubMemberIdx();
         ClubPostComment clubPostComment = clubPostCommentRepository.findById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 아이디를 가진 동아리 공지 댓글이 존재하지 않습니다."));
         Long clubMemberIdFromComment = clubPostComment.getClubMember().getClubMemberIdx();
