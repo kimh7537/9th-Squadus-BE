@@ -79,7 +79,7 @@ public class Club extends BaseTimeEntity {
         this.clubRank = clubRank;
         this.clubMessage = clubMessage;
         this.maxMembers = maxMembers;
-        this.numberOfMembers = 0;
+        this.numberOfMembers = 1;
         this.region = region;
     }
 
