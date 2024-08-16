@@ -2,17 +2,13 @@ package com.cotato.squadus.api.member.controller;
 
 import com.cotato.squadus.api.member.dto.MemberClubListResponse;
 import com.cotato.squadus.api.member.dto.MemberInfoResponse;
-import com.cotato.squadus.api.member.dto.MemberUpdateRequest;
 import com.cotato.squadus.common.config.auth.CustomOAuth2Member;
-import com.cotato.squadus.common.config.jwt.JWTUtil;
-import com.cotato.squadus.domain.auth.repository.MemberRepository;
 import com.cotato.squadus.domain.auth.service.MemberService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -42,7 +38,8 @@ public class MemberController {
         return ResponseEntity.ok(memberClubListResponse);
     }
 
-    @PatchMapping("/profile-image")
+    @PostMapping(value = "/profile-image",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<MemberInfoResponse> updateMemberProfileImage(
             @AuthenticationPrincipal CustomOAuth2Member customOAuth2Member,
             @RequestPart(value = "profileImage", required = true) MultipartFile profileImageFile) {
