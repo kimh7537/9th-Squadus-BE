@@ -51,7 +51,14 @@ public class ClubService {
     public ClubCreateResponse createClub(CustomOAuth2Member customOAuth2Member, ClubCreateRequest clubCreateRequest, MultipartFile logoImage) {
 
         Member member = memberService.findMemberByUniqueId(customOAuth2Member.getUniqueId());
-        String logo = s3ImageService.upload(logoImage);
+
+        // logo 설정
+        String logo = null;
+        if (logoImage != null && !logoImage.isEmpty()) {
+            logo = s3ImageService.upload(logoImage);
+        } else {
+            logo = "default_logo.jpg"; // 기본 로고 이미지 URL
+        }
 
         // ClubCategory에 따른 university 값 설정
         String university;
