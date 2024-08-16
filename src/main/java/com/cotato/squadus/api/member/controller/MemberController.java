@@ -5,6 +5,7 @@ import com.cotato.squadus.api.member.dto.MemberInfoResponse;
 import com.cotato.squadus.common.config.auth.CustomOAuth2Member;
 import com.cotato.squadus.domain.auth.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,7 @@ public class MemberController {
     }
 
     @GetMapping("/clubs")
+    @Operation(summary = "유저가 가입된 동아리 조회", description = "가입된 동아리에 대한 정보를 리스트로 조회")
     public ResponseEntity<MemberClubListResponse> findJoinedClubs(@AuthenticationPrincipal CustomOAuth2Member customOAuth2Member) {
         MemberClubListResponse memberClubListResponse = memberService.findJoinedClubs(customOAuth2Member);
         return ResponseEntity.ok(memberClubListResponse);
@@ -40,8 +42,10 @@ public class MemberController {
 
     @PostMapping(value = "/profile-image",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "유저 프로필 이미지 변경", description = "유저의 프로필 이미지를 변경합니다.")
     public ResponseEntity<MemberInfoResponse> updateMemberProfileImage(
             @AuthenticationPrincipal CustomOAuth2Member customOAuth2Member,
+            @Parameter(description = "multipart/form-data 형식의 이미지를 input으로 받습니다. 이때 key 값은 profileImage입니다.")
             @RequestPart(value = "profileImage", required = true) MultipartFile profileImageFile) {
         MemberInfoResponse memberInfoResponse = memberService.updateProfileImage(customOAuth2Member, profileImageFile);
         return ResponseEntity.ok(memberInfoResponse);

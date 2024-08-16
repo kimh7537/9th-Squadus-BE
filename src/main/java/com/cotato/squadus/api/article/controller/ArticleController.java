@@ -6,6 +6,7 @@ import com.cotato.squadus.api.article.dto.ArticleResponse;
 import com.cotato.squadus.api.article.dto.ArticleSummaryResponse;
 import com.cotato.squadus.domain.club.article.service.ArticleService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,7 +42,9 @@ public class ArticleController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "아티클 단건 생성", description = "article에 대한 정보를 바탕으로 아티클 하나를 생성합니다")
     public ResponseEntity<ArticleResponse> createArticle(
+            @Parameter(description = "입력 폼에 대한 정보는 slack에 올려두겠습니다.")
             @RequestPart("articleRequest") String articleRequestString,
+            @Parameter(description = "multipart/form-data 형식의 이미지를 input으로 받습니다. 이때 key 값은 image입니다.")
             @RequestPart("image") MultipartFile imageFile) {
         // JSON String을 객체로 변환
         ObjectMapper objectMapper = new ObjectMapper();
