@@ -53,6 +53,9 @@ public class Club extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private SportsCategory sportsCategory;
 
+    @Embedded
+    private Region region; // 활동 지역
+
     //s3로 이미지 저장
     private String logo;
 
