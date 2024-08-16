@@ -61,7 +61,7 @@ public class ClubAdminService {
     }
 
     public void validateAdminMember(Long clubId) {
-        ClubMember clubMember = clubMemberService.findClubMemberBySecurityContextHolder();
+        ClubMember clubMember = clubMemberService.findClubMemberBySecurityContextHolder(clubId);
         if (!clubMember.getMemberType().equals(MemberType.ADMIN)) {
             throw new AppException(ErrorCode.MEMBER_TYPE_IS_NOT_ADMIN);
         }

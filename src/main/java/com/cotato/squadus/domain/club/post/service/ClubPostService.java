@@ -73,8 +73,8 @@ public class ClubPostService {
     }
 
     @Transactional
-    public ClubPostLikesResponse increaseClubPostLikes(Long postId) {
-        if(isClubPostAuthor(postId)) {
+    public ClubPostLikesResponse increaseClubPostLikes(Long clubId, Long postId) {
+        if(isClubPostAuthor(clubId, postId)) {
             throw new AppException(ErrorCode.CLUB_POST_AUTHOR);
         }
         ClubPost clubPost = clubPostRepository.findByPostId(postId)
@@ -84,8 +84,8 @@ public class ClubPostService {
         return new ClubPostLikesResponse(updated.getLikes());
     }
 
-    private Boolean isClubPostAuthor(Long postId) {
-        Long clubMemberId = clubMemberService.findClubMemberBySecurityContextHolder().getClubMemberIdx();
+    private Boolean isClubPostAuthor(Long clubId, Long postId) {
+        Long clubMemberId = clubMemberService.findClubMemberBySecurityContextHolder(clubId).getClubMemberIdx();
         ClubPost clubPost = clubPostRepository.findById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 아이디를 가진 동아리 공지가 존재하지 않습니다."));
         Long clubMemberIdFromClubPost = clubPost.getAuthor().getClubMemberIdx();

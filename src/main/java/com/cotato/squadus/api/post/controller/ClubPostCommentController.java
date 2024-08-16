@@ -46,7 +46,7 @@ public class ClubPostCommentController {
     @Operation(summary = "동아리 공지 댓글 좋아요", description = "clubId, postId, commentId를 바탕으로 동아리 공지 댓글에 대한 좋아요를 1 증가시킵니다")
     public ResponseEntity<ClubPostCommentLikeResponse> increaseClubPostCommentLike(@PathVariable Long clubId, @PathVariable Long postId, @PathVariable Long commentId) {
         clubMemberService.validateClubMember(clubId);
-        ClubPostCommentLikeResponse clubPostCommentLikeResponse = clubPostCommentService.increaseClubPostCommentLike(commentId);
+        ClubPostCommentLikeResponse clubPostCommentLikeResponse = clubPostCommentService.increaseClubPostCommentLike(clubId, commentId);
         return ResponseEntity.ok(clubPostCommentLikeResponse);
     }
 }

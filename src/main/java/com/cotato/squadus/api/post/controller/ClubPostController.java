@@ -60,7 +60,7 @@ public class ClubPostController {
     @Operation(summary = "동아리 공지 좋아요 증가", description = "postId를 바탕으로 동아리 공지의 좋아요를 1 증가시킵니다")
     public ResponseEntity<ClubPostLikesResponse> increaseClubPostLikes(@PathVariable Long clubId, @PathVariable Long postId) {
 //        clubMemberService.validateClubMember(clubId);
-        ClubPostLikesResponse clubPostLikesResponse = clubPostService.increaseClubPostLikes(postId);
+        ClubPostLikesResponse clubPostLikesResponse = clubPostService.increaseClubPostLikes(clubId, postId);
         log.info("동아리 공지 좋아요, likes: {} ", clubPostLikesResponse);
         return ResponseEntity.ok(clubPostLikesResponse);
     }

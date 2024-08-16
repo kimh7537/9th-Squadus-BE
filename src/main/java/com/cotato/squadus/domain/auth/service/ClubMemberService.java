@@ -32,17 +32,17 @@ public class ClubMemberService {
 
     // 임시 세션 정보를 통해 회원이 속한 동아리인지 검증
     public void validateClubMember(Long clubId) {
-        ClubMember clubMember = findClubMemberBySecurityContextHolder();
+        ClubMember clubMember = findClubMemberBySecurityContextHolder(clubId);
         log.info("현재 로그인 된 회원의 clubId: {} ", clubMember.getClub().getClubId());
         if(!clubMember.getClub().getClubId().equals(clubId)) {
             throw new AppException(ErrorCode.CLUB_ACCESS_DENIED);
         }
     }
 
-     public ClubMember findClubMemberBySecurityContextHolder() {
+     public ClubMember findClubMemberBySecurityContextHolder(Long clubId) {
         CustomOAuth2Member oAuth2Member = (CustomOAuth2Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Member member = memberService.findMemberByUniqueId(oAuth2Member.getUniqueId());
-        ClubMember clubMember = clubMemberRepository.findClubMemberByMember_MemberIdx(member.getMemberIdx())
+        ClubMember clubMember = clubMemberRepository.findClubMemberByMember_MemberIdxAndClub_ClubId(member.getMemberIdx(), clubId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 회원 고유번호를 가진 동아리 회원을 찾을 수 없습니다."));
         return clubMember;
     }
