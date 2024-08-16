@@ -66,4 +66,13 @@ public class MemberService {
         Member updatedMember = member.updateProfileImage(profileImage);
         return MemberInfoResponse.from(updatedMember);
     }
+
+    @Transactional
+    public MemberInfoResponse deleteProfileImage(CustomOAuth2Member customOAuth2Member) {
+        Member member = findMemberByUniqueId(customOAuth2Member.getUniqueId());
+        s3ImageService.deleteImageFromS3(member.getProfileImage());
+        member.updateProfileImage("default profile img");
+        memberRepository.save(member);
+        return MemberInfoResponse.from(member);
+    }
 }
