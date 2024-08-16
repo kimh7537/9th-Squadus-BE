@@ -3,12 +3,18 @@ package com.cotato.squadus.api.post.controller;
 import com.cotato.squadus.api.post.dto.*;
 import com.cotato.squadus.domain.auth.service.ClubMemberService;
 import com.cotato.squadus.domain.club.post.service.ClubPostService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "동아리 공지", description = "동아리 공지 관련 API")
 @Slf4j
@@ -47,14 +53,37 @@ public class ClubPostController {
         return ResponseEntity.ok(clubPostByPostId);
     }
 
-    @PostMapping("")
+//    @PostMapping("")
+//    @Operation(summary = "동아리 공지 생성", description = "동아리 공지를 하나 생성합니다")
+//    public ResponseEntity<ClubPostCreateResponse> createClubPost(@PathVariable Long clubId, @RequestBody ClubPostCreateRequest clubPostCreateRequest) {
+////        clubMemberService.validateClubMember(clubId);
+//        ClubPostCreateResponse clubPostCreateResponse = clubPostService.createClubPost(clubId, clubPostCreateRequest);
+//        log.info("동아리 공지 작성, postId: {} ", clubPostCreateResponse);
+//        return ResponseEntity.ok(clubPostCreateResponse);
+//    }
+
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "동아리 공지 생성", description = "동아리 공지를 하나 생성합니다")
-    public ResponseEntity<ClubPostCreateResponse> createClubPost(@PathVariable Long clubId, @RequestBody ClubPostCreateRequest clubPostCreateRequest) {
-//        clubMemberService.validateClubMember(clubId);
-        ClubPostCreateResponse clubPostCreateResponse = clubPostService.createClubPost(clubId, clubPostCreateRequest);
+    public ResponseEntity<ClubPostCreateResponse> createClubPost(
+            @PathVariable Long clubId,
+            @Parameter(description = "공지 사항 생성 요청 정보", schema = @Schema(implementation = ClubPostCreateRequest.class))
+            @RequestPart("clubPostCreateRequest") String clubPostCreateRequestString,
+            @RequestPart(value = "image", required = false) MultipartFile imageFile) {
+
+        // JSON String을 객체로 변환
+        ObjectMapper objectMapper = new ObjectMapper();
+        ClubPostCreateRequest clubPostCreateRequest;
+        try {
+            clubPostCreateRequest = objectMapper.readValue(clubPostCreateRequestString, ClubPostCreateRequest.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Invalid JSON format", e);
+        }
+
+        ClubPostCreateResponse clubPostCreateResponse = clubPostService.createClubPost(clubId, clubPostCreateRequest, imageFile);
         log.info("동아리 공지 작성, postId: {} ", clubPostCreateResponse);
         return ResponseEntity.ok(clubPostCreateResponse);
     }
+
 
     @PatchMapping("{postId}/like")
     @Operation(summary = "동아리 공지 좋아요 증가", description = "postId를 바탕으로 동아리 공지의 좋아요를 1 증가시킵니다")

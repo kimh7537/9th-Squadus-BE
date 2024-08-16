@@ -3,6 +3,7 @@ package com.cotato.squadus.domain.club.post.service;
 import com.cotato.squadus.api.post.dto.*;
 import com.cotato.squadus.common.error.ErrorCode;
 import com.cotato.squadus.common.error.exception.AppException;
+import com.cotato.squadus.common.s3.S3ImageService;
 import com.cotato.squadus.domain.auth.service.ClubMemberService;
 import com.cotato.squadus.domain.club.common.entity.Club;
 import com.cotato.squadus.domain.club.common.repository.ClubRepository;
@@ -13,6 +14,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartRequest;
+
 import java.util.List;
 
 @Slf4j
@@ -24,6 +28,7 @@ public class ClubPostService {
     private final ClubPostRepository clubPostRepository;
     private final ClubMemberService clubMemberService;
     private final ClubRepository clubRepository;
+    private final S3ImageService s3ImageService;
 
     // 공지 전체 내용 조회
     public ClubPostListResponse findAllClubPostsByClubId(Long clubId) {
@@ -57,14 +62,16 @@ public class ClubPostService {
     }
 
     @Transactional
-    public ClubPostCreateResponse createClubPost(Long clubId, ClubPostCreateRequest clubPostCreateRequest) {
+    public ClubPostCreateResponse createClubPost(Long clubId, ClubPostCreateRequest clubPostCreateRequest, MultipartFile image) {
         Club club = clubRepository.findById(clubId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 고유번호를 가진 동아리를 찾을 수 없습니다."));
+
+        String imageUrl = s3ImageService.upload(image);
         ClubPost clubPost = ClubPost.builder()
                 .club(club)
                 .title(clubPostCreateRequest.title())
                 .content(clubPostCreateRequest.content())
-                .image(clubPostCreateRequest.imageUrl())
+                .image(imageUrl)
                 .views(0L)
                 .likes(0L)
                 .build();
