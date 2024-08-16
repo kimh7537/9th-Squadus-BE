@@ -72,4 +72,8 @@ public class Member {
         return this;
     }
 
+    public Member updateProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+        return this;
+    }
 }
