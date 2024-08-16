@@ -7,7 +7,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.util.IOUtils;
 import com.cotato.squadus.common.error.ErrorCode;
-import com.cotato.squadus.common.error.handler.S3Exception;
+import com.cotato.squadus.common.error.exception.S3Exception;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
