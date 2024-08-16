@@ -4,8 +4,11 @@ import com.cotato.squadus.api.article.dto.ArticleListResponse;
 import com.cotato.squadus.api.article.dto.ArticleRequest;
 import com.cotato.squadus.api.article.dto.ArticleResponse;
 import com.cotato.squadus.api.article.dto.ArticleSummaryResponse;
+import com.cotato.squadus.api.post.dto.ClubPostCreateRequest;
 import com.cotato.squadus.domain.club.article.service.ArticleService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,10 +41,12 @@ public class ArticleController {
         return ResponseEntity.ok(article);
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "아티클 단건 생성", description = "article에 대한 정보를 바탕으로 아티클 하나를 생성합니다")
     public ResponseEntity<ArticleResponse> createArticle(
+            @Parameter(description = "아티클 생성 정보", schema = @Schema(implementation = ArticleRequest.class))
             @RequestPart("articleRequest") String articleRequestString,
+            @Parameter(description = "multipart/form-data 형식의 이미지를 input으로 받습니다. 이때 key 값은 image입니다.")
             @RequestPart("image") MultipartFile imageFile) {
         // JSON String을 객체로 변환
         ObjectMapper objectMapper = new ObjectMapper();

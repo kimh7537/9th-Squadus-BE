@@ -60,11 +60,13 @@ public class ClubAdminService {
         clubRepository.save(club);
     }
 
-    public void validateAdminMember(Long clubId) {
+    public ClubAdminMember validateAdminMember(Long clubId) {
         ClubMember clubMember = clubMemberService.findClubMemberBySecurityContextHolder(clubId);
         if (!clubMember.getMemberType().equals(MemberType.ADMIN)) {
             throw new AppException(ErrorCode.MEMBER_TYPE_IS_NOT_ADMIN);
         }
+
+        return (ClubAdminMember) clubMember;
     }
 
 }

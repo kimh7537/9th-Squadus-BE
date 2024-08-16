@@ -5,6 +5,7 @@ import com.cotato.squadus.api.member.dto.MemberClubResponse;
 import com.cotato.squadus.api.member.dto.MemberInfoResponse;
 import com.cotato.squadus.common.config.auth.CustomOAuth2Member;
 import com.cotato.squadus.common.config.jwt.JWTUtil;
+import com.cotato.squadus.common.s3.S3ImageService;
 import com.cotato.squadus.domain.auth.entity.Member;
 import com.cotato.squadus.domain.auth.repository.MemberRepository;
 import com.cotato.squadus.domain.club.common.entity.ClubMember;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -24,6 +26,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final JWTUtil jwtUtil;
+    private final S3ImageService s3ImageService;
 
     @Transactional
     public Long saveMember(Member member) {
@@ -52,5 +55,24 @@ public class MemberService {
                 .toList();
 
         return MemberClubListResponse.from(memberClubResponseList);
+    }
+
+    @Transactional
+    public MemberInfoResponse updateProfileImage(CustomOAuth2Member customOAuth2Member, MultipartFile profileImageFile) {
+        String profileImage = s3ImageService.upload(profileImageFile);
+
+        Member member = memberRepository.findByUniqueId(customOAuth2Member.getUniqueId())
+                .orElseThrow(() -> new EntityNotFoundException("해당 uniqueId를 가진 회원을 찾을 수 없습니다."));
+        Member updatedMember = member.updateProfileImage(profileImage);
+        return MemberInfoResponse.from(updatedMember);
+    }
+
+    @Transactional
+    public MemberInfoResponse deleteProfileImage(CustomOAuth2Member customOAuth2Member) {
+        Member member = findMemberByUniqueId(customOAuth2Member.getUniqueId());
+        s3ImageService.deleteImageFromS3(member.getProfileImage());
+        member.updateProfileImage("default profile img");
+        memberRepository.save(member);
+        return MemberInfoResponse.from(member);
     }
 }
