@@ -1,7 +1,6 @@
 package com.cotato.squadus.api.post.controller;
 
 import com.cotato.squadus.api.post.dto.*;
-import com.cotato.squadus.domain.auth.service.ClubMemberService;
 import com.cotato.squadus.domain.club.post.service.ClubPostService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,7 +23,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class ClubPostController {
 
     private final ClubPostService clubPostService;
-    private final ClubMemberService clubMemberService;
 
     @GetMapping("")
     @Operation(summary = "동아리 공지 전체 조회", description = "clubId를 바탕으로 동아리 공지 전체를 조회합니다")
@@ -52,15 +50,6 @@ public class ClubPostController {
         log.info("PostId로 동아리 공지 조회 : {} ", clubPostByPostId);
         return ResponseEntity.ok(clubPostByPostId);
     }
-
-//    @PostMapping("")
-//    @Operation(summary = "동아리 공지 생성", description = "동아리 공지를 하나 생성합니다")
-//    public ResponseEntity<ClubPostCreateResponse> createClubPost(@PathVariable Long clubId, @RequestBody ClubPostCreateRequest clubPostCreateRequest) {
-////        clubMemberService.validateClubMember(clubId);
-//        ClubPostCreateResponse clubPostCreateResponse = clubPostService.createClubPost(clubId, clubPostCreateRequest);
-//        log.info("동아리 공지 작성, postId: {} ", clubPostCreateResponse);
-//        return ResponseEntity.ok(clubPostCreateResponse);
-//    }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "동아리 공지 생성", description = "동아리 공지를 하나 생성합니다")
