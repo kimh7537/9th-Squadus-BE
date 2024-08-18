@@ -3,6 +3,7 @@ package com.cotato.squadus.common.error.handler;
 
 import com.cotato.squadus.common.error.ErrorCode;
 import com.cotato.squadus.common.error.exception.AppException;
+import com.cotato.squadus.common.error.exception.S3Exception;
 import com.cotato.squadus.common.error.response.ErrorResponse;
 import com.cotato.squadus.common.error.response.MethodArgumentErrorResponse;
 import com.cotato.squadus.common.error.response.MethodArgumentErrorResponse.FieldErrorResponse;

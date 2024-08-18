@@ -33,7 +33,10 @@ public class SecurityConfig {
             "/swagger-ui/**",
             "/v3/api-docs/**",
             "/login",
-            "oauth2/**"
+            "oauth2/**",
+            "/v1/api/matches/**",
+            "/v1/api/mercenary/**",
+            "/v1/api/mercenary-requests/**"
     };
 
     private final CustomOAuth2MemberService customOAuth2MemberService;

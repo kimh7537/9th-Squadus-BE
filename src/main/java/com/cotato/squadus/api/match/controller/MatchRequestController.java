@@ -1,0 +1,82 @@
+package com.cotato.squadus.api.match.controller;
+
+import com.cotato.squadus.api.match.dto.matchPost.response.*;
+import com.cotato.squadus.domain.club.match.service.MatchRequestService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/match-requests")
+@RequiredArgsConstructor
+@Tag(name = "매칭 요청", description = "매칭 요청 관련 API")
+public class MatchRequestController {
+
+    private final MatchRequestService matchRequestService;
+
+    //신청한 내역 기능
+    
+    @GetMapping("/my-club")
+    @Operation(summary = "내 동아리에서 신청한 매치 목록 조회 (페이징)", description = "내 동아리에서 신청한 매칭 글 목록을 페이징 처리하여 조회합니다.")
+    public ResponseEntity<MatchRequestResponseWrapper> getMyClubMatchRequests(
+            @RequestParam Long clubId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<MatchRequestResponse> responses = matchRequestService.getMyClubMatchRequests(clubId, pageable);
+        return ResponseEntity.ok(MatchRequestResponseWrapper.from(responses));
+    }
+
+    @GetMapping("/my-club/all")
+    @Operation(summary = "내 동아리에서 신청한 매치 목록 조회 (전체)", description = "내 동아리에서 신청한 매칭 글 목록을 페이징 없이 전체 조회합니다.")
+    public ResponseEntity<MatchRequestResponseWrapper> getAllMyClubMatchRequests(@RequestParam Long clubId) {
+        List<MatchRequestResponse> responses = matchRequestService.getAllMyClubMatchRequests(clubId);
+        return ResponseEntity.ok(MatchRequestResponseWrapper.from(responses));
+    }
+
+    @DeleteMapping("/{requestId}")
+    @Operation(summary = "매칭 요청 취소", description = "특정 동아리의 임원이 요청한 매칭 요청을 취소합니다.")
+    public ResponseEntity<Void> cancelMatchRequest(@PathVariable Long requestId, @RequestParam Long memberId) {
+        matchRequestService.cancelMatchRequest(requestId, memberId);
+        return ResponseEntity.noContent().build();
+    }
+
+
+    //신청 받은 내역 기능
+
+    @GetMapping("/received")
+    @Operation(summary = "내 동아리가 받은 매칭 요청 목록 조회 (페이징)", description = "내 동아리가 받은 매칭 요청 목록을 페이징 처리하여 조회합니다.")
+    public ResponseEntity<MatchRequestAndMatchPostResponseWrapper> getReceivedMatchRequests(
+            @RequestParam Long clubId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<MatchRequestAndMatchPostResponse> responses = matchRequestService.getReceivedMatchRequests(clubId, pageable);
+        MatchRequestAndMatchPostResponseWrapper wrapper = MatchRequestAndMatchPostResponseWrapper.from(responses.getContent());
+        return ResponseEntity.ok(wrapper);
+    }
+
+    @GetMapping("/received/all")
+    @Operation(summary = "내 동아리가 받은 매칭 요청 목록 조회 (전체)", description = "내 동아리가 받은 매칭 요청 목록을 페이징 없이 전체 조회합니다.")
+    public ResponseEntity<MatchRequestAndMatchPostResponseWrapper> getAllReceivedMatchRequests(@RequestParam Long clubId) {
+        List<MatchRequestAndMatchPostResponse> responses = matchRequestService.getAllReceivedMatchRequests(clubId);
+        MatchRequestAndMatchPostResponseWrapper wrapper = MatchRequestAndMatchPostResponseWrapper.from(responses);
+        return ResponseEntity.ok(wrapper);
+    }
+
+
+    @PostMapping("/{requestId}/decision")
+    @Operation(summary = "매칭 요청 승낙/거절", description = "특정 동아리의 임원이 받은 매칭 요청에 대해 승낙 또는 거절을 합니다.")
+    public ResponseEntity<Void> decideMatchRequest(@PathVariable Long requestId, @RequestParam String decision, @RequestParam Long memberId) {
+        matchRequestService.decideMatchRequest(requestId, decision, memberId);
+        return ResponseEntity.noContent().build();
+    }
+}
+
