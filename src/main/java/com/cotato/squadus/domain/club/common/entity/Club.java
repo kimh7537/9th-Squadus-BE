@@ -53,6 +53,9 @@ public class Club extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private SportsCategory sportsCategory;
 
+    @Embedded
+    private Region region; // 활동 지역
+
     //s3로 이미지 저장
     private String logo;
 
@@ -66,7 +69,7 @@ public class Club extends BaseTimeEntity {
     private List<ClubPost> clubPosts = new ArrayList<>();
 
     @Builder
-    private Club(String clubName, String university, ClubCategory clubCategory, SportsCategory sportsCategory, String logo, ClubTier clubTier, Integer clubRank, String clubMessage, Long maxMembers) {
+    private Club(String clubName, String university, ClubCategory clubCategory, SportsCategory sportsCategory, String logo, ClubTier clubTier, Integer clubRank, String clubMessage, Long maxMembers, Region region) {
         this.clubName = clubName;
         this.university = university;
         this.clubCategory = clubCategory;
@@ -76,7 +79,8 @@ public class Club extends BaseTimeEntity {
         this.clubRank = clubRank;
         this.clubMessage = clubMessage;
         this.maxMembers = maxMembers;
-        this.numberOfMembers = 0;
+        this.numberOfMembers = 1;
+        this.region = region;
     }
 
     public void addClubMember(ClubMember clubMember) {

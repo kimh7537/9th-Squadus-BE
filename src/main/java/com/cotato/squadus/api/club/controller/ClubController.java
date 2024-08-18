@@ -1,14 +1,21 @@
 package com.cotato.squadus.api.club.controller;
 
 import com.cotato.squadus.api.club.dto.*;
+import com.cotato.squadus.api.post.dto.ClubPostCreateRequest;
 import com.cotato.squadus.common.config.auth.CustomOAuth2Member;
 import com.cotato.squadus.domain.club.common.service.ClubService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "동아리", description = "동아리 관련 API")
 @RestController
@@ -18,10 +25,23 @@ public class ClubController {
 
     private final ClubService clubService;
 
-    @PostMapping()
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "동아리 생성", description = "동아리에 대한 정보를 바탕으로 동아리를 생성합니다")
-    public ResponseEntity<ClubCreateResponse> createClub(@AuthenticationPrincipal CustomOAuth2Member customOAuth2Member,  @RequestBody ClubCreateRequest clubCreateRequest) {
-        ClubCreateResponse clubCreateResponse = clubService.createClub(customOAuth2Member, clubCreateRequest);
+    public ResponseEntity<ClubCreateResponse> createClub(
+            @AuthenticationPrincipal CustomOAuth2Member customOAuth2Member,
+            @Parameter(description = "동아리 생성 요청 정보", schema = @Schema(implementation = ClubCreateRequest.class))
+            @RequestPart("clubCreateRequest") String clubCreateRequestString,
+            @RequestPart(value = "logoImage", required = false) MultipartFile logoImage) {
+
+        // JSON String을 객체로 변환
+        ObjectMapper objectMapper = new ObjectMapper();
+        ClubCreateRequest clubCreateRequest;
+        try {
+            clubCreateRequest = objectMapper.readValue(clubCreateRequestString, ClubCreateRequest.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Invalid JSON format", e);
+        }
+        ClubCreateResponse clubCreateResponse = clubService.createClub(customOAuth2Member, clubCreateRequest, logoImage);
         return ResponseEntity.ok(clubCreateResponse);
     }
 
