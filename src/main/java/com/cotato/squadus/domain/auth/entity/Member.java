@@ -1,18 +1,15 @@
 package com.cotato.squadus.domain.auth.entity;
 
-import com.cotato.squadus.domain.club.common.entity.ClubAdminMember;
 import com.cotato.squadus.domain.club.common.entity.ClubMember;
 import com.cotato.squadus.domain.auth.enums.MemberRole;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.List;
 
 import static jakarta.persistence.CascadeType.*;
-import static jakarta.persistence.FetchType.*;
 
 @Entity
 @Getter
@@ -26,14 +23,7 @@ public class Member {
 
     private String uniqueId;
 
-//    private String memberId;
-
     private String username; // 임시로 생성
-
-//    private String password; // 임시로 생성
-
-//    private String role; // 임시로 생성
-
 
     private String email;
 
@@ -61,10 +51,12 @@ public class Member {
 
 
     @Builder
-    public Member(String uniqueId, String username, String email, String memberRole) {
+    public Member(String uniqueId, String username, String email, String memberRole, String profileImage, String university) {
         this.uniqueId = uniqueId;
         this.username = username;
         this.email = email;
+        this.profileImage = profileImage;
+        this.university = university;
         if (memberRole.equals("MEMBER")) this.memberRole = MemberRole.MEMBER;
         else if(memberRole.equals("CERTIFIED_MEMBER")) this.memberRole = MemberRole.CERTIFIED_MEMBER;
     }
@@ -75,4 +67,13 @@ public class Member {
         return this;
     }
 
+    public Member updateUniversity(String university) {
+        this.university = university;
+        return this;
+    }
+
+    public Member updateProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+        return this;
+    }
 }

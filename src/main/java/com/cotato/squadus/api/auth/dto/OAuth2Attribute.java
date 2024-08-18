@@ -66,6 +66,8 @@ public class OAuth2Attribute {
                 .email(email)
                 .uniqueId(uniqueId)
                 .memberRole(MemberRole.CERTIFIED_MEMBER.toString())
+                .profileImage("default profile img")
+                .university("uncertified")
                 .build();
     }
 

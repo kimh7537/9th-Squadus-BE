@@ -5,11 +5,13 @@ import com.cotato.squadus.domain.auth.entity.Member;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@NoArgsConstructor
 @Table(name = "club_application")
 public class ClubApplication {
 
@@ -35,5 +37,9 @@ public class ClubApplication {
         this.club = club;
         this.appliedAt = appliedAt;
         this.applicationStatus = applicationStatus;
+    }
+
+    public void updateApplicationState(ApplicationStatus status) {
+        this.applicationStatus = status;
     }
 }

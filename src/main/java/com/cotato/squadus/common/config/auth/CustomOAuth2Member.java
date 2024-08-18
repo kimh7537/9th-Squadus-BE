@@ -3,6 +3,7 @@ package com.cotato.squadus.common.config.auth;
 import com.cotato.squadus.api.auth.dto.LoginRequest;
 import com.cotato.squadus.domain.auth.enums.MemberRole;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
@@ -11,6 +12,7 @@ import java.util.Collection;
 import java.util.Map;
 
 @RequiredArgsConstructor
+@Slf4j
 public class CustomOAuth2Member implements OAuth2User {
 
     private final LoginRequest loginRequest;
@@ -22,7 +24,7 @@ public class CustomOAuth2Member implements OAuth2User {
         collection.add(new GrantedAuthority() {
             @Override
             public String getAuthority() {
-                return loginRequest.getMemberRole();
+                return loginRequest.getMemberRole().name();
             }
         });
         return collection;
