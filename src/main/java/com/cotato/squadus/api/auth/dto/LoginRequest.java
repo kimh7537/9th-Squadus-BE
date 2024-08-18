@@ -13,17 +13,17 @@ public class LoginRequest {
     private String uniqueId;
     private String username;
     private String email;
-    private String memberRole;
+    private MemberRole memberRole;
 
     public LoginRequest(Member member) {
         this.uniqueId = member.getUniqueId();
         this.username = member.getUsername();
         this.email = member.getEmail();
-        this.memberRole = member.getMemberRole().name();
+        this.memberRole = member.getMemberRole();
     }
 
     @Builder
-    public LoginRequest(String uniqueId, String username, String memberRole) {
+    public LoginRequest(String uniqueId, String username, MemberRole memberRole) {
         this.uniqueId = uniqueId;
         this.username = username;
         this.memberRole = memberRole;

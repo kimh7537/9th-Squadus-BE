@@ -2,6 +2,7 @@ package com.cotato.squadus.common.error.handler;
 
 
 import com.cotato.squadus.common.error.ErrorCode;
+import com.cotato.squadus.common.error.exception.AppException;
 import com.cotato.squadus.common.error.response.ErrorResponse;
 import com.cotato.squadus.common.error.response.MethodArgumentErrorResponse;
 import com.cotato.squadus.common.error.response.MethodArgumentErrorResponse.FieldErrorResponse;
@@ -26,14 +27,14 @@ import java.util.List;
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-//    @ExceptionHandler(AppException.class)
-//    public ResponseEntity<ErrorResponse> handleAppCustomException(AppException e, HttpServletRequest request) {
-//        log.error("AppException 발생: {}", e.getErrorCode().getMessage());
-//        log.error("에러가 발생한 지점 {}, {}", request.getMethod(), request.getRequestURI());
-//        ErrorResponse errorResponse = ErrorResponse.of(e.getErrorCode(), request);
-//        return ResponseEntity.status(e.getErrorCode().getHttpStatus())
-//                .body(errorResponse);
-//    }
+    @ExceptionHandler(AppException.class)
+    public ResponseEntity<ErrorResponse> handleAppCustomException(AppException e, HttpServletRequest request) {
+        log.error("AppException 발생: {}", e.getErrorCode().getMessage());
+        log.error("에러가 발생한 지점 {}, {}", request.getMethod(), request.getRequestURI());
+        ErrorResponse errorResponse = ErrorResponse.of(e.getErrorCode(), request);
+        return ResponseEntity.status(e.getErrorCode().getHttpStatus())
+                .body(errorResponse);
+    }
 //
 //    @ExceptionHandler(ImageException.class)
 //    public ResponseEntity<ErrorResponse> handleImageException(ImageException e, HttpServletRequest request) {
@@ -82,5 +83,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         log.error("에러가 발생한 지점 {}, {}", request.getMethod(), request.getRequestURI());
         ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INTERNAL_SQL_ERROR, request);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+    }
+
+    @ExceptionHandler(S3Exception.class)
+    public ResponseEntity<ErrorResponse> handleS3Exception(S3Exception e, HttpServletRequest request) {
+        log.error("S3Exception 발생: {}", e.getErrorCode().getMessage());
+        log.error("Exception detail: ", e);  // 예외의 상세 내용을 로그에 출력
+        log.error("에러가 발생한 지점 {}, {}", request.getMethod(), request.getRequestURI());
+        ErrorResponse errorResponse = ErrorResponse.of(e.getErrorCode(), request);
+        return ResponseEntity.status(e.getErrorCode().getHttpStatus())
+                .body(errorResponse);
     }
 }

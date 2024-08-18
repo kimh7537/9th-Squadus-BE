@@ -30,14 +30,17 @@ public class Article extends BaseTimeEntity {
 
     private Long views;
 
+    private String imageUrl;
+
     @Builder
-    public Article(String title, String subtitle, String type, String tag, String content, Long views) {
+    public Article(String title, String subtitle, String type, String tag, String content, Long views, String imageUrl) {
         this.title = title;
         this.subtitle = subtitle;
         this.type = type;
         this.tag = tag;
         this.content = content;
         this.views = views;
+        this.imageUrl = imageUrl; // 추가된 필드
     }
 
     public Article() {
@@ -45,6 +48,10 @@ public class Article extends BaseTimeEntity {
 
     public void setViews(Long views) {
         this.views = views;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
 }

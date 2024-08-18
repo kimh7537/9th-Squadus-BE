@@ -7,6 +7,15 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 @Getter
 public enum ErrorCode {
+    
+    //S3 에러
+    EMPTY_FILE_EXCEPTION(HttpStatus.BAD_REQUEST, "S3-001", "파일이 비어 있습니다."),
+    IO_EXCEPTION_ON_IMAGE_UPLOAD(HttpStatus.INTERNAL_SERVER_ERROR, "S3-002", "이미지 업로드 중 IO 예외 발생"),
+    NO_FILE_EXTENTION(HttpStatus.BAD_REQUEST, "S3-003", "파일 확장자가 없습니다."),
+    INVALID_FILE_EXTENTION(HttpStatus.BAD_REQUEST, "S3-004", "유효하지 않은 파일 확장자입니다."),
+    PUT_OBJECT_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "S3-005", "S3에 객체를 업로드하는 동안 예외 발생"),
+    IO_EXCEPTION_ON_IMAGE_DELETE(HttpStatus.INTERNAL_SERVER_ERROR, "S3-006", "이미지 삭제 중 IO 예외 발생"),
+
     // Auth 일반적인 인증 문제 Auth JWT 토큰 관련 에러
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "T-001", "이미 만료된 토큰입니다."),
     FILTER_EXCEPTION(HttpStatus.UNAUTHORIZED, "T-002", "필터 내부에러 발생"),
@@ -33,6 +42,13 @@ public enum ErrorCode {
     ROLE_IS_NOT_MATCH(HttpStatus.BAD_REQUEST, "M-101", "해당 ROLE은 변경할 수 없습니다."),
     ROLE_IS_NOT_OLD_MEMBER(HttpStatus.BAD_REQUEST, "M-103", "해당 회원의 ROLE은 OLD_MEMBER가 아닙니다."),
     SAME_PASSWORD(HttpStatus.CONFLICT, "M-301", "이전과 같은 비밀번호로 변경할 수 없습니다."),
+    MEMBER_TYPE_IS_NOT_ADMIN(HttpStatus.BAD_REQUEST, "M-102", "해당 회원은 ADMIN 회원이 아닙니다."),
+
+    // 동아리 관련
+    CLUB_ACCESS_DENIED(HttpStatus.FORBIDDEN, "C-001", "해당 동아리에 접근할 수 있는 권한이 없습니다."),
+    CLUB_POST_COMMENT_ACCESS_DENIED(HttpStatus.FORBIDDEN, "C-002", "해당 동아리 공지에 접근할 수 있는 권한이 없습니다."),
+    CLUB_POST_AUTHOR(HttpStatus.BAD_REQUEST, "C-003", "자신의 글은 좋아요할 수 없습니다."),
+    CLUB_POST_COMMENT_AUTHOR(HttpStatus.BAD_REQUEST, "C-004", "자신의 댓글은 좋아요할 수 없습니다."),
 
     // 기수 운영 (세션 -> 출석)
     INVALID_DATE(HttpStatus.BAD_REQUEST, "G-101", "시작날짜가 끝 날짜보다 뒤입니다"),
@@ -52,9 +68,9 @@ public enum ErrorCode {
     CONTENT_IS_ALREADY_ANSWER(HttpStatus.BAD_REQUEST, "Q-303", "이미 정답인 답을 추가했습니다"),
     QUIZ_ACCESS_DENIED(HttpStatus.BAD_REQUEST, "Q-401", "해당 퀴즈는 아직 접근할 수 없습니다."),
     QUIZ_TYPE_NOT_MATCH(HttpStatus.BAD_REQUEST, "Q-402", "주관식 정답만 추가 가능합니다."),
-    
+
     KING_MEMBER_EXIST(HttpStatus.CONFLICT, "K-301", "이미 킹킹 멤버가 존재합니다"),
-  
+
     SUBJECT_INVALID(HttpStatus.BAD_REQUEST, "E-000", "교육 주제는 NULL이거나 비어있을 수 없습니다."),
 
     PROCESSING(HttpStatus.CONFLICT, "D-999", "해당 키의 요청은 아직 처리 중 입니다."),

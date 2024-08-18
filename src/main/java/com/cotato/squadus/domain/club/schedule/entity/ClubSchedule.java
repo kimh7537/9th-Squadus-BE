@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 import static jakarta.persistence.CascadeType.ALL;
@@ -52,11 +54,17 @@ public class ClubSchedule extends BaseTimeEntity {
     @Temporal(TemporalType.DATE)
     private LocalDate date;
 
+    @Temporal(TemporalType.TIME)
+    private LocalTime startTime;
+
+    @Temporal(TemporalType.TIME)
+    private LocalTime endTime;
+
 //    private List<Vote> votes;
 //    private List<Participant> participants;
 
     @Builder
-    public ClubSchedule(Club club, String title, ScheduleCategory scheduleCategory, String content, ClubAdminMember author, String location, String equipment, LocalDate date) {
+    public ClubSchedule(Club club, String title, ScheduleCategory scheduleCategory, String content, ClubAdminMember author, String location, String equipment, LocalDate date, LocalTime startTime, LocalTime endTime) {
         this.club = club;
         this.title = title;
         this.scheduleCategory = scheduleCategory;
@@ -65,14 +73,18 @@ public class ClubSchedule extends BaseTimeEntity {
         this.location = location;
         this.equipment = equipment;
         this.date = date;
+        this.startTime = startTime;
+        this.endTime = endTime;
     }
 
-    public void update(String title, ScheduleCategory scheduleCategory, String content, String location, String equipment, LocalDate date) {
+    public void update(String title, ScheduleCategory scheduleCategory, String content, String location, String equipment, LocalDate date, LocalTime startTime, LocalTime endTime) {
         this.title = title;
         this.scheduleCategory = scheduleCategory;
         this.content = content;
         this.location = location;
         this.equipment = equipment;
         this.date = date;
+        this.startTime = startTime;
+        this.endTime = endTime;
     }
 }
