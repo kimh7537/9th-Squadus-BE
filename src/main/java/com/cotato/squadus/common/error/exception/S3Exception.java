@@ -1,4 +1,4 @@
-package com.cotato.squadus.common.error.handler;
+package com.cotato.squadus.common.error.exception;
 
 import com.cotato.squadus.common.error.ErrorCode;
 import lombok.Getter;
