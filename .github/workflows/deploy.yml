@@ -11,10 +11,6 @@ env:
 
 permissions: write-all
 
-permissions:
-  contents: read
-  id-token: write
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
