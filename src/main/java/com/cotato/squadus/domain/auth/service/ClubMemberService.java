@@ -35,7 +35,7 @@ public class ClubMemberService {
      public ClubMember findClubMemberBySecurityContextHolder() {
         CustomOAuth2Member oAuth2Member = (CustomOAuth2Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Member member = memberService.findMemberByUniqueId(oAuth2Member.getUniqueId());
-        ClubMember clubMember = clubMemberRepository.findClubMemberByMember_MemberIdx(member.getMemberIdx())
+        ClubMember clubMember = clubMemberRepository.findClubMemberByClubMemberIdx(member.getMemberIdx())
                 .orElseThrow(() -> new EntityNotFoundException("해당 회원 고유번호를 가진 동아리 회원을 찾을 수 없습니다."));
         return clubMember;
     }

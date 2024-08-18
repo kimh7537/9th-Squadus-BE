@@ -1,6 +1,6 @@
 package com.cotato.squadus.api.match.controller;
 
-import com.cotato.squadus.api.match.dto.match.response.*;
+import com.cotato.squadus.api.match.dto.matchPost.response.*;
 import com.cotato.squadus.domain.club.match.service.MatchRequestService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

@@ -34,7 +34,9 @@ public class SecurityConfig {
             "/v3/api-docs/**",
             "/login",
             "oauth2/**",
-            "/v1/api/matches/**"
+            "/v1/api/matches/**",
+            "/v1/api/mercenary/**",
+            "/v1/api/mercenary-requests/**"
     };
 
     private final CustomOAuth2MemberService customOAuth2MemberService;

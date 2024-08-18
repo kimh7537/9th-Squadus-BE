@@ -1,9 +1,9 @@
 package com.cotato.squadus.api.match.controller;
 
-import com.cotato.squadus.api.match.dto.match.request.*;
-import com.cotato.squadus.api.match.dto.match.response.MatchCreateResponse;
-import com.cotato.squadus.api.match.dto.match.response.MatchCreateResponseWrapper;
-import com.cotato.squadus.api.match.dto.match.response.MatchRequestResponse;
+import com.cotato.squadus.api.match.dto.matchPost.request.*;
+import com.cotato.squadus.api.match.dto.matchPost.response.MatchCreateResponse;
+import com.cotato.squadus.api.match.dto.matchPost.response.MatchCreateResponseWrapper;
+import com.cotato.squadus.api.match.dto.matchPost.response.MatchRequestResponse;
 import com.cotato.squadus.domain.club.match.service.MatchService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -50,14 +50,14 @@ public class MatchController {
     //필터 4개를 한 번에 조회 가능. 필터를 하지 않는 부분은 null로 reqeust해주면 자동으로 필터링 해줌
     @PostMapping("/filter")
     @Operation(summary = "필터링된 매칭 조회", description = "필터를 적용하여 매칭 게시글을 조회합니다. 필터 4개를 한번에 조회할 수 있습니다.")
-    public ResponseEntity<MatchCreateResponseWrapper> getMatchesByFilter(@RequestBody MatchFilterRequest filterRequest) {
+    public ResponseEntity<MatchCreateResponseWrapper> getMatchesByFilter(@RequestBody FilterRequest filterRequest) {
         List<MatchCreateResponse> responses = matchService.getFilteredMatches(filterRequest);
         return ResponseEntity.ok(MatchCreateResponseWrapper.from(responses));
     }
 
     @PostMapping("/search")
     @Operation(summary = "매칭 검색", description = "검색어를 바탕으로 매칭 게시글을 조회합니다.")
-    public ResponseEntity<MatchCreateResponseWrapper> searchMatches(@RequestBody MatchSearchRequest searchRequest) {
+    public ResponseEntity<MatchCreateResponseWrapper> searchMatches(@RequestBody SearchRequest searchRequest) {
         List<MatchCreateResponse> responses = matchService.searchMatches(searchRequest);
         return ResponseEntity.ok(MatchCreateResponseWrapper.from(responses));
     }

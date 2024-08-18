@@ -1,4 +1,4 @@
-package com.cotato.squadus.api.match.dto.match.request;
+package com.cotato.squadus.api.match.dto.matchPost.request;
 
 import lombok.Getter;
 import lombok.Setter;

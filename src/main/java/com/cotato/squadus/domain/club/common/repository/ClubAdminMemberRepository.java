@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface ClubAdminMemberRepository extends JpaRepository<ClubAdminMember, Long> {
     Optional<ClubAdminMember> findByClubMemberIdxAndAdminStatus(Long id, AdminStatus status);
 
-    @Query("SELECT cam FROM ClubAdminMember cam WHERE cam.club.clubId = :clubId AND cam.member.memberIdx = :memberId AND cam.adminStatus = 'CURRENT'")
-    Optional<ClubAdminMember> findActiveAdminByClubIdAndMemberId(@Param("clubId") Long clubId, @Param("memberId") Long memberId);
+    @Query("SELECT cam FROM ClubAdminMember cam WHERE cam.club.clubId = :clubId AND cam.clubMemberIdx = :memberId AND cam.adminStatus = 'CURRENT'")
+    Optional<ClubAdminMember> findActiveAdminByClubIdAndClubMemberId(@Param("clubId") Long clubId, @Param("memberId") Long memberId);
 
 }

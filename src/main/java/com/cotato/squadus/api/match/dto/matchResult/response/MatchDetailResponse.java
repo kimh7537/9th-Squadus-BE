@@ -1,7 +1,9 @@
-package com.cotato.squadus.api.match.dto.match.response;
+package com.cotato.squadus.api.match.dto.matchResult.response;
 
 import com.cotato.squadus.domain.club.common.entity.Club;
 import com.cotato.squadus.domain.club.match.entity.MatchPost;
+
+import java.util.List;
 
 public record MatchDetailResponse(
         String homeClubName,
@@ -11,9 +13,10 @@ public record MatchDetailResponse(
         String awayClubLogoUrl,
         String awayClubTier,
         String matchTitle,
-        String matchContent
+        String matchContent,
+        List<MatchResultResponse> matchResults
 ) {
-    public static MatchDetailResponse from(MatchPost matchPost, Club awayClub) {
+    public static MatchDetailResponse from(MatchPost matchPost, Club awayClub, List<MatchResultResponse> matchResults) {
         return new MatchDetailResponse(
                 matchPost.getHomeClub().getClubName(),
                 matchPost.getHomeClub().getLogo(),
@@ -22,7 +25,8 @@ public record MatchDetailResponse(
                 awayClub.getLogo(),
                 awayClub.getClubTier().name(),
                 matchPost.getTitle(),
-                matchPost.getContent()
+                matchPost.getContent(),
+                matchResults
         );
     }
 }

@@ -1,4 +1,4 @@
-package com.cotato.squadus.api.match.dto.match.response;
+package com.cotato.squadus.api.match.dto.matchPost.response;
 
 import com.cotato.squadus.domain.club.common.entity.Tier;
 import com.cotato.squadus.domain.club.common.enums.SportsCategory;

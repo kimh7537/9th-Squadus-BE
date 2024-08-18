@@ -1,10 +1,12 @@
 package com.cotato.squadus.domain.club.match.service;
 
-import com.cotato.squadus.api.match.dto.match.request.*;
-import com.cotato.squadus.api.match.dto.match.response.MatchCreateResponse;
-import com.cotato.squadus.api.match.dto.match.response.MatchRequestResponse;
+import com.cotato.squadus.api.match.dto.matchPost.request.*;
+import com.cotato.squadus.api.match.dto.matchPost.response.MatchCreateResponse;
+import com.cotato.squadus.api.match.dto.matchPost.response.MatchRequestResponse;
 import com.cotato.squadus.domain.club.common.entity.Club;
 import com.cotato.squadus.domain.club.common.entity.ClubMember;
+import com.cotato.squadus.domain.club.common.entity.Tier;
+import com.cotato.squadus.domain.club.common.enums.SportsCategory;
 import com.cotato.squadus.domain.club.common.repository.ClubAdminMemberRepository;
 import com.cotato.squadus.domain.club.common.repository.ClubMemberRepository;
 import com.cotato.squadus.domain.club.common.repository.ClubRepository;
@@ -40,11 +42,11 @@ public class MatchService {
         Club homeClub = clubRepository.findById(matchCreateRequest.getHomeClubId())
                 .orElseThrow(() -> new EntityNotFoundException("동아리를 찾을 수 없습니다."));
 
-        ClubMember clubMember = clubMemberRepository.findClubMemberByMember_MemberIdx(matchCreateRequest.getMemberId())
+        ClubMember clubMember = clubMemberRepository.findClubMemberByClubMemberIdx(matchCreateRequest.getMemberId())
                 .orElseThrow(() -> new EntityNotFoundException("동아리 멤버를 찾을 수 없습니다."));
 
         // 해당 club의 임원인지 확인
-        if (!clubAdminMemberRepository.findActiveAdminByClubIdAndMemberId(homeClub.getClubId(), matchCreateRequest.getMemberId()).isPresent()) {
+        if (!clubAdminMemberRepository.findActiveAdminByClubIdAndClubMemberId(homeClub.getClubId(), matchCreateRequest.getMemberId()).isPresent()) {
             throw new AccessDeniedException("매칭 요청을 보낼 권한이 없습니다.");
         }
 
@@ -85,12 +87,12 @@ public class MatchService {
     }
 
 
-    public List<MatchCreateResponse> getFilteredMatches(MatchFilterRequest filterRequest) {
+    public List<MatchCreateResponse> getFilteredMatches(FilterRequest filterRequest) {
         List<MatchPost> matchPosts = matchPostRepository.customFindMatchesByFilter(
-                filterRequest.getSportsCategory(),
+                SportsCategory.valueOf(filterRequest.getSportsCategory()),
                 filterRequest.getCity(),
                 filterRequest.getDistrict(),
-                filterRequest.getTier(),
+                Tier.valueOf(filterRequest.getTier()),
                 filterRequest.getPlaceProvided()
         );
 
@@ -100,7 +102,7 @@ public class MatchService {
     }
 
 
-    public List<MatchCreateResponse> searchMatches(MatchSearchRequest searchRequest) {
+    public List<MatchCreateResponse> searchMatches(SearchRequest searchRequest) {
         List<MatchPost> matchPosts = matchPostRepository.customFindByKeyword(searchRequest.getKeyword());
 
         return matchPosts.stream()
@@ -119,11 +121,11 @@ public class MatchService {
         MatchPost matchPost = matchPostRepository.findById(matchRequestRequest.getMatchPostId())
                 .orElseThrow(() -> new EntityNotFoundException("매칭 게시글을 찾을 수 없습니다."));
 
-        ClubMember clubMember = clubMemberRepository.findClubMemberByMember_MemberIdx(matchRequestRequest.getMemberId())
+        ClubMember clubMember = clubMemberRepository.findClubMemberByClubMemberIdx(matchRequestRequest.getMemberId())
                 .orElseThrow(() -> new EntityNotFoundException("동아리 멤버를 찾을 수 없습니다."));
 
         // 해당 club의 임원인지 확인
-        if (!clubAdminMemberRepository.findActiveAdminByClubIdAndMemberId(club.getClubId(), matchRequestRequest.getMemberId()).isPresent()) {
+        if (!clubAdminMemberRepository.findActiveAdminByClubIdAndClubMemberId(club.getClubId(), matchRequestRequest.getMemberId()).isPresent()) {
             throw new AccessDeniedException("매칭 요청을 보낼 권한이 없습니다.");
         }
 

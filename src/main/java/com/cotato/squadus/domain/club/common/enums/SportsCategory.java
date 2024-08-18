@@ -1,30 +1,29 @@
 package com.cotato.squadus.domain.club.common.enums;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 public enum SportsCategory {
-    BALL("구기", Arrays.asList("축구", "농구", "배구", "야구")),
-    RACKET("라켓", Arrays.asList("테니스", "배드민턴", "탁구")),
-    MARTIAL_ARTS("격투", Arrays.asList("태권도", "유도", "검도")),
-    TRACK_AND_FIELD("육상", Arrays.asList("러닝", "크로스핏", "사이클")),
-    WATER_SPORTS("수상", Arrays.asList("수영", "서핑", "요트")),
-    OTHER("기타", Collections.emptyList());
+    // 구기 종목
+    SOCCER,          // 축구
+    BASKETBALL,      // 농구
+    VOLLEYBALL,      // 배구
+    BASEBALL,        // 야구
 
-    private final String name;
-    private final List<String> subCategories;
+    // 라켓 스포츠
+    BADMINTON,       // 배드민턴
+    TENNIS,          // 테니스
+    TABLE_TENNIS,    // 탁구
 
-    SportsCategory(String name, List<String> subCategories) {
-        this.name = name;
-        this.subCategories = subCategories;
-    }
+    // 격투 스포츠
+    TAEKWONDO,       // 태권도
+    JUDO,            // 유도
+    KENDO,           // 검도
 
-    public String getName() {
-        return name;
-    }
+    // 육상 종목
+    RUNNING,         // 러닝
+    CROSSFIT,        // 크로스핏
+    CYCLING,         // 사이클
 
-    public List<String> getSubCategories() {
-        return subCategories;
-    }
+    // 수상 스포츠
+    SWIMMING,        // 수영
+    SURFING,         // 서핑
+    YACHTING         // 요트
 }

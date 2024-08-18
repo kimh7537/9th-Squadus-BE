@@ -1,4 +1,4 @@
-package com.cotato.squadus.api.match.dto.match.request;
+package com.cotato.squadus.api.match.dto.matchPost.request;
 
 import com.cotato.squadus.domain.club.common.entity.Tier;
 import com.cotato.squadus.domain.club.common.enums.SportsCategory;
@@ -7,11 +7,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class MatchFilterRequest {
+public class FilterRequest {
 
-    private SportsCategory sportsCategory;
+    private String sportsCategory;
     private String city;
     private String district;
-    private Tier tier;
+    private String tier;
     private Boolean placeProvided;
 }

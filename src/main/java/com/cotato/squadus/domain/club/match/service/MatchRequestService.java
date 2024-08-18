@@ -1,10 +1,9 @@
 package com.cotato.squadus.domain.club.match.service;
 
-import com.cotato.squadus.api.match.dto.match.response.MatchRequestAndMatchPostResponse;
-import com.cotato.squadus.api.match.dto.match.response.MatchRequestResponse;
-import com.cotato.squadus.api.match.dto.match.response.ReceivedMatchRequestResponse;
+import com.cotato.squadus.api.match.dto.matchPost.response.MatchRequestAndMatchPostResponse;
+import com.cotato.squadus.api.match.dto.matchPost.response.MatchRequestResponse;
+import com.cotato.squadus.api.match.dto.matchPost.response.ReceivedMatchRequestResponse;
 import com.cotato.squadus.domain.club.common.entity.Club;
-import com.cotato.squadus.domain.club.common.entity.ClubMember;
 import com.cotato.squadus.domain.club.common.repository.ClubAdminMemberRepository;
 import com.cotato.squadus.domain.club.common.repository.ClubRepository;
 import com.cotato.squadus.domain.club.match.entity.MatchPost;
@@ -50,7 +49,7 @@ public class MatchRequestService {
         MatchRequest matchRequest = matchRequestRepository.findById(requestId)
                 .orElseThrow(() -> new EntityNotFoundException("매칭 요청을 찾을 수 없습니다."));
 
-        clubAdminMemberRepository.findActiveAdminByClubIdAndMemberId(
+        clubAdminMemberRepository.findActiveAdminByClubIdAndClubMemberId(
                         matchRequest.getClub().getClubId(), memberId)
                 .orElseThrow(() -> new AccessDeniedException("매칭 요청을 취소할 권한이 없습니다."));
 
@@ -125,7 +124,7 @@ public class MatchRequestService {
         MatchRequest matchRequest = matchRequestRepository.findById(requestId)
                 .orElseThrow(() -> new EntityNotFoundException("매칭 요청을 찾을 수 없습니다."));
 
-        clubAdminMemberRepository.findActiveAdminByClubIdAndMemberId(
+        clubAdminMemberRepository.findActiveAdminByClubIdAndClubMemberId(
                         matchRequest.getClub().getClubId(), memberId)
                 .orElseThrow(() -> new AccessDeniedException("매칭 요청에 대해 결정할 권한이 없습니다."));
 
