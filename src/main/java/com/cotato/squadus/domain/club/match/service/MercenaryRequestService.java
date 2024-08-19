@@ -15,12 +15,14 @@ import com.cotato.squadus.domain.club.match.repository.MercenaryRequestRepositor
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,23 +30,36 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MercenaryRequestService {
 
+    private static final Logger log = LoggerFactory.getLogger(MercenaryRequestService.class);
     private final MercenaryRequestRepository mercenaryRequestRepository;
     private final ClubAdminMemberRepository clubAdminMemberRepository;
     private final ClubRepository clubRepository;
     private final MercenaryPostRepository mercenaryPostRepository;
 
     public Page<MercenaryRequestResponse> getMyRequests(Long memberId, Pageable pageable) {
-        return mercenaryRequestRepository.findAllByClubMember_ClubMemberIdx(memberId, pageable)
-                .map(MercenaryRequestResponse::from);
+        Page<MercenaryRequest> requestsPage = mercenaryRequestRepository.findAllByClubMember_ClubMemberIdx(memberId, pageable);
+
+        // 유효한 MercenaryPost만 필터링하여 새로운 리스트로 변환
+        List<MercenaryRequestResponse> filteredResponses = requestsPage
+                .stream()
+                .filter(mercenaryRequest -> isPostValid(mercenaryRequest.getMercenaryPost()))
+                .map(MercenaryRequestResponse::from)
+                .collect(Collectors.toList());
+
+        // 필터링된 리스트를 Page 객체로 변환하여 반환
+        return new PageImpl<>(filteredResponses, pageable, requestsPage.getTotalElements());
     }
 
 
     public List<MercenaryRequestResponse> getAllMyRequests(Long memberId) {
         return mercenaryRequestRepository.findAllByClubMember_ClubMemberIdx(memberId)
                 .stream()
+                .filter(mercenaryRequest -> isPostValid(mercenaryRequest.getMercenaryPost()))
                 .map(MercenaryRequestResponse::from)
                 .collect(Collectors.toList());
     }
+
+
 
     @Transactional
     public void cancelMatchRequest(Long requestId, Long memberId) {
@@ -68,15 +83,20 @@ public class MercenaryRequestService {
 
         List<MercenaryPost> mercenaryPosts = mercenaryPostRepository.findByHomeClub(club);
 
+        LocalDateTime now = LocalDateTime.now();
+
         List<MercenaryRequestAndMercenaryPostResponse> allResponses = mercenaryPosts.stream()
-                .flatMap(mercenaryPost -> {
+                .filter(mercenaryPost -> LocalDateTime.of(mercenaryPost.getMatchStartDate(), mercenaryPost.getMatchStartTime()).isAfter(now))
+                .map(mercenaryPost -> {
                     List<ReceivedMercenaryRequestResponse> receivedRequests = mercenaryPost.getMercenaryRequests()
                             .stream()
                             .map(ReceivedMercenaryRequestResponse::from)
                             .collect(Collectors.toList());
 
-                    return mercenaryPost.getMercenaryRequests().stream()
-                            .map(mercenaryRequest -> MercenaryRequestAndMercenaryPostResponse.from(mercenaryRequest, receivedRequests));
+                    return MercenaryRequestAndMercenaryPostResponse.from(
+                            mercenaryPost,
+                            receivedRequests
+                    );
                 })
                 .collect(Collectors.toList());
 
@@ -97,17 +117,22 @@ public class MercenaryRequestService {
 
         List<MercenaryPost> mercenaryPosts = club.getMercenaryPosts();
 
+        LocalDateTime now = LocalDateTime.now();
+
         return mercenaryPosts.stream()
-                .flatMap(mercenaryPost -> {
+                .filter(mercenaryPost -> LocalDateTime.of(mercenaryPost.getMatchStartDate(), mercenaryPost.getMatchStartTime()).isAfter(now))
+                .map(mercenaryPost -> {
                     List<ReceivedMercenaryRequestResponse> receivedRequests = mercenaryPost.getMercenaryRequests()
                             .stream()
                             .map(ReceivedMercenaryRequestResponse::from)
                             .collect(Collectors.toList());
 
-                    return mercenaryPost.getMercenaryRequests().stream()
-                            .map(mercenaryRequest -> MercenaryRequestAndMercenaryPostResponse.from(mercenaryRequest, receivedRequests)
-                            );
-                }).collect(Collectors.toList());
+                    return MercenaryRequestAndMercenaryPostResponse.from(
+                            mercenaryPost,
+                            receivedRequests
+                    );
+                })
+                .collect(Collectors.toList());
     }
 
 
@@ -134,5 +159,10 @@ public class MercenaryRequestService {
         }
 
         mercenaryRequestRepository.save(mercenaryRequest);
+    }
+
+    private boolean isPostValid(MercenaryPost mercenaryPost) {
+        LocalDateTime postDateTime = LocalDateTime.of(mercenaryPost.getMatchStartDate(), mercenaryPost.getMatchStartTime());
+        return postDateTime.isAfter(LocalDateTime.now());
     }
 }

@@ -82,4 +82,15 @@ public class MercenaryPost  extends BaseTimeEntity {
             throw new IllegalStateException("더 이상 참가할 수 없습니다. 최대 인원을 초과했습니다.");
         }
     }
+
+    public void update(String title, String content, MatchPlace matchPlace, Boolean placeProvided, LocalDate matchStartDate, LocalTime matchStartTime, Integer maxParticipants) {
+        this.title = title;
+        this.content = content;
+        this.matchPlace = matchPlace;
+        this.placeProvided = placeProvided;
+        this.matchStartDate = matchStartDate;
+        this.matchStartTime = matchStartTime;
+        this.maxParticipants = maxParticipants;
+    }
+
 }
