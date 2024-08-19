@@ -4,6 +4,7 @@ import com.cotato.squadus.common.entity.BaseTimeEntity;
 import com.cotato.squadus.domain.club.common.enums.ClubCategory;
 import com.cotato.squadus.domain.club.common.enums.ClubTier;
 import com.cotato.squadus.domain.club.common.enums.SportsCategory;
+import com.cotato.squadus.domain.club.fee.entity.FeeType;
 import com.cotato.squadus.domain.club.post.entity.ClubPost;
 import com.cotato.squadus.domain.club.schedule.entity.ClubSchedule;
 import jakarta.persistence.*;
@@ -67,6 +68,9 @@ public class Club extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "club", fetch = LAZY, cascade = ALL)
     private List<ClubPost> clubPosts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "club", fetch = LAZY, cascade = ALL)
+    private List<FeeType> feeTypes = new ArrayList<>();
 
     @Builder
     private Club(String clubName, String university, ClubCategory clubCategory, SportsCategory sportsCategory, String logo, ClubTier clubTier, Integer clubRank, String clubMessage, Long maxMembers, Region region) {
