@@ -4,7 +4,9 @@ import com.cotato.squadus.api.fee.dto.*;
 import com.cotato.squadus.common.config.auth.CustomOAuth2Member;
 import com.cotato.squadus.common.error.ErrorCode;
 import com.cotato.squadus.common.error.exception.AppException;
+import com.cotato.squadus.domain.auth.entity.Member;
 import com.cotato.squadus.domain.auth.service.ClubMemberService;
+import com.cotato.squadus.domain.auth.service.MemberService;
 import com.cotato.squadus.domain.club.common.entity.Club;
 import com.cotato.squadus.domain.club.common.entity.ClubMember;
 import com.cotato.squadus.domain.club.common.service.ClubService;
@@ -17,10 +19,10 @@ import com.cotato.squadus.domain.club.fee.repository.FeeUsageRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -34,6 +36,7 @@ public class ClubFeeService {
     private final ClubMemberService clubMemberService;
     private final ClubService clubService;
     private final FeeUsageRepository feeUsageRepository;
+    private final MemberService memberService;
 
 
     public ClubFeeSummaryResponseList findAllClubFeeTypesSummary(CustomOAuth2Member customOAuth2Member, Long clubId) {
@@ -141,5 +144,23 @@ public class ClubFeeService {
         feeTypeRepository.save(feeType);
 
         return new ClubFeeUsageResponse(savedUsage.getFeeUsageId());
+    }
+
+    public ClubFeePaymentInfoResponseList findClubFeePaymentInfo(CustomOAuth2Member customOAuth2Member, Long clubId, Long feeTypeId) {
+        Member member = memberService.findMemberByUniqueId(customOAuth2Member.getUniqueId());
+        List<FeePayment> feePayments = feePaymentRepository.findAllByFeeType_FeeTypeId(feeTypeId);
+
+        List<ClubFeePaymentInfoResponse> clubFeePaymentInfoResponseList = new ArrayList<>();
+        for (FeePayment feePayment : feePayments) {
+            ClubFeePaymentInfoResponse clubFeePaymentInfoResponse;
+            if (feePayment.getClubMember().getMember().getMemberIdx().equals(member.getMemberIdx())) {
+                clubFeePaymentInfoResponse = ClubFeePaymentInfoResponse.from(feePayment, true);
+            } else {
+                clubFeePaymentInfoResponse = ClubFeePaymentInfoResponse.from(feePayment, false);
+            }
+            clubFeePaymentInfoResponseList.add(clubFeePaymentInfoResponse);
+        }
+        return ClubFeePaymentInfoResponseList.from(clubFeePaymentInfoResponseList);
+
     }
 }

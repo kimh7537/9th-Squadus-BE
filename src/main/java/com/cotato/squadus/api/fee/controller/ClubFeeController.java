@@ -40,8 +40,18 @@ public class ClubFeeController {
     public ResponseEntity<ClubFeeUsageResponse> createClubFeeUsage(@AuthenticationPrincipal CustomOAuth2Member customOAuth2Member, @PathVariable("clubId") Long clubId, @PathVariable("feeTypeId") Long feeTypeId, ClubFeeUsageRequest clubFeeUsageRequest) {
         ClubFeeUsageResponse clubFeeUsage = clubFeeService.createClubFeeUsage(customOAuth2Member, clubId, feeTypeId, clubFeeUsageRequest);
         return ResponseEntity.ok(clubFeeUsage);
-
     }
+
+    @GetMapping("/{feeTypeId}/payment")
+    @Operation(summary = "동아리 회비 입금 현황 조회", description = "회비의 id를 지정하여 동아리의 입금 현황을 조회합니다.")
+    public ResponseEntity<ClubFeePaymentInfoResponseList> findClubFeePaymentInfo(
+            @AuthenticationPrincipal CustomOAuth2Member customOAuth2Member,
+            @PathVariable("clubId") Long clubId,
+            @PathVariable("feeTypeId") Long feeTypeId) {
+        ClubFeePaymentInfoResponseList clubFeePaymentInfo = clubFeeService.findClubFeePaymentInfo(customOAuth2Member, clubId, feeTypeId);
+        return ResponseEntity.ok(clubFeePaymentInfo);
+    }
+
 
 
 
