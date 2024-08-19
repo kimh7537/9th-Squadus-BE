@@ -1,8 +1,6 @@
 package com.cotato.squadus.api.fee.controller;
 
-import com.cotato.squadus.api.fee.dto.ClubFeeCreateRequest;
-import com.cotato.squadus.api.fee.dto.ClubFeeCreateResponse;
-import com.cotato.squadus.api.fee.dto.ClubFeeSummaryResponseList;
+import com.cotato.squadus.api.fee.dto.*;
 import com.cotato.squadus.common.config.auth.CustomOAuth2Member;
 import com.cotato.squadus.domain.club.fee.service.ClubFeeService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,6 +34,16 @@ public class ClubFeeController {
         ClubFeeCreateResponse createdClubFee = clubFeeService.createFee(customOAuth2Member, clubId, clubFeeCreateRequest);
         return ResponseEntity.ok(createdClubFee);
     }
+
+    @PostMapping("/{feeTypeId}/usage")
+    @Operation(summary = "동아리 회비 사용", description = "회비의 id를 지정하여 동아리 회비를 사용합니다.")
+    public ResponseEntity<ClubFeeUsageResponse> createClubFeeUsage(@AuthenticationPrincipal CustomOAuth2Member customOAuth2Member, @PathVariable("clubId") Long clubId, @PathVariable("feeTypeId") Long feeTypeId, ClubFeeUsageRequest clubFeeUsageRequest) {
+        ClubFeeUsageResponse clubFeeUsage = clubFeeService.createClubFeeUsage(customOAuth2Member, clubId, feeTypeId, clubFeeUsageRequest);
+        return ResponseEntity.ok(clubFeeUsage);
+
+    }
+
+
 
 
 
