@@ -18,7 +18,8 @@ public record ClubInfoResponse(
         Long maxMembers,
         LocalDateTime createdAt,
         String clubMessage,
-        List<String> tags
+        List<String> tags,
+        Integer matchScore
 ) {
     public static ClubInfoResponse from(Club club) {
         return new ClubInfoResponse(
@@ -33,7 +34,8 @@ public record ClubInfoResponse(
                 club.getMaxMembers(),
                 club.getCreatedAt(),
                 club.getClubMessage(),
-                club.getTags()
+                club.getTags(),
+                club.getMatchScore()
         );
     }
 }

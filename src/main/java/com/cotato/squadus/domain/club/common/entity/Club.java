@@ -4,6 +4,8 @@ import com.cotato.squadus.common.entity.BaseTimeEntity;
 import com.cotato.squadus.domain.club.common.enums.ClubCategory;
 import com.cotato.squadus.domain.club.common.enums.ClubTier;
 import com.cotato.squadus.domain.club.common.enums.SportsCategory;
+import com.cotato.squadus.domain.club.match.entity.MatchPost;
+import com.cotato.squadus.domain.club.match.entity.MercenaryPost;
 import com.cotato.squadus.domain.club.fee.entity.FeeType;
 import com.cotato.squadus.domain.club.post.entity.ClubPost;
 import com.cotato.squadus.domain.club.schedule.entity.ClubSchedule;
@@ -45,6 +47,9 @@ public class Club extends BaseTimeEntity {
 
     private Integer numberOfMembers;
 
+    //동아리 매칭 점수, 티어를 위해 사용함
+    private Integer matchScore;
+
     @ElementCollection
     private List<String> tags; // 별도의 테이블을 생성하여 컬렉션의 데이터를 저장
 
@@ -69,6 +74,12 @@ public class Club extends BaseTimeEntity {
     @OneToMany(mappedBy = "club", fetch = LAZY, cascade = ALL)
     private List<ClubPost> clubPosts = new ArrayList<>();
 
+    @OneToMany(mappedBy = "homeClub", fetch = LAZY, cascade = ALL)
+    private List<MatchPost> matchPosts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "homeClub", fetch = LAZY, cascade = ALL)
+    private List<MercenaryPost> mercenaryPosts = new ArrayList<>();
+
     @OneToMany(mappedBy = "club", fetch = LAZY, cascade = ALL)
     private List<FeeType> feeTypes = new ArrayList<>();
 
@@ -91,8 +102,23 @@ public class Club extends BaseTimeEntity {
         this.clubMembers.add(clubMember);
     }
 
+    public void addMatchPost(MatchPost matchPost) {
+        this.matchPosts.add(matchPost);
+        matchPost.setHomeClub(this);
+    }
+
+    public void addMercenaryPost(MercenaryPost mercenaryPost) {
+        this.mercenaryPosts.add(mercenaryPost);
+        mercenaryPost.setHomeClub(this);
+    }
+
     public void addNumberOfMembers() {
         this.numberOfMembers++;
+    }
+
+    // 매칭 결과를 누적하여 점수 반영
+    public void updateMatchScore(int points) {
+        this.matchScore += points;
     }
 
     public Club updateClub(String logo, String clubMessage) {
