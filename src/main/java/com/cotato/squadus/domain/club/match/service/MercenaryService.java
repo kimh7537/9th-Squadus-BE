@@ -29,6 +29,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -80,9 +82,13 @@ public class MercenaryService {
                 .orElseThrow(() -> new EntityNotFoundException("동아리 멤버를 찾을 수 없습니다."));
 
         Club userClub = clubMember.getClub();
+        LocalDateTime now = LocalDateTime.now();
 
         return mercenaryPostRepository.findAll().stream()
-                .filter(mercenaryPost -> !mercenaryPost.getHomeClub().equals(userClub))
+                .filter(mercenaryPost -> {
+                    LocalDateTime matchDateTime = LocalDateTime.of(mercenaryPost.getMatchStartDate(), mercenaryPost.getMatchStartTime());
+                    return !mercenaryPost.getHomeClub().equals(userClub) && matchDateTime.isAfter(now);
+                })
                 .map(MercenaryCreateResponse::from)
                 .collect(Collectors.toList());
     }
@@ -113,6 +119,7 @@ public class MercenaryService {
 
         SportsCategory sportsCategory = null;
         ClubTier tier = null;
+        LocalDateTime now = LocalDateTime.now();
 
         if (filterRequest.getSportsCategory() != null) {
             sportsCategory = SportsCategory.valueOf(filterRequest.getSportsCategory());
@@ -131,7 +138,10 @@ public class MercenaryService {
         );
 
         return mercenaryPosts.stream()
-                .filter(mercenaryPost -> !mercenaryPost.getHomeClub().equals(userClub))
+                .filter(mercenaryPost -> {
+                    LocalDateTime matchDateTime = LocalDateTime.of(mercenaryPost.getMatchStartDate(), mercenaryPost.getMatchStartTime());
+                    return !mercenaryPost.getHomeClub().equals(userClub) && matchDateTime.isAfter(now);
+                })
                 .map(MercenaryCreateResponse::from)
                 .collect(Collectors.toList());
     }
@@ -145,9 +155,13 @@ public class MercenaryService {
 
         // 사용자의 동아리를 가져옵니다.
         Club userClub = clubMember.getClub();
+        LocalDateTime now = LocalDateTime.now();
 
         return mercenaryPostRepository.customFindByKeyword(searchRequest.getKeyword()).stream()
-                .filter(mercenaryPost -> !mercenaryPost.getHomeClub().equals(userClub)) // 사용자의 동아리에서 작성한 글 제외
+                .filter(mercenaryPost -> {
+                    LocalDateTime matchDateTime = LocalDateTime.of(mercenaryPost.getMatchStartDate(), mercenaryPost.getMatchStartTime());
+                    return !mercenaryPost.getHomeClub().equals(userClub) && matchDateTime.isAfter(now);
+                }) // 사용자의 동아리에서 작성한 글 제외
                 .map(MercenaryCreateResponse::from)
                 .collect(Collectors.toList());
     }
@@ -186,5 +200,55 @@ public class MercenaryService {
         mercenaryRequestRepository.save(mercenaryRequest);
         return MercenaryRequestResponse.from(mercenaryRequest);
     }
+
+
+    @Transactional
+    public MercenaryCreateResponse updateMercenaryPost(Long mercenaryPostId, MercenaryCreateRequest mercenaryCreateRequest) {
+        MercenaryPost mercenaryPost = mercenaryPostRepository.findById(mercenaryPostId)
+                .orElseThrow(() -> new EntityNotFoundException("매칭 게시글을 찾을 수 없습니다."));
+
+        Club homeClub = clubRepository.findById(mercenaryCreateRequest.getHomeClubId())
+                .orElseThrow(() -> new EntityNotFoundException("동아리를 찾을 수 없습니다."));
+
+        if (!clubAdminMemberRepository.findActiveAdminByClubIdAndClubMemberId(homeClub.getClubId(), mercenaryCreateRequest.getClubMemberId()).isPresent()) {
+            throw new AppException(ErrorCode.CLUB_ACCESS_DENIED);
+        }
+
+        mercenaryPost.update(
+                mercenaryCreateRequest.getTitle(),
+                mercenaryCreateRequest.getContent(),
+                new MatchPlace(mercenaryCreateRequest.getMatchPlace().getCity(), mercenaryCreateRequest.getMatchPlace().getDistrict()),
+                mercenaryCreateRequest.getPlaceProvided(),
+                mercenaryCreateRequest.getMatchStartDate(),
+                mercenaryCreateRequest.getMatchStartTime(),
+                mercenaryCreateRequest.getMaxParticipants()
+        );
+
+        mercenaryPostRepository.save(mercenaryPost);
+        return MercenaryCreateResponse.from(mercenaryPost);
+    }
+
+
+    @Transactional
+    public MercenaryCreateResponse deleteMercenaryPost(Long mercenaryIdx, Long clubMemberId) {
+        MercenaryPost mercenaryPost = mercenaryPostRepository.findById(mercenaryIdx)
+                .orElseThrow(() -> new EntityNotFoundException("해당 용병 매칭 게시글을 찾을 수 없습니다."));
+
+        // 해당 게시글을 작성한 동아리를 찾습니다.
+        Club homeClub = mercenaryPost.getHomeClub();
+
+        // 요청한 사용자가 해당 동아리의 관리자인지 확인합니다.
+        boolean isAdmin = clubAdminMemberRepository.findActiveAdminByClubIdAndClubMemberId(homeClub.getClubId(), clubMemberId)
+                .isPresent();
+
+        // 관리자가 아니라면 접근 권한이 없음을 예외 처리합니다.
+        if (!isAdmin) {
+            throw new AppException(ErrorCode.CLUB_ACCESS_DENIED);
+        }
+
+        mercenaryPostRepository.delete(mercenaryPost);
+        return MercenaryCreateResponse.from(mercenaryPost);
+    }
+
 
 }
