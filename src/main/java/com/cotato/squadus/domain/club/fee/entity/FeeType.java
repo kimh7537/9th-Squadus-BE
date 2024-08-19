@@ -56,6 +56,10 @@ public class FeeType extends BaseTimeEntity {
         this.feePayments.add(feePayment);
     }
 
+    public void updateFeeUsages(FeeUsage feeUsage) {
+        this.feeUsages.add(feeUsage);
+    }
+
     @Builder
     public FeeType(Club club, String feeTypeName, Long price, String memo, List<ClubMember> clubMembers, FeeCategory feeCategory, LocalDate startDate, LocalDate endDate, Long totalPrice, Long balance) {
         this.club = club;
@@ -69,6 +73,17 @@ public class FeeType extends BaseTimeEntity {
         this.balance = balance;
     }
 
+    public void update(String feeTypeName, Long price, String memo, FeeCategory feeCategory, LocalDate startDate, LocalDate endDate) {
+        if (feeTypeName != null) this.feeTypeName = feeTypeName;
+        if (price != null) this.price = price;
+        if (memo != null) this.memo = memo;
+        if (feeCategory != null) this.feeCategory = feeCategory;
+        if (startDate != null) this.startDate = startDate;
+        if (endDate != null) this.endDate = endDate;
+    }
 
 
+    public void updateBalance(Long price) {
+        this.balance -= price;
+    }
 }
