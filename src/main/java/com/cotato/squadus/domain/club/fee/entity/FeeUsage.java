@@ -2,10 +2,11 @@ package com.cotato.squadus.domain.club.fee.entity;
 
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -19,11 +20,19 @@ public class FeeUsage {
 
     private String description; // 사용 내역
 
-    private LocalDateTime used_at;
+    private LocalDate usedAt;
 
     private Long price;
 
     @ManyToOne
     @JoinColumn(name = "fee_type_id")
     private FeeType feeType;
+
+    @Builder
+    public FeeUsage(String description, LocalDate usedAt, Long price, FeeType feeType) {
+        this.feeType = feeType;
+        this.description = description;
+        this.usedAt = usedAt;
+        this.price = price;
+    }
 }
