@@ -29,6 +29,12 @@ public class ClubMemberService {
         return savedClubMember;
     }
 
+    public ClubMember findClubMemberById(Long id) {
+        ClubMember clubMember = clubMemberRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("해당 고유번호를 가진 회원을 찾을 수 없습니다."));
+        return clubMember;
+    }
+
 
     // 임시 세션 정보를 통해 회원이 속한 동아리인지 검증
     public void validateClubMember(Long clubId) {
