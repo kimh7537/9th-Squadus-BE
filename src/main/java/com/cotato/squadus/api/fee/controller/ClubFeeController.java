@@ -1,0 +1,43 @@
+package com.cotato.squadus.api.fee.controller;
+
+import com.cotato.squadus.api.fee.dto.ClubFeeCreateRequest;
+import com.cotato.squadus.api.fee.dto.ClubFeeCreateResponse;
+import com.cotato.squadus.api.fee.dto.ClubFeeSummaryResponseList;
+import com.cotato.squadus.common.config.auth.CustomOAuth2Member;
+import com.cotato.squadus.domain.club.fee.service.ClubFeeService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+
+@Tag(name = "동아리 회비", description = "동아리 회비 관련 API")
+@Slf4j
+@RestController
+@RequestMapping("/v1/api/clubs/{clubId}/fees")
+@RequiredArgsConstructor
+public class ClubFeeController {
+
+    private final ClubFeeService clubFeeService;
+
+
+    @GetMapping("")
+    @Operation(summary = "동아리 회비 종류 전체 요약 조회", description = "동아리 회비의 종류 전체를 요약해서 조회합니다.(정기회비, 이벤트회비 등)")
+    public ResponseEntity<ClubFeeSummaryResponseList> findAllClubFeesSummary(@AuthenticationPrincipal CustomOAuth2Member customOAuth2Member, @PathVariable("clubId") Long clubId) {
+        ClubFeeSummaryResponseList clubFeeSummaryResponseList = clubFeeService.findAllClubFeeTypesSummary(customOAuth2Member, clubId);
+        return ResponseEntity.ok(clubFeeSummaryResponseList);
+    }
+
+    @PostMapping("")
+    @Operation(summary = "동아리 회비 등록", description = "동아리 회비를 등록합니다.")
+    public ResponseEntity<ClubFeeCreateResponse> createClubFee(@AuthenticationPrincipal CustomOAuth2Member customOAuth2Member, @PathVariable("clubId") Long clubId, ClubFeeCreateRequest clubFeeCreateRequest) {
+        ClubFeeCreateResponse createdClubFee = clubFeeService.createFee(customOAuth2Member, clubId, clubFeeCreateRequest);
+        return ResponseEntity.ok(createdClubFee);
+    }
+
+
+
+
+}
