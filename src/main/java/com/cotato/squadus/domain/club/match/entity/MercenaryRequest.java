@@ -24,7 +24,7 @@ public class MercenaryRequest {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "club_member_id")
-    private ClubMember clubMember;  // 신청한 동아리
+    private ClubMember clubMember;  // 신청한 개인
 
     @Enumerated(EnumType.STRING)
     private MatchingStatus status;  // 대기, 승낙, 거절 상태 관리
