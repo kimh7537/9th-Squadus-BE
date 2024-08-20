@@ -70,8 +70,9 @@ public class ClubService {
                 .sportsCategory(clubCreateRequest.getSportsCategory())
                 .logo(logo)
                 .clubTier(ClubTier.BRONZE)
-                .clubMessage(clubCreateRequest.getClubName() + "입니다.")
+                .clubMessage(clubCreateRequest.getClubMessage())
                 .maxMembers(clubCreateRequest.getMaxMembers())
+                .tags(clubCreateRequest.getTags())
                 .region(Region.builder()
                         .city(clubCreateRequest.getCity())
                         .district(clubCreateRequest.getDistrict())
@@ -150,7 +151,8 @@ public class ClubService {
                         .city(clubUpdateRequest.city())
                         .district(clubUpdateRequest.district())
                         .build(),
-                clubUpdateRequest.maxMembers()
+                clubUpdateRequest.maxMembers(),
+                clubUpdateRequest.tags()
         );
 
         Club savedClub = clubRepository.save(updateClub);

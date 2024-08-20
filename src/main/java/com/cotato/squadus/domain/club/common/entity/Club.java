@@ -84,7 +84,7 @@ public class Club extends BaseTimeEntity {
     private List<FeeType> feeTypes = new ArrayList<>();
 
     @Builder
-    private Club(String clubName, String university, ClubCategory clubCategory, SportsCategory sportsCategory, String logo, ClubTier clubTier, Integer clubRank, String clubMessage, Long maxMembers, Region region) {
+    private Club(String clubName, String university, ClubCategory clubCategory, SportsCategory sportsCategory, String logo, ClubTier clubTier, Integer clubRank, String clubMessage, Long maxMembers, Region region, List<String> tags) {
         this.clubName = clubName;
         this.university = university;
         this.clubCategory = clubCategory;
@@ -96,6 +96,7 @@ public class Club extends BaseTimeEntity {
         this.maxMembers = maxMembers;
         this.numberOfMembers = 1;
         this.region = region;
+        this.tags = tags;
     }
 
     public void addClubMember(ClubMember clubMember) {
@@ -121,11 +122,12 @@ public class Club extends BaseTimeEntity {
         this.matchScore += points;
     }
 
-    public Club updateClub(String logo, String clubMessage, Region region, Long maxMembers) {
+    public Club updateClub(String logo, String clubMessage, Region region, Long maxMembers, List<String> tags) {
         this.logo = logo;
         this.clubMessage = clubMessage;
         this.region = region;
         this.maxMembers = maxMembers;
+        this.tags = tags;
         return this;
     }
 }
