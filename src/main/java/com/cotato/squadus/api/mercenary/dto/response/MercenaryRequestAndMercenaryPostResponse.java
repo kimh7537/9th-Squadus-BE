@@ -1,12 +1,6 @@
 package com.cotato.squadus.api.mercenary.dto.response;
 
-import com.cotato.squadus.api.match.dto.matchPost.response.MatchCreateResponse;
-import com.cotato.squadus.api.match.dto.matchPost.response.MatchRequestAndMatchPostResponse;
-import com.cotato.squadus.api.match.dto.matchPost.response.ReceivedMatchRequestResponse;
-import com.cotato.squadus.domain.club.match.entity.MatchRequest;
-import com.cotato.squadus.domain.club.match.entity.MercenaryPost;
-import com.cotato.squadus.domain.club.match.entity.MercenaryRequest;
-import com.cotato.squadus.domain.club.match.enums.MatchingStatus;
+import com.cotato.squadus.domain.club.match.entity.mercenary.MercenaryPost;
 
 import java.util.List;
 

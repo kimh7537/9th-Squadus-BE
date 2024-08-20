@@ -7,7 +7,7 @@ import com.cotato.squadus.api.mercenary.dto.request.MercenaryRequestRequest;
 import com.cotato.squadus.api.mercenary.dto.response.MercenaryCreateResponse;
 import com.cotato.squadus.api.mercenary.dto.response.MercenaryCreateResponseWrapper;
 import com.cotato.squadus.api.mercenary.dto.response.MercenaryRequestResponse;
-import com.cotato.squadus.domain.club.match.service.MercenaryService;
+import com.cotato.squadus.domain.club.match.service.mercenary.MercenaryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

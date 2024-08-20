@@ -2,8 +2,8 @@ package com.cotato.squadus.api.mercenary.controller;
 
 import com.cotato.squadus.api.mercenary.dto.request.MercenaryCreateRequest;
 import com.cotato.squadus.api.mercenary.dto.response.*;
-import com.cotato.squadus.domain.club.match.service.MercenaryRequestService;
-import com.cotato.squadus.domain.club.match.service.MercenaryService;
+import com.cotato.squadus.domain.club.match.service.mercenary.MercenaryRequestService;
+import com.cotato.squadus.domain.club.match.service.mercenary.MercenaryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -91,7 +91,7 @@ public class MercenaryRequestController {
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/{mercenaryIdx}")
+    @DeleteMapping("/{mercenaryIdx}/delete")
     @Operation(summary = "용병 매칭 게시글 삭제", description = "특정 용병 매칭 게시글을 삭제합니다.")
     public ResponseEntity<Void> deleteMercenaryPost(
             @PathVariable Long mercenaryIdx,

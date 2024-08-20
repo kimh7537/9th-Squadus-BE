@@ -1,15 +1,15 @@
-package com.cotato.squadus.domain.club.match.service;
+package com.cotato.squadus.domain.club.match.service.match;
 
 import com.cotato.squadus.api.match.dto.matchResult.response.MatchDetailResponse;
 import com.cotato.squadus.api.match.dto.matchResult.response.MatchResultResponse;
 import com.cotato.squadus.domain.club.common.entity.Club;
 import com.cotato.squadus.domain.club.common.repository.ClubAdminMemberRepository;
-import com.cotato.squadus.domain.club.match.entity.MatchPost;
-import com.cotato.squadus.domain.club.match.entity.MatchRequest;
-import com.cotato.squadus.domain.club.match.entity.MatchResult;
+import com.cotato.squadus.domain.club.match.entity.match.MatchPost;
+import com.cotato.squadus.domain.club.match.entity.match.MatchRequest;
+import com.cotato.squadus.domain.club.match.entity.match.MatchResult;
 import com.cotato.squadus.domain.club.match.enums.MatchingStatus;
-import com.cotato.squadus.domain.club.match.repository.MatchPostRepository;
-import com.cotato.squadus.domain.club.match.repository.MatchResultRepository;
+import com.cotato.squadus.domain.club.match.repository.match.MatchPostRepository;
+import com.cotato.squadus.domain.club.match.repository.match.MatchResultRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;

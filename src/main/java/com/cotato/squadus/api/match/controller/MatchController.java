@@ -4,7 +4,7 @@ import com.cotato.squadus.api.match.dto.matchPost.request.*;
 import com.cotato.squadus.api.match.dto.matchPost.response.MatchCreateResponse;
 import com.cotato.squadus.api.match.dto.matchPost.response.MatchCreateResponseWrapper;
 import com.cotato.squadus.api.match.dto.matchPost.response.MatchRequestResponse;
-import com.cotato.squadus.domain.club.match.service.MatchService;
+import com.cotato.squadus.domain.club.match.service.match.MatchService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

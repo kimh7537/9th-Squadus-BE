@@ -2,8 +2,7 @@ package com.cotato.squadus.api.match.controller;
 
 import com.cotato.squadus.api.match.dto.matchResult.response.MatchDetailResponse;
 import com.cotato.squadus.api.match.dto.matchResult.response.MatchResultResponse;
-import com.cotato.squadus.domain.club.match.entity.MatchResult;
-import com.cotato.squadus.domain.club.match.service.MatchResultService;
+import com.cotato.squadus.domain.club.match.service.match.MatchResultService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

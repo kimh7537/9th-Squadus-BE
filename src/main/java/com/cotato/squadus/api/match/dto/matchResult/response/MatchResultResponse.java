@@ -1,6 +1,6 @@
 package com.cotato.squadus.api.match.dto.matchResult.response;
 
-import com.cotato.squadus.domain.club.match.entity.MatchResult;
+import com.cotato.squadus.domain.club.match.entity.match.MatchResult;
 
 public record MatchResultResponse(
         Long matchResultIdx,

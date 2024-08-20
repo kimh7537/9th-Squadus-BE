@@ -1,6 +1,6 @@
 package com.cotato.squadus.api.match.dto.matchPost.response;
 
-import com.cotato.squadus.domain.club.match.entity.MatchPost;
+import com.cotato.squadus.domain.club.match.entity.match.MatchPost;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -14,7 +14,10 @@ public record MatchCreateResponse(
         Boolean placeProvided,
         LocalDate matchStartDate,
         LocalTime matchStartTime,
-        Integer maxParticipants
+        Integer maxParticipants,
+        String sportsCategory,
+        String clubName,
+        String clubLogo
 ) {
     public static MatchCreateResponse from(MatchPost matchPost) {
         return new MatchCreateResponse(
@@ -26,7 +29,10 @@ public record MatchCreateResponse(
                 matchPost.getPlaceProvided(),
                 matchPost.getMatchStartDate(),
                 matchPost.getMatchStartTime(),
-                matchPost.getMaxParticipants()
+                matchPost.getMaxParticipants(),
+                matchPost.getHomeClub().getSportsCategory().name(),
+                matchPost.getHomeClub().getClubName(),
+                matchPost.getHomeClub().getLogo()
         );
     }
 }

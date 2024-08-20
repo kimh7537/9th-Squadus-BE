@@ -1,18 +1,17 @@
-package com.cotato.squadus.domain.club.match.service;
+package com.cotato.squadus.domain.club.match.service.match;
 
 import com.cotato.squadus.api.match.dto.matchPost.response.MatchRequestAndMatchPostResponse;
 import com.cotato.squadus.api.match.dto.matchPost.response.MatchRequestResponse;
 import com.cotato.squadus.api.match.dto.matchPost.response.ReceivedMatchRequestResponse;
-import com.cotato.squadus.api.mercenary.dto.response.MercenaryRequestResponse;
+import com.cotato.squadus.common.error.ErrorCode;
+import com.cotato.squadus.common.error.exception.AppException;
 import com.cotato.squadus.domain.club.common.entity.Club;
 import com.cotato.squadus.domain.club.common.repository.ClubAdminMemberRepository;
 import com.cotato.squadus.domain.club.common.repository.ClubRepository;
-import com.cotato.squadus.domain.club.match.entity.MatchPost;
-import com.cotato.squadus.domain.club.match.entity.MatchRequest;
-import com.cotato.squadus.domain.club.match.entity.MercenaryPost;
-import com.cotato.squadus.domain.club.match.entity.MercenaryRequest;
-import com.cotato.squadus.domain.club.match.repository.MatchPostRepository;
-import com.cotato.squadus.domain.club.match.repository.MatchRequestRepository;
+import com.cotato.squadus.domain.club.match.entity.match.MatchPost;
+import com.cotato.squadus.domain.club.match.entity.match.MatchRequest;
+import com.cotato.squadus.domain.club.match.repository.match.MatchPostRepository;
+import com.cotato.squadus.domain.club.match.repository.match.MatchRequestRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -65,7 +64,7 @@ public class MatchRequestService {
 
         clubAdminMemberRepository.findActiveAdminByClubIdAndClubMemberId(
                         matchRequest.getClub().getClubId(), memberId)
-                .orElseThrow(() -> new AccessDeniedException("매칭 요청을 취소할 권한이 없습니다."));
+                .orElseThrow(() -> new AppException(ErrorCode.CLUB_ACCESS_DENIED));
 
         matchRequestRepository.delete(matchRequest);
     }
@@ -80,15 +79,20 @@ public class MatchRequestService {
 
         List<MatchPost> matchPosts = matchPostRepository.findByHomeClub(club);
 
+        LocalDateTime now = LocalDateTime.now();
+
         List<MatchRequestAndMatchPostResponse> allResponses = matchPosts.stream()
-                .flatMap(matchPost -> {
+                .filter(matchPost -> LocalDateTime.of(matchPost.getMatchStartDate(),matchPost.getMatchStartTime()).isAfter(now))
+                .map(matchPost -> {
                     List<ReceivedMatchRequestResponse> receivedRequests = matchPost.getMatchRequests()
                             .stream()
                             .map(ReceivedMatchRequestResponse::from)
                             .collect(Collectors.toList());
 
-                    return matchPost.getMatchRequests().stream()
-                            .map(matchRequest -> MatchRequestAndMatchPostResponse.from(matchRequest, receivedRequests));
+                   return MatchRequestAndMatchPostResponse.from(
+                           matchPost,
+                           receivedRequests
+                   );
                 })
                 .collect(Collectors.toList());
 
@@ -109,20 +113,22 @@ public class MatchRequestService {
 
         List<MatchPost> matchPosts = club.getMatchPosts();
 
+        LocalDateTime now = LocalDateTime.now();
+
         return matchPosts.stream()
-                .flatMap(matchPost -> {
+                .filter(matchPost -> LocalDateTime.of(matchPost.getMatchStartDate(),matchPost.getMatchStartTime()).isAfter(now))
+                .map(matchPost -> {
+                    List<ReceivedMatchRequestResponse> receivedRequests = matchPost.getMatchRequests()
+                            .stream()
+                            .map(ReceivedMatchRequestResponse::from)
+                            .collect(Collectors.toList());
 
-//                    club.addMatchPost(matchPost);
-
-                     List<ReceivedMatchRequestResponse> receivedRequests = matchPost.getMatchRequests()
-                             .stream()
-                             .map(ReceivedMatchRequestResponse::from)
-                             .collect(Collectors.toList());
-
-            return matchPost.getMatchRequests().stream()
-                    .map(matchRequest -> MatchRequestAndMatchPostResponse.from(matchRequest, receivedRequests)
-            );
-        }).collect(Collectors.toList());
+                    return MatchRequestAndMatchPostResponse.from(
+                            matchPost,
+                            receivedRequests
+                    );
+                })
+                .collect(Collectors.toList());
     }
 
 

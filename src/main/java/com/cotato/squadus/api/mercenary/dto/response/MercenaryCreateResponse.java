@@ -1,7 +1,7 @@
 package com.cotato.squadus.api.mercenary.dto.response;
 
 import com.cotato.squadus.api.match.dto.matchPost.response.MatchPlaceResponse;
-import com.cotato.squadus.domain.club.match.entity.MercenaryPost;
+import com.cotato.squadus.domain.club.match.entity.mercenary.MercenaryPost;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -15,7 +15,10 @@ public record MercenaryCreateResponse(
         LocalDate matchStartDate,
         LocalTime matchStartTime,
         Integer maxParticipants,
-        Integer currentParticipants
+        Integer currentParticipants,
+        String sportsCategory,
+        String clubName,
+        String clubLogo
 ) {
     public static MercenaryCreateResponse from(MercenaryPost mercenaryPost) {
         return new MercenaryCreateResponse(
@@ -27,7 +30,10 @@ public record MercenaryCreateResponse(
                 mercenaryPost.getMatchStartDate(),
                 mercenaryPost.getMatchStartTime(),
                 mercenaryPost.getMaxParticipants(),
-                mercenaryPost.getCurrentParticipants()
+                mercenaryPost.getCurrentParticipants(),
+                mercenaryPost.getHomeClub().getSportsCategory().name(),
+                mercenaryPost.getHomeClub().getClubName(),
+                mercenaryPost.getHomeClub().getLogo()
         );
     }
 }
