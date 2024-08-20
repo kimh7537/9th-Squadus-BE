@@ -13,6 +13,7 @@ import com.cotato.squadus.domain.club.common.entity.ClubAdminMember;
 import com.cotato.squadus.domain.club.common.entity.Region;
 import com.cotato.squadus.domain.club.common.enums.ClubCategory;
 import com.cotato.squadus.domain.club.common.enums.ClubTier;
+import com.cotato.squadus.domain.club.common.enums.SportsCategory;
 import com.cotato.squadus.domain.club.common.repository.ClubApplicationRepository;
 import com.cotato.squadus.domain.club.common.repository.ClubRepository;
 import com.cotato.squadus.domain.auth.enums.ApplicationStatus;
@@ -26,7 +27,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -157,6 +162,164 @@ public class ClubService {
         Club savedClub = clubRepository.save(updateClub);
 
         return new ClubUpdateResponse(savedClub.getClubId());
+    }
+
+
+    public ClubTierInfoResponse getClubTierInfo(Long clubId) {
+        Club club = clubRepository.findById(clubId)
+                .orElseThrow(() -> new EntityNotFoundException("동아리를 찾을 수 없습니다."));
+
+        SportsCategory category = club.getSportsCategory();
+        List<Club> clubs = clubRepository.findBySportsCategoryOrderByMatchScoreDesc(category);
+
+        int totalClubs = clubs.size();
+        int currentRank = 0;
+
+        for (int i = 0; i < totalClubs; i++) {
+            if (clubs.get(i).getClubId().equals(clubId)) {
+                currentRank = i + 1; // 1-based index
+                break;
+            }
+        }
+
+        int ranksToNextTier = 0;
+        if (club.getClubTier() == ClubTier.BRONZE) {
+            int silverCutoff = (int) Math.ceil(totalClubs * 0.5);
+            ranksToNextTier = Math.max(0, silverCutoff - currentRank);
+        } else if (club.getClubTier() == ClubTier.SILVER) {
+            int goldCutoff = (int) Math.ceil(totalClubs * 0.2);
+            ranksToNextTier = Math.max(0, goldCutoff - currentRank);
+        }
+
+        return new ClubTierInfoResponse(
+                club.getClubTier().name(),
+                totalClubs,
+                currentRank,
+                ranksToNextTier
+        );
+    }
+
+
+
+    @Transactional
+    public void updateClubTiers() {
+        List<SportsCategory> categories = Arrays.asList(SportsCategory.values());
+
+        for (SportsCategory category : categories) {
+            List<Club> clubs = clubRepository.findBySportsCategoryOrderByMatchScoreDesc(category);
+
+            int totalClubs = clubs.size();
+            int goldCutoff = (int) Math.ceil(totalClubs * 0.2);
+            int silverCutoff = (int) Math.ceil(totalClubs * 0.5);
+
+            for (int i = 0; i < totalClubs; i++) {
+                Club club = clubs.get(i);
+                if (i < goldCutoff) {
+                    club.updateTier(ClubTier.GOLD);
+                } else if (i < silverCutoff) {
+                    club.updateTier(ClubTier.SILVER);
+                } else {
+                    club.updateTier(ClubTier.BRONZE);
+                }
+            }
+            clubRepository.saveAll(clubs);
+        }
+    }
+
+
+    @Transactional
+    public List<ClubRankResponse> getClubRankingByCategory(Long clubId) {
+        Club club = clubRepository.findById(clubId)
+                .orElseThrow(() -> new EntityNotFoundException("동아리를 찾을 수 없습니다."));
+
+        SportsCategory category = club.getSportsCategory();
+        List<Club> clubs = clubRepository.findBySportsCategoryOrderByMatchScoreDesc(category);
+
+        List<ClubRankResponse> rankings = new ArrayList<>();
+        for (int i = 0; i < clubs.size(); i++) {
+            Club currentClub = clubs.get(i);
+            int rankChange = currentClub.getClubRank() - (i + 1); // 순위 변동 계산
+            ClubRankResponse response = new ClubRankResponse(
+                    currentClub.getClubName(),
+                    currentClub.getLogo(),
+                    currentClub.getMatchScore(),
+                    currentClub.getClubRank(),
+                    rankChange
+            );
+            rankings.add(response);
+        }
+
+        return rankings;
+    }
+
+
+
+    public List<ClubRankResponse> getClubsByTierAndRank(SportsCategory sportsCategory) {
+        List<Club> clubs = clubRepository.findBySportsCategoryOrderByMatchScoreDesc(sportsCategory);
+        List<ClubRankResponse> response = new ArrayList<>();
+        int rank = 1;
+
+        for (Club club : clubs) {
+            // 이전 순위와 현재 순위 간의 변동 계산
+            int previousRank = club.getClubRank(); // 클럽의 이전 순위를 가져옵니다.
+            int rankChange = previousRank - rank; // 순위 변동 계산
+
+            response.add(new ClubRankResponse(club.getLogo(), club.getClubName(), club.getMatchScore(), rank, rankChange));
+
+            // 현재 순위를 업데이트
+            club.updateClubRank(rank);
+            rank++;
+        }
+
+        // 클럽의 최신 순위를 업데이트하여 저장 (옵션)
+        clubRepository.saveAll(clubs);
+
+        return response;
+    }
+
+
+    public List<ClubRankResponse> getMonthlyClubsByTierAndRank(SportsCategory sportsCategory, int year, int month) {
+        LocalDate startDate = LocalDate.of(year, month, 1);
+        LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
+
+        // 특정 월 동안의 매치 점수를 기준으로 클럽들을 가져옵니다.
+        List<Club> clubs = clubRepository.findBySportsCategoryAndMatchDateBetweenOrderByMatchScoreDesc(sportsCategory, startDate, endDate);
+        List<ClubRankResponse> response = new ArrayList<>();
+        int rank = 1;
+
+        for (Club club : clubs) {
+            int previousRank = getPreviousRank(club, year, month - 1); // 이전 달의 순위를 가져오는 로직
+            int rankChange = previousRank - rank; // 순위 변동 계산
+
+            response.add(new ClubRankResponse(club.getLogo(), club.getClubName(), club.getMatchScore(), rank, rankChange));
+
+            // 현재 순위를 업데이트
+            club.setClubRank(rank);
+            rank++;
+        }
+
+        // 클럽의 최신 순위를 업데이트하여 저장 (선택 사항)
+        clubRepository.saveAll(clubs);
+
+        return response;
+    }
+
+    // 이전 달의 순위를 가져오는 메서드 (예시)
+    private int getPreviousRank(Club club, int year, int month) {
+        // 이전 달의 시작일과 종료일을 계산
+        LocalDate startDate = LocalDate.of(year, month, 1);
+        LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
+
+        // 이전 달의 데이터를 가져와서 순위를 계산하는 로직이 필요
+        List<Club> previousMonthClubs = clubRepository.findBySportsCategoryAndMatchDateBetweenOrderByMatchScoreDesc(club.getSportsCategory(), startDate, endDate);
+
+        // 클럽의 이전 달 순위를 계산하여 반환
+        for (int i = 0; i < previousMonthClubs.size(); i++) {
+            if (previousMonthClubs.get(i).getClubId().equals(club.getClubId())) {
+                return i + 1;
+            }
+        }
+        return -1; // 만약 이전 달 순위를 찾지 못한 경우
     }
 
 }
