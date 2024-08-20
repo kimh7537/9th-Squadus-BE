@@ -14,7 +14,10 @@ public record MatchCreateResponse(
         Boolean placeProvided,
         LocalDate matchStartDate,
         LocalTime matchStartTime,
-        Integer maxParticipants
+        Integer maxParticipants,
+        String sportsCategory,
+        String clubName,
+        String clubLogo
 ) {
     public static MatchCreateResponse from(MatchPost matchPost) {
         return new MatchCreateResponse(
@@ -26,7 +29,10 @@ public record MatchCreateResponse(
                 matchPost.getPlaceProvided(),
                 matchPost.getMatchStartDate(),
                 matchPost.getMatchStartTime(),
-                matchPost.getMaxParticipants()
+                matchPost.getMaxParticipants(),
+                matchPost.getHomeClub().getSportsCategory().name(),
+                matchPost.getHomeClub().getClubName(),
+                matchPost.getHomeClub().getLogo()
         );
     }
 }

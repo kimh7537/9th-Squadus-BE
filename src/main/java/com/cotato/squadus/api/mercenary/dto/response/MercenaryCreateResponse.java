@@ -15,7 +15,10 @@ public record MercenaryCreateResponse(
         LocalDate matchStartDate,
         LocalTime matchStartTime,
         Integer maxParticipants,
-        Integer currentParticipants
+        Integer currentParticipants,
+        String sportsCategory,
+        String clubName,
+        String clubLogo
 ) {
     public static MercenaryCreateResponse from(MercenaryPost mercenaryPost) {
         return new MercenaryCreateResponse(
@@ -27,7 +30,10 @@ public record MercenaryCreateResponse(
                 mercenaryPost.getMatchStartDate(),
                 mercenaryPost.getMatchStartTime(),
                 mercenaryPost.getMaxParticipants(),
-                mercenaryPost.getCurrentParticipants()
+                mercenaryPost.getCurrentParticipants(),
+                mercenaryPost.getHomeClub().getSportsCategory().name(),
+                mercenaryPost.getHomeClub().getClubName(),
+                mercenaryPost.getHomeClub().getLogo()
         );
     }
 }
