@@ -9,6 +9,7 @@ import java.util.List;
 
 public record RecruitingPostResponse(
         Long postId,
+        Long clubId,
         Boolean isActive,
         String title,
         LocalDate startDate,
@@ -21,6 +22,7 @@ public record RecruitingPostResponse(
     public static RecruitingPostResponse from(RecruitingPost recruitingPost) {
         return new RecruitingPostResponse(
                 recruitingPost.getPostId(),
+                recruitingPost.getClub().getClubId(),
                 recruitingPost.getIsActive(),
                 recruitingPost.getTitle(),
                 recruitingPost.getStartDate(),
