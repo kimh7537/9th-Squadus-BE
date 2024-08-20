@@ -2,7 +2,6 @@ package com.cotato.squadus.api.mercenary.controller;
 
 import com.cotato.squadus.api.mercenary.dto.request.MercenaryCreateRequest;
 import com.cotato.squadus.api.mercenary.dto.response.*;
-import com.cotato.squadus.domain.club.match.repository.MercenaryPostRepository;
 import com.cotato.squadus.domain.club.match.service.MercenaryRequestService;
 import com.cotato.squadus.domain.club.match.service.MercenaryService;
 import io.swagger.v3.oas.annotations.Operation;
