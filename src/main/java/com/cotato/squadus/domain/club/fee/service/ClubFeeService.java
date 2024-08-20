@@ -120,7 +120,7 @@ public class ClubFeeService {
 //    }
 
     @Transactional
-    public ClubFeeUsageResponse createClubFeeUsage(CustomOAuth2Member customOAuth2Member, Long clubId, Long feeTypeId, ClubFeeUsageRequest clubFeeUsageRequest) {
+    public ClubFeeUsageCreateResponse createClubFeeUsage(CustomOAuth2Member customOAuth2Member, Long clubId, Long feeTypeId, ClubFeeUsageRequest clubFeeUsageRequest) {
 
         FeeType feeType = feeTypeRepository.findById(feeTypeId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 id를 가진 회비를 찾을 수 없습니다."));
@@ -143,7 +143,7 @@ public class ClubFeeService {
 
         feeTypeRepository.save(feeType);
 
-        return new ClubFeeUsageResponse(savedUsage.getFeeUsageId());
+        return new ClubFeeUsageCreateResponse(savedUsage.getFeeUsageId());
     }
 
     public ClubFeePaymentInfoResponseList findClubFeePaymentInfo(CustomOAuth2Member customOAuth2Member, Long clubId, Long feeTypeId) {
@@ -161,6 +161,19 @@ public class ClubFeeService {
             clubFeePaymentInfoResponseList.add(clubFeePaymentInfoResponse);
         }
         return ClubFeePaymentInfoResponseList.from(clubFeePaymentInfoResponseList);
+
+    }
+
+    public ClubFeeUsageResponseList findAllClubFeeUsage(CustomOAuth2Member customOAuth2Member, Long clubId, Long feeTypeId) {
+
+        FeeType feeType = feeTypeRepository.findById(feeTypeId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 id를 가진 회비를 찾을 수 없습니다."));
+        List<ClubFeeUsageResponse> clubFeeUsageResponseList = feeUsageRepository.findAllByFeeType(feeType)
+                .stream()
+                .map(ClubFeeUsageResponse::from)
+                .toList();
+
+        return ClubFeeUsageResponseList.from(clubFeeUsageResponseList);
 
     }
 }
