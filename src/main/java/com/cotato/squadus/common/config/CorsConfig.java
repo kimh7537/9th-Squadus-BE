@@ -20,7 +20,8 @@ public class CorsConfig {
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         config.setExposedHeaders(List.of("access"));
-        config.addExposedHeader("Set-Cookie");
+        config.setExposedHeaders(List.of("refresh"));
+//        config.addExposedHeader("Set-Cookie");
         config.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
