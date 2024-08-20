@@ -5,6 +5,7 @@ import com.cotato.squadus.domain.club.common.entity.Club;
 import com.cotato.squadus.domain.club.common.entity.ClubMember;
 import com.cotato.squadus.domain.club.common.entity.Tier;
 import com.cotato.squadus.domain.club.common.enums.SportsCategory;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -49,6 +50,7 @@ public class MatchPost extends BaseTimeEntity {
     private LocalDate matchStartDate;
 
     //시간 정보 저장
+    @JsonFormat(pattern = "HH:mm")
     private LocalTime matchStartTime;
 
     private Integer maxParticipants; // 최대 참가 인원
