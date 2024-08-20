@@ -27,7 +27,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -97,9 +99,13 @@ public class MatchService {
                 .orElseThrow(() -> new EntityNotFoundException("동아리 멤버를 찾을 수 없습니다."));
 
         Club userClub = clubMember.getClub();
+        LocalDate today = LocalDate.now();
+        LocalTime nowTime = LocalTime.now();
 
-        // 데이터베이스에서 직접 페이징 처리하여 가져오기
-        Page<MatchPost> matchPostPage = matchPostRepository.findAllByHomeClubNot(userClub, pageable);
+        // 데이터베이스에서 직접 필터링 및 페이징 처리하여 가져오기
+        Page<MatchPost> matchPostPage = matchPostRepository
+                .findAllByHomeClubNotAndMatchStartDateAfterOrMatchStartDateEqualsAndMatchStartTimeAfter(
+                        userClub, today, nowTime, pageable);
 
         // 페이지 내용을 DTO로 변환
         return matchPostPage.map(MatchCreateResponse::from);
