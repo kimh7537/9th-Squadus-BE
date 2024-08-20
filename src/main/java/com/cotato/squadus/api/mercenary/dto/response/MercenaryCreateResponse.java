@@ -1,10 +1,6 @@
 package com.cotato.squadus.api.mercenary.dto.response;
 
-import com.cotato.squadus.api.match.dto.matchPost.response.MatchCreateResponse;
 import com.cotato.squadus.api.match.dto.matchPost.response.MatchPlaceResponse;
-import com.cotato.squadus.domain.club.common.entity.Tier;
-import com.cotato.squadus.domain.club.common.enums.SportsCategory;
-import com.cotato.squadus.domain.club.match.entity.MatchPost;
 import com.cotato.squadus.domain.club.match.entity.MercenaryPost;
 
 import java.time.LocalDate;

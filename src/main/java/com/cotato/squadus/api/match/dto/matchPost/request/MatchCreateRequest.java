@@ -12,18 +12,15 @@ import java.time.LocalTime;
 @Setter
 public class MatchCreateRequest {
     private Long homeClubId;
-    private Long memberId;
-    private SportsCategory sportsCategory;
+    private Long clubMemberId;
     private String title;
     private String content;
-    private Tier tier;
+    private String tier;
     private MatchPlaceRequest matchPlace;
     private Boolean placeProvided;
     private LocalDate matchStartDate;
     private LocalTime matchStartTime;
-    private Integer currentParticipants;
     private Integer maxParticipants;
-
 
     @Getter
     @Setter

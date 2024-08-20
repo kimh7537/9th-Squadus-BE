@@ -93,7 +93,7 @@ public class MercenaryRequestController {
     }
 
     @DeleteMapping("/{mercenaryIdx}")
-    @Operation(summary = "용병 매칭 게시글 수정", description = "특정 용병 매칭 게시글을 수정합니다.")
+    @Operation(summary = "용병 매칭 게시글 삭제", description = "특정 용병 매칭 게시글을 삭제합니다.")
     public ResponseEntity<Void> deleteMercenaryPost(
             @PathVariable Long mercenaryIdx,
             @RequestParam Long clubMemberId) {

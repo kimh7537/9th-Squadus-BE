@@ -22,12 +22,10 @@ public class MercenaryCreateRequest {
     private LocalTime matchStartTime;
     private Integer maxParticipants;
 
-
     @Getter
     @Setter
     public static class MatchPlaceRequest {
         private String city;
         private String district;
     }
-
 }
