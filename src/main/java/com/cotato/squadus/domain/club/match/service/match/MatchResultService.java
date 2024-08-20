@@ -2,6 +2,8 @@ package com.cotato.squadus.domain.club.match.service.match;
 
 import com.cotato.squadus.api.match.dto.matchResult.response.MatchDetailResponse;
 import com.cotato.squadus.api.match.dto.matchResult.response.MatchResultResponse;
+import com.cotato.squadus.common.error.ErrorCode;
+import com.cotato.squadus.common.error.exception.AppException;
 import com.cotato.squadus.domain.club.common.entity.Club;
 import com.cotato.squadus.domain.club.common.repository.ClubAdminMemberRepository;
 import com.cotato.squadus.domain.club.match.entity.match.MatchPost;
@@ -21,13 +23,13 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class MatchResultService {
 
     private final MatchResultRepository matchResultRepository;
     private final MatchPostRepository matchPostRepository;
     private final ClubAdminMemberRepository clubAdminMemberRepository;
-
-    @Transactional(readOnly = true)
+    
     public MatchDetailResponse getMatchDetail(Long matchPostId) {
         MatchPost matchPost = matchPostRepository.findById(matchPostId)
                 .orElseThrow(() -> new EntityNotFoundException("매칭 게시글을 찾을 수 없습니다."));
@@ -79,7 +81,7 @@ public class MatchResultService {
                 .orElseThrow(() -> new EntityNotFoundException("매칭 게시글을 찾을 수 없습니다."));
 
         clubAdminMemberRepository.findActiveAdminByClubIdAndClubMemberId(matchPost.getHomeClub().getClubId(), memberId)
-                .orElseThrow(() -> new AccessDeniedException("경기 결과를 확정할 권한이 없습니다."));
+                .orElseThrow(() -> new AppException(ErrorCode.CLUB_ACCESS_DENIED));
 
         List<MatchResult> matchResults = matchResultRepository.findByMatchPost(matchPost);
         matchResults.forEach(MatchResult::finalizeHomeResult);
@@ -93,7 +95,7 @@ public class MatchResultService {
                 .orElseThrow(() -> new EntityNotFoundException("매칭 게시글을 찾을 수 없습니다."));
 
         clubAdminMemberRepository.findActiveAdminByClubIdAndClubMemberId(matchPost.getHomeClub().getClubId(), memberId)
-                .orElseThrow(() -> new AccessDeniedException("경기 결과를 확정할 권한이 없습니다."));
+                .orElseThrow(() -> new AppException(ErrorCode.CLUB_ACCESS_DENIED));
 
         List<MatchResult> matchResults = matchResultRepository.findByMatchPost(matchPost);
         matchResults.forEach(MatchResult::finalizeAwayResult);
@@ -121,7 +123,7 @@ public class MatchResultService {
                 .orElseThrow(() -> new EntityNotFoundException("매칭 게시글을 찾을 수 없습니다."));
 
         clubAdminMemberRepository.findActiveAdminByClubIdAndClubMemberId(matchPost.getHomeClub().getClubId(), memberId)
-                .orElseThrow(() -> new AccessDeniedException("경기 결과를 거절할 권한이 없습니다."));
+                .orElseThrow(() -> new AppException(ErrorCode.CLUB_ACCESS_DENIED));
 
         List<MatchResult> matchResults = matchResultRepository.findByMatchPost(matchPost);
         matchResults.forEach(result -> {

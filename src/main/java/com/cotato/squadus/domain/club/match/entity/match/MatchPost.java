@@ -52,6 +52,9 @@ public class MatchPost extends BaseTimeEntity {
 
     private Integer maxParticipants; // 최대 참가 인원
 
+    //추가해야 할까?
+    private Boolean isFinalized = false;
+
 
     @Builder
     public MatchPost(Club homeClub, String title, String content,
@@ -84,6 +87,11 @@ public class MatchPost extends BaseTimeEntity {
         this.matchStartDate = matchStartDate;
         this.matchStartTime = matchStartTime;
         this.maxParticipants = maxParticipants;
+    }
+
+    //매칭을 최종 확정하는 메서드
+    public void finalizeMatch(){
+        this.isFinalized = true;
     }
 
 }

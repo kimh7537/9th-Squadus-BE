@@ -4,12 +4,14 @@ import com.cotato.squadus.api.match.dto.matchResult.response.MatchDetailResponse
 import com.cotato.squadus.api.match.dto.matchResult.response.MatchResultResponse;
 import com.cotato.squadus.domain.club.match.service.match.MatchResultService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "매치 결과", description = "매칭 결과 관련 API")
 @RestController
-@RequestMapping("/api/match-results")
+@RequestMapping("/v1/api/match-results")
 @RequiredArgsConstructor
 public class MatchResultController {
 
