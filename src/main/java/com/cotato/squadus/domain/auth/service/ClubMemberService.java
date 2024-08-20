@@ -1,5 +1,7 @@
 package com.cotato.squadus.domain.auth.service;
 
+import com.cotato.squadus.api.club.dto.ClubMemberInfoResponse;
+import com.cotato.squadus.api.club.dto.ClubMemberInfoResponseList;
 import com.cotato.squadus.common.config.auth.CustomOAuth2Member;
 import com.cotato.squadus.common.error.ErrorCode;
 import com.cotato.squadus.common.error.exception.AppException;
@@ -12,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -27,6 +31,12 @@ public class ClubMemberService {
     public ClubMember saveClubMember(ClubMember clubMember) {
         ClubMember savedClubMember = clubMemberRepository.save(clubMember);
         return savedClubMember;
+    }
+
+    public ClubMember findClubMemberById(Long id) {
+        ClubMember clubMember = clubMemberRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("해당 고유번호를 가진 회원을 찾을 수 없습니다."));
+        return clubMember;
     }
 
 
@@ -45,6 +55,16 @@ public class ClubMemberService {
         ClubMember clubMember = clubMemberRepository.findClubMemberByMember_MemberIdxAndClub_ClubId(member.getMemberIdx(), clubId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 회원 고유번호를 가진 동아리 회원을 찾을 수 없습니다."));
         return clubMember;
+    }
+
+    public ClubMemberInfoResponseList findAllClubMemberInfo(Long clubId) {
+        List<ClubMemberInfoResponse> clubMemberInfoResponseList = clubMemberRepository.findAllByClub_ClubId(clubId)
+                .stream()
+                .map(ClubMemberInfoResponse::from)
+                .toList();
+
+        return ClubMemberInfoResponseList.from(clubMemberInfoResponseList);
+
     }
 
 }

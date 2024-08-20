@@ -124,6 +124,14 @@ public class ClubService {
         return new ClubApplyResponse(savedApplication.getApplicationIdx());
     }
 
+    public Club findClubByClubId(Long clubId) {
+
+        Club club = clubRepository.findById(clubId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 고유번호를 가진 동아리를 찾을 수 없습니다."));
+
+        return club;
+    }
+
     public ClubInfoResponse findClubInfo(Long clubId) {
 
         Club club = clubRepository.findById(clubId)
