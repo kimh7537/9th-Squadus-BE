@@ -3,11 +3,14 @@ package com.cotato.squadus.domain.club.match.service;
 import com.cotato.squadus.api.match.dto.matchPost.response.MatchRequestAndMatchPostResponse;
 import com.cotato.squadus.api.match.dto.matchPost.response.MatchRequestResponse;
 import com.cotato.squadus.api.match.dto.matchPost.response.ReceivedMatchRequestResponse;
+import com.cotato.squadus.api.mercenary.dto.response.MercenaryRequestResponse;
 import com.cotato.squadus.domain.club.common.entity.Club;
 import com.cotato.squadus.domain.club.common.repository.ClubAdminMemberRepository;
 import com.cotato.squadus.domain.club.common.repository.ClubRepository;
 import com.cotato.squadus.domain.club.match.entity.MatchPost;
 import com.cotato.squadus.domain.club.match.entity.MatchRequest;
+import com.cotato.squadus.domain.club.match.entity.MercenaryPost;
+import com.cotato.squadus.domain.club.match.entity.MercenaryRequest;
 import com.cotato.squadus.domain.club.match.repository.MatchPostRepository;
 import com.cotato.squadus.domain.club.match.repository.MatchRequestRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -19,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,14 +36,24 @@ public class MatchRequestService {
     private final MatchPostRepository matchPostRepository;
 
     public Page<MatchRequestResponse> getMyClubMatchRequests(Long clubId, Pageable pageable) {
-        return matchRequestRepository.findAllByClub_ClubId(clubId, pageable)
-                .map(MatchRequestResponse::from);
+        Page<MatchRequest> requestsPage = matchRequestRepository.findAllByClub_ClubId(clubId, pageable);
+
+        // 유효한 MercenaryPost만 필터링하여 새로운 리스트로 변환
+        List<MatchRequestResponse> filteredResponses = requestsPage
+                .stream()
+                .filter(matchRequest -> isPostValid(matchRequest.getMatchPost()))
+                .map(MatchRequestResponse::from)
+                .collect(Collectors.toList());
+
+        // 필터링된 리스트를 Page 객체로 변환하여 반환
+        return new PageImpl<>(filteredResponses, pageable, requestsPage.getTotalElements());
     }
 
 
     public List<MatchRequestResponse> getAllMyClubMatchRequests(Long clubId) {
         return matchRequestRepository.findAllByClub_ClubId(clubId)
                 .stream()
+                .filter(mercenaryRequest -> isPostValid(mercenaryRequest.getMatchPost()))
                 .map(MatchRequestResponse::from)
                 .collect(Collectors.toList());
     }
@@ -52,11 +66,6 @@ public class MatchRequestService {
         clubAdminMemberRepository.findActiveAdminByClubIdAndClubMemberId(
                         matchRequest.getClub().getClubId(), memberId)
                 .orElseThrow(() -> new AccessDeniedException("매칭 요청을 취소할 권한이 없습니다."));
-
-//        // 해당 club의 임원인지 확인
-//        if (!clubAdminMemberRepository.findActiveAdminByClubIdAndMemberId( matchRequest.getClub().getClubId(), memberId).isPresent()) {
-//            throw new AccessDeniedException("매칭 요청을 보낼 권한이 없습니다.");
-//        }
 
         matchRequestRepository.delete(matchRequest);
     }
@@ -137,6 +146,11 @@ public class MatchRequestService {
         }
 
         matchRequestRepository.save(matchRequest);
+    }
+
+    private boolean isPostValid(MatchPost matchPost) {
+        LocalDateTime postDateTime = LocalDateTime.of(matchPost.getMatchStartDate(), matchPost.getMatchStartTime());
+        return postDateTime.isAfter(LocalDateTime.now());
     }
 }
 

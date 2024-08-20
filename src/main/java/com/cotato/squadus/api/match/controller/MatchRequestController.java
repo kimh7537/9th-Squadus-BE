@@ -1,7 +1,9 @@
 package com.cotato.squadus.api.match.controller;
 
+import com.cotato.squadus.api.match.dto.matchPost.request.MatchCreateRequest;
 import com.cotato.squadus.api.match.dto.matchPost.response.*;
 import com.cotato.squadus.domain.club.match.service.MatchRequestService;
+import com.cotato.squadus.domain.club.match.service.MatchService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -20,10 +22,10 @@ import java.util.List;
 public class MatchRequestController {
 
     private final MatchRequestService matchRequestService;
+    private final MatchService matchService;
 
-    //신청한 내역 기능
-    
-    @GetMapping("/my-club")
+    //신청한 내역 기능 - 동아리 단위의 신청
+    @GetMapping("/paged")
     @Operation(summary = "내 동아리에서 신청한 매치 목록 조회 (페이징)", description = "내 동아리에서 신청한 매칭 글 목록을 페이징 처리하여 조회합니다.")
     public ResponseEntity<MatchRequestResponseWrapper> getMyClubMatchRequests(
             @RequestParam Long clubId,
@@ -34,7 +36,7 @@ public class MatchRequestController {
         return ResponseEntity.ok(MatchRequestResponseWrapper.from(responses));
     }
 
-    @GetMapping("/my-club/all")
+    @GetMapping
     @Operation(summary = "내 동아리에서 신청한 매치 목록 조회 (전체)", description = "내 동아리에서 신청한 매칭 글 목록을 페이징 없이 전체 조회합니다.")
     public ResponseEntity<MatchRequestResponseWrapper> getAllMyClubMatchRequests(@RequestParam Long clubId) {
         List<MatchRequestResponse> responses = matchRequestService.getAllMyClubMatchRequests(clubId);
@@ -43,15 +45,14 @@ public class MatchRequestController {
 
     @DeleteMapping("/{requestId}")
     @Operation(summary = "매칭 요청 취소", description = "특정 동아리의 임원이 요청한 매칭 요청을 취소합니다.")
-    public ResponseEntity<Void> cancelMatchRequest(@PathVariable Long requestId, @RequestParam Long memberId) {
-        matchRequestService.cancelMatchRequest(requestId, memberId);
+    public ResponseEntity<Void> cancelMatchRequest(@PathVariable Long requestId, @RequestParam Long clubMemberId) {
+        matchRequestService.cancelMatchRequest(requestId, clubMemberId);
         return ResponseEntity.noContent().build();
     }
 
 
     //신청 받은 내역 기능
-
-    @GetMapping("/received")
+    @GetMapping("/received/paged")
     @Operation(summary = "내 동아리가 받은 매칭 요청 목록 조회 (페이징)", description = "내 동아리가 받은 매칭 요청 목록을 페이징 처리하여 조회합니다.")
     public ResponseEntity<MatchRequestAndMatchPostResponseWrapper> getReceivedMatchRequests(
             @RequestParam Long clubId,
@@ -63,7 +64,7 @@ public class MatchRequestController {
         return ResponseEntity.ok(wrapper);
     }
 
-    @GetMapping("/received/all")
+    @GetMapping("/received")
     @Operation(summary = "내 동아리가 받은 매칭 요청 목록 조회 (전체)", description = "내 동아리가 받은 매칭 요청 목록을 페이징 없이 전체 조회합니다.")
     public ResponseEntity<MatchRequestAndMatchPostResponseWrapper> getAllReceivedMatchRequests(@RequestParam Long clubId) {
         List<MatchRequestAndMatchPostResponse> responses = matchRequestService.getAllReceivedMatchRequests(clubId);
@@ -76,6 +77,24 @@ public class MatchRequestController {
     @Operation(summary = "매칭 요청 승낙/거절", description = "특정 동아리의 임원이 받은 매칭 요청에 대해 승낙 또는 거절을 합니다.")
     public ResponseEntity<Void> decideMatchRequest(@PathVariable Long requestId, @RequestParam String decision, @RequestParam Long memberId) {
         matchRequestService.decideMatchRequest(requestId, decision, memberId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{matchIdx}")
+    @Operation(summary = "매칭 게시글 수정", description = "특정 매칭 게시글을 수정합니다.")
+    public ResponseEntity<MatchCreateResponse> updateMatchPost(
+            @PathVariable Long matchIdx,
+            @RequestBody MatchCreateRequest matchCreateRequest) {
+        MatchCreateResponse response = matchService.updateMatchPost(matchIdx, matchCreateRequest);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{matchIdx}")
+    @Operation(summary = "매칭 게시글 삭제", description = "특정 매칭 게시글을 삭제합니다.")
+    public ResponseEntity<Void> deleteMatchPost(
+            @PathVariable Long matchIdx,
+            @RequestParam Long clubMemberId) {
+        matchService.deleteMatchPost(matchIdx, clubMemberId);
         return ResponseEntity.noContent().build();
     }
 }

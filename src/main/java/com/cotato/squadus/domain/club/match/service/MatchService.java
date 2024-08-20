@@ -27,7 +27,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -97,9 +99,13 @@ public class MatchService {
                 .orElseThrow(() -> new EntityNotFoundException("동아리 멤버를 찾을 수 없습니다."));
 
         Club userClub = clubMember.getClub();
+        LocalDate today = LocalDate.now();
+        LocalTime nowTime = LocalTime.now();
 
-        // 데이터베이스에서 직접 페이징 처리하여 가져오기
-        Page<MatchPost> matchPostPage = matchPostRepository.findAllByHomeClubNot(userClub, pageable);
+        // 데이터베이스에서 직접 필터링 및 페이징 처리하여 가져오기
+        Page<MatchPost> matchPostPage = matchPostRepository
+                .findAllByHomeClubNotAndMatchStartDateAfterOrMatchStartDateEqualsAndMatchStartTimeAfter(
+                        userClub, today, nowTime, pageable);
 
         // 페이지 내용을 DTO로 변환
         return matchPostPage.map(MatchCreateResponse::from);
@@ -170,6 +176,11 @@ public class MatchService {
         ClubMember clubMember = clubMemberRepository.findById(matchRequestRequest.getClubMemberId())
                 .orElseThrow(() -> new EntityNotFoundException("동아리 멤버를 찾을 수 없습니다."));
 
+        // 해당 club의 임원인지 확인
+        if (!clubAdminMemberRepository.findActiveAdminByClubIdAndClubMemberId(clubMember.getClub().getClubId(), clubMember.getClubMemberIdx()).isPresent()) {
+            throw new AppException(ErrorCode.CLUB_ACCESS_DENIED);
+        }
+
         //다른 동아리에서 작성한 매칭 게시글
         MatchPost matchPost = matchPostRepository.findById(matchRequestRequest.getMatchPostId())
                 .orElseThrow(() -> new EntityNotFoundException("매칭 게시글을 찾을 수 없습니다."));
@@ -179,11 +190,10 @@ public class MatchService {
             throw new AppException(ErrorCode.CLUB_ACCESS_DENIED);
         }
 
-        // 이미 신청한 용병 요청이 있는지 확인
-        if (matchRequestRepository.findTop1ByClubAndMatchPost(matchPost.getHomeClub(), matchPost).isPresent()) {
+        // 이미 신청한 클럽 요청이 있는지 확인
+        if (matchRequestRepository.findTop1ByClubAndMatchPost(clubMember.getClub(), matchPost).isPresent()) {
             throw new AppException(ErrorCode.DUPLICATE_REQUEST);
         }
-
 
         MatchRequest matchRequest = MatchRequest.builder()
                 .club(clubMember.getClub()) // 다시 보기
@@ -196,6 +206,8 @@ public class MatchService {
         matchRequestRepository.save(matchRequest);
         return MatchRequestResponse.from(matchRequest);
     }
+
+
 
     @Transactional
     public MatchCreateResponse updateMatchPost(Long matchPostId, MatchCreateRequest matchCreateRequest) {
