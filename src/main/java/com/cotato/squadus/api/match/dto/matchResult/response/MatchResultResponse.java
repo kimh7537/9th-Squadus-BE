@@ -5,23 +5,15 @@ import com.cotato.squadus.domain.club.match.entity.match.MatchResult;
 public record MatchResultResponse(
         Long matchResultIdx,
         Long matchPostId,
-        String homeClubName,
-        String awayClubName,
         Integer homeScore,
-        Integer awayScore,
-        Boolean isFinalizedHome,
-        Boolean isFinalizedAway
+        Integer awayScore
 ) {
     public static MatchResultResponse from(MatchResult matchResult) {
         return new MatchResultResponse(
                 matchResult.getMatchResultIdx(),
-                matchResult.getMatchPost().getMatchIdx(),
-                matchResult.getHomeClub().getClubName(),
-                matchResult.getAwayClub().getClubName(),
+                matchResult.getMatchPost().getMatchIdx(), //option으로 넣음
                 matchResult.getHomeScore(),
-                matchResult.getAwayScore(),
-                matchResult.getIsFinalizedHome(),
-                matchResult.getIsfinalizedAway()
+                matchResult.getAwayScore()
         );
     }
 }
