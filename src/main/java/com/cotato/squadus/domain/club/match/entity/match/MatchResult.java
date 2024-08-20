@@ -1,4 +1,4 @@
-package com.cotato.squadus.domain.club.match.entity;
+package com.cotato.squadus.domain.club.match.entity.match;
 
 import com.cotato.squadus.domain.club.common.entity.Club;
 import jakarta.persistence.*;

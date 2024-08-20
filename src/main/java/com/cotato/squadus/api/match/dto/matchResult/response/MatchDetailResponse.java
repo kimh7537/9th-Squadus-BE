@@ -1,7 +1,7 @@
 package com.cotato.squadus.api.match.dto.matchResult.response;
 
 import com.cotato.squadus.domain.club.common.entity.Club;
-import com.cotato.squadus.domain.club.match.entity.MatchPost;
+import com.cotato.squadus.domain.club.match.entity.match.MatchPost;
 
 import java.util.List;
 

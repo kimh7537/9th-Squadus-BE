@@ -1,4 +1,4 @@
-package com.cotato.squadus.domain.club.match.service;
+package com.cotato.squadus.domain.club.match.service.mercenary;
 
 import com.cotato.squadus.api.match.dto.matchPost.request.FilterRequest;
 import com.cotato.squadus.api.match.dto.matchPost.request.SearchRequest;
@@ -10,23 +10,22 @@ import com.cotato.squadus.common.error.ErrorCode;
 import com.cotato.squadus.common.error.exception.AppException;
 import com.cotato.squadus.domain.club.common.entity.Club;
 import com.cotato.squadus.domain.club.common.entity.ClubMember;
-import com.cotato.squadus.domain.club.common.entity.Tier;
 import com.cotato.squadus.domain.club.common.enums.ClubTier;
 import com.cotato.squadus.domain.club.common.enums.SportsCategory;
 import com.cotato.squadus.domain.club.common.repository.ClubAdminMemberRepository;
 import com.cotato.squadus.domain.club.common.repository.ClubMemberRepository;
 import com.cotato.squadus.domain.club.common.repository.ClubRepository;
 import com.cotato.squadus.domain.club.match.entity.*;
+import com.cotato.squadus.domain.club.match.entity.mercenary.MercenaryPost;
+import com.cotato.squadus.domain.club.match.entity.mercenary.MercenaryRequest;
 import com.cotato.squadus.domain.club.match.enums.MatchingStatus;
-import com.cotato.squadus.domain.club.match.repository.MercenaryPostRepository;
-import com.cotato.squadus.domain.club.match.repository.MercenaryRequestRepository;
+import com.cotato.squadus.domain.club.match.repository.mercenary.MercenaryPostRepository;
+import com.cotato.squadus.domain.club.match.repository.mercenary.MercenaryRequestRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;

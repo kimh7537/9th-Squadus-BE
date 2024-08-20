@@ -1,8 +1,8 @@
-package com.cotato.squadus.domain.club.match.repository;
+package com.cotato.squadus.domain.club.match.repository.mercenary;
 
 import com.cotato.squadus.domain.club.common.enums.ClubTier;
 import com.cotato.squadus.domain.club.common.enums.SportsCategory;
-import com.cotato.squadus.domain.club.match.entity.MercenaryPost;
+import com.cotato.squadus.domain.club.match.entity.mercenary.MercenaryPost;
 
 import java.util.List;
 

@@ -1,6 +1,6 @@
 package com.cotato.squadus.api.match.dto.matchPost.response;
 
-import com.cotato.squadus.domain.club.match.entity.MatchPost;
+import com.cotato.squadus.domain.club.match.entity.match.MatchPost;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

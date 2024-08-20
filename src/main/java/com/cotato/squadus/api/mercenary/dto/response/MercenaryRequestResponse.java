@@ -1,6 +1,6 @@
 package com.cotato.squadus.api.mercenary.dto.response;
 
-import com.cotato.squadus.domain.club.match.entity.MercenaryRequest;
+import com.cotato.squadus.domain.club.match.entity.mercenary.MercenaryRequest;
 import com.cotato.squadus.domain.club.match.enums.MatchingStatus;
 
 public record MercenaryRequestResponse(

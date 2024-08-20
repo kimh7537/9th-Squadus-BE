@@ -1,7 +1,7 @@
-package com.cotato.squadus.domain.club.match.repository;
+package com.cotato.squadus.domain.club.match.repository.match;
 
 import com.cotato.squadus.domain.club.common.entity.Club;
-import com.cotato.squadus.domain.club.match.entity.MatchPost;
+import com.cotato.squadus.domain.club.match.entity.match.MatchPost;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

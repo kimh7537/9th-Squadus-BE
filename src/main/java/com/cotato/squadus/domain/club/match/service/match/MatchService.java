@@ -1,4 +1,4 @@
-package com.cotato.squadus.domain.club.match.service;
+package com.cotato.squadus.domain.club.match.service.match;
 
 import com.cotato.squadus.api.match.dto.matchPost.request.*;
 import com.cotato.squadus.api.match.dto.matchPost.response.MatchCreateResponse;
@@ -14,13 +14,14 @@ import com.cotato.squadus.domain.club.common.repository.ClubAdminMemberRepositor
 import com.cotato.squadus.domain.club.common.repository.ClubMemberRepository;
 import com.cotato.squadus.domain.club.common.repository.ClubRepository;
 import com.cotato.squadus.domain.club.match.entity.*;
+import com.cotato.squadus.domain.club.match.entity.match.MatchPost;
+import com.cotato.squadus.domain.club.match.entity.match.MatchRequest;
 import com.cotato.squadus.domain.club.match.enums.MatchingStatus;
-import com.cotato.squadus.domain.club.match.repository.MatchPostRepository;
-import com.cotato.squadus.domain.club.match.repository.MatchRequestRepository;
+import com.cotato.squadus.domain.club.match.repository.match.MatchPostRepository;
+import com.cotato.squadus.domain.club.match.repository.match.MatchRequestRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;

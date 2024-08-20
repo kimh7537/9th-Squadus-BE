@@ -1,9 +1,9 @@
-package com.cotato.squadus.domain.club.match.entity;
+package com.cotato.squadus.domain.club.match.entity.match;
 
 import com.cotato.squadus.common.entity.BaseTimeEntity;
 import com.cotato.squadus.domain.club.common.entity.Club;
 import com.cotato.squadus.domain.club.common.entity.Tier;
-import com.cotato.squadus.domain.club.common.enums.SportsCategory;
+import com.cotato.squadus.domain.club.match.entity.MatchPlace;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,24 +17,27 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "mercenary_post")
-public class MercenaryPost  extends BaseTimeEntity {
+@Table(name = "match_post")
+public class MatchPost extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long mercenaryIdx;
+    private Long matchIdx;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "home_club_id")
     private Club homeClub;
 
-    @OneToMany(mappedBy = "mercenaryPost", cascade = CascadeType.ALL)
-    private List<MercenaryRequest> mercenaryRequests = new ArrayList<>();
+    @OneToMany(mappedBy = "matchPost", cascade = CascadeType.ALL)
+    private List<MatchRequest> matchRequests = new ArrayList<>();
 
     private String title;
 
     @Lob
     private String content;
+
+    @Enumerated(EnumType.STRING)
+    private Tier tier;
 
     @Embedded
     private MatchPlace matchPlace;
@@ -49,16 +52,14 @@ public class MercenaryPost  extends BaseTimeEntity {
 
     private Integer maxParticipants; // 최대 참가 인원
 
-    private Integer currentParticipants = 0;
-
 
     @Builder
-    public MercenaryPost(Club homeClub, String title, String content,
-                     MatchPlace matchPlace, Boolean placeProvided, LocalDate matchStartDate, LocalTime matchStartTime,
-                     Integer maxParticipants) {
+    public MatchPost(Club homeClub, String title, String content,
+                     Tier tier, MatchPlace matchPlace, Boolean placeProvided, LocalDate matchStartDate, LocalTime matchStartTime, Integer maxParticipants) {
         this.homeClub = homeClub;
         this.title = title;
         this.content = content;
+        this.tier = tier;
         this.matchPlace = matchPlace;
         this.placeProvided = placeProvided;
         this.matchStartDate = matchStartDate;
@@ -70,17 +71,9 @@ public class MercenaryPost  extends BaseTimeEntity {
         this.homeClub = homeClub;
     }
 
-    public void addMercenaryRequest(MercenaryRequest mercenaryRequest) {
-        this.mercenaryRequests.add(mercenaryRequest);
-        mercenaryRequest.setMercenaryPost(this);
-    }
-
-    public void incrementParticipants() {
-        if (this.currentParticipants < this.maxParticipants) {
-            this.currentParticipants++;
-        } else {
-            throw new IllegalStateException("더 이상 참가할 수 없습니다. 최대 인원을 초과했습니다.");
-        }
+    public void addMatchRequest(MatchRequest matchRequest) {
+        this.matchRequests.add(matchRequest);
+        matchRequest.setMatchPost(this);
     }
 
     public void update(String title, String content, MatchPlace matchPlace, Boolean placeProvided, LocalDate matchStartDate, LocalTime matchStartTime, Integer maxParticipants) {

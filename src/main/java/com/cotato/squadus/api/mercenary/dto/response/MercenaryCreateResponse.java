@@ -1,7 +1,7 @@
 package com.cotato.squadus.api.mercenary.dto.response;
 
 import com.cotato.squadus.api.match.dto.matchPost.response.MatchPlaceResponse;
-import com.cotato.squadus.domain.club.match.entity.MercenaryPost;
+import com.cotato.squadus.domain.club.match.entity.mercenary.MercenaryPost;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

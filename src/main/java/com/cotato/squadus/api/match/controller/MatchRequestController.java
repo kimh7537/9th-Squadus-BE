@@ -2,11 +2,12 @@ package com.cotato.squadus.api.match.controller;
 
 import com.cotato.squadus.api.match.dto.matchPost.request.MatchCreateRequest;
 import com.cotato.squadus.api.match.dto.matchPost.response.*;
-import com.cotato.squadus.domain.club.match.service.MatchRequestService;
-import com.cotato.squadus.domain.club.match.service.MatchService;
+import com.cotato.squadus.domain.club.match.service.match.MatchRequestService;
+import com.cotato.squadus.domain.club.match.service.match.MatchService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,8 +17,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/match-requests")
+@RequestMapping("/v1/api/match-requests")
 @RequiredArgsConstructor
+@Slf4j
 @Tag(name = "매칭 요청", description = "매칭 요청 관련 API")
 public class MatchRequestController {
 
@@ -89,7 +91,7 @@ public class MatchRequestController {
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/{matchIdx}")
+    @DeleteMapping("/{matchIdx}/delete")
     @Operation(summary = "매칭 게시글 삭제", description = "특정 매칭 게시글을 삭제합니다.")
     public ResponseEntity<Void> deleteMatchPost(
             @PathVariable Long matchIdx,

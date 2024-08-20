@@ -1,11 +1,10 @@
 package com.cotato.squadus.api.mercenary.dto.response;
 
-import com.cotato.squadus.domain.club.common.enums.ClubTier;
-import com.cotato.squadus.domain.club.match.entity.MercenaryRequest;
+import com.cotato.squadus.domain.club.match.entity.mercenary.MercenaryRequest;
 import com.cotato.squadus.domain.club.match.enums.MatchingStatus;
 
 public record ReceivedMercenaryRequestResponse(
-        MatchingStatus matchingStatus,
+        String matchingStatus,
         Long requestId,
         Long clubMemberId,
         String requestName,
@@ -13,7 +12,7 @@ public record ReceivedMercenaryRequestResponse(
 ) {
     public static ReceivedMercenaryRequestResponse from(MercenaryRequest mercenaryRequest) {
         return new ReceivedMercenaryRequestResponse(
-                mercenaryRequest.getStatus(),
+                mercenaryRequest.getStatus().name(),
                 mercenaryRequest.getMercenaryRequestIdx(),
                 mercenaryRequest.getClubMember().getClubMemberIdx(),
                 mercenaryRequest.getClubMember().getMember().getUsername(),   // 요청자 이름

@@ -1,10 +1,9 @@
-package com.cotato.squadus.domain.club.match.repository;
+package com.cotato.squadus.domain.club.match.repository.match;
 
-import com.cotato.squadus.domain.club.common.entity.Tier;
 import com.cotato.squadus.domain.club.common.enums.ClubTier;
 import com.cotato.squadus.domain.club.common.enums.SportsCategory;
-import com.cotato.squadus.domain.club.match.entity.MatchPost;
-import com.cotato.squadus.domain.club.match.entity.QMatchPost;
+import com.cotato.squadus.domain.club.match.entity.match.MatchPost;
+import com.cotato.squadus.domain.club.match.entity.match.QMatchPost;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -12,8 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static com.cotato.squadus.domain.club.match.entity.QMatchPost.matchPost;
-import static com.cotato.squadus.domain.club.match.entity.QMercenaryPost.mercenaryPost;
+import static com.cotato.squadus.domain.club.match.entity.match.QMatchPost.matchPost;
 import static com.querydsl.core.types.dsl.Expressions.stringTemplate;
 
 @Repository

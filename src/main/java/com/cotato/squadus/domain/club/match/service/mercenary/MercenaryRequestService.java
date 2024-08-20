@@ -1,4 +1,4 @@
-package com.cotato.squadus.domain.club.match.service;
+package com.cotato.squadus.domain.club.match.service.mercenary;
 
 import com.cotato.squadus.api.mercenary.dto.response.MercenaryRequestAndMercenaryPostResponse;
 import com.cotato.squadus.api.mercenary.dto.response.MercenaryRequestResponse;
@@ -8,10 +8,10 @@ import com.cotato.squadus.common.error.exception.AppException;
 import com.cotato.squadus.domain.club.common.entity.Club;
 import com.cotato.squadus.domain.club.common.repository.ClubAdminMemberRepository;
 import com.cotato.squadus.domain.club.common.repository.ClubRepository;
-import com.cotato.squadus.domain.club.match.entity.MercenaryPost;
-import com.cotato.squadus.domain.club.match.entity.MercenaryRequest;
-import com.cotato.squadus.domain.club.match.repository.MercenaryPostRepository;
-import com.cotato.squadus.domain.club.match.repository.MercenaryRequestRepository;
+import com.cotato.squadus.domain.club.match.entity.mercenary.MercenaryPost;
+import com.cotato.squadus.domain.club.match.entity.mercenary.MercenaryRequest;
+import com.cotato.squadus.domain.club.match.repository.mercenary.MercenaryPostRepository;
+import com.cotato.squadus.domain.club.match.repository.mercenary.MercenaryRequestRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

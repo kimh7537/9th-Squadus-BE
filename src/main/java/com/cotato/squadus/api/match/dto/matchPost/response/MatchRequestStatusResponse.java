@@ -1,6 +1,6 @@
 package com.cotato.squadus.api.match.dto.matchPost.response;
 
-import com.cotato.squadus.domain.club.match.entity.MatchRequest;
+import com.cotato.squadus.domain.club.match.entity.match.MatchRequest;
 import com.cotato.squadus.domain.club.match.enums.MatchingStatus;
 
 public record MatchRequestStatusResponse(
