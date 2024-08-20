@@ -88,6 +88,8 @@ public enum ErrorCode {
     IMAGE_DELETE_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "S-003", "s3 이미지 삭제처리를 실패했습니다"),
     INTERNAL_SQL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "S-004", "SQL 관련 에러 발생"),
     ENUM_NOT_RESOLVED(HttpStatus.BAD_REQUEST, "S-005", "입력한 Enum이 존재하지 않습니다."),
+
+    NO_BALANCE_ERROR(HttpStatus.BAD_REQUEST, "F-001", "회비의 잔액보다 사용내역의 금액이 더 큽니다."),
     ;
 
     private final HttpStatus httpStatus;

@@ -1,8 +1,8 @@
 package com.cotato.squadus.api.club.controller;
 
 import com.cotato.squadus.api.club.dto.*;
-import com.cotato.squadus.api.post.dto.ClubPostCreateRequest;
 import com.cotato.squadus.common.config.auth.CustomOAuth2Member;
+import com.cotato.squadus.domain.auth.service.ClubMemberService;
 import com.cotato.squadus.domain.club.common.service.ClubService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ClubController {
 
     private final ClubService clubService;
+    private final ClubMemberService clubMemberService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "동아리 생성", description = "동아리에 대한 정보를 바탕으로 동아리를 생성합니다")
@@ -51,6 +52,14 @@ public class ClubController {
         ClubInfoResponse clubInfoResponse = clubService.findClubInfo(clubId);
         return ResponseEntity.ok(clubInfoResponse);
     }
+
+    @GetMapping("/{clubId}/members")
+    @Operation(summary = "동아리원 전체 조회", description = "clubId를 바탕으로 동아리원을 조회합니다.")
+    public ResponseEntity<ClubMemberInfoResponseList> findAllClubMemberInfo(@PathVariable Long clubId) {
+        ClubMemberInfoResponseList clubMemberInfoResponseList = clubMemberService.findAllClubMemberInfo(clubId);
+        return ResponseEntity.ok(clubMemberInfoResponseList);
+    }
+
 
     @PostMapping("/{clubId}")
     @Operation(summary = "동아리 가입 신청", description = "clubId와 동아리 가입에 대한 정보를 바탕으로 동아리 가입을 신청합니다")
