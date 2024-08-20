@@ -19,8 +19,7 @@ public class CorsConfig {
         config.addAllowedOrigin("http://15.165.165.240");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
-        config.setExposedHeaders(List.of("access"));
-        config.addExposedHeader("Set-Cookie");
+        config.setExposedHeaders(List.of("access", "refresh"));
         config.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
