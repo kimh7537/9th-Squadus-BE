@@ -6,6 +6,7 @@ import com.cotato.squadus.domain.club.common.entity.ClubMember;
 
 public record MemberClubResponse(
         Long clubId,
+        Long clubMemberIdx,
         String clubName,
         Boolean isAdmin
 ) {
@@ -20,6 +21,7 @@ public record MemberClubResponse(
 
         return new MemberClubResponse(
                 clubMember.getClub().getClubId(),
+                clubMember.getClubMemberIdx(),
                 clubMember.getClub().getClubName(),
                 isAdmin
         );
