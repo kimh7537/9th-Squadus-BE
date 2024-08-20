@@ -33,32 +33,38 @@ public class MatchController {
 
     @GetMapping
     @Operation(summary = "모든 매칭 조회", description = "모든 매칭 게시글을 조회합니다.")
-    public ResponseEntity<MatchCreateResponseWrapper> getAllMatches() {
-        List<MatchCreateResponse> responses = matchService.findAllMatches();
+    public ResponseEntity<MatchCreateResponseWrapper> getAllMatches(@RequestParam Long clubMemberId) {
+        List<MatchCreateResponse> responses = matchService.findAllMatches(clubMemberId);
         return ResponseEntity.ok(MatchCreateResponseWrapper.from(responses));
     }
 
     @GetMapping("/paged")
     @Operation(summary = "모든 매칭 조회 (페이징)", description = "모든 매칭 게시글을 페이징 처리하여 조회합니다.")
-    public ResponseEntity<MatchCreateResponseWrapper> getAllMatchesPaged(@RequestParam(defaultValue = "0") int page,
-                                                                         @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<MatchCreateResponseWrapper> getAllMatchesPaged(
+            @RequestParam Long clubMemberId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<MatchCreateResponse> responses = matchService.findAllMatches(pageable);
+        Page<MatchCreateResponse> responses = matchService.findAllMatches(clubMemberId, pageable);
         return ResponseEntity.ok(MatchCreateResponseWrapper.from(responses));
     }
 
     //필터 4개를 한 번에 조회 가능. 필터를 하지 않는 부분은 null로 reqeust해주면 자동으로 필터링 해줌
     @PostMapping("/filter")
-    @Operation(summary = "필터링된 매칭 조회", description = "필터를 적용하여 매칭 게시글을 조회합니다. 필터 4개를 한번에 조회할 수 있습니다.")
-    public ResponseEntity<MatchCreateResponseWrapper> getMatchesByFilter(@RequestBody FilterRequest filterRequest) {
-        List<MatchCreateResponse> responses = matchService.getFilteredMatches(filterRequest);
+    @Operation(summary = "필터링된 매칭 조회", description = "필터를 적용하여 용병 매칭 게시글을 조회합니다. 필터 4개를 한번에 조회할 수 있습니다. 필터를 하지 않는 부분은 null로 reqeust해주면 자동으로 필터링을 진행한다.")
+    public ResponseEntity<MatchCreateResponseWrapper> getMatchesByFilter(
+            @RequestBody FilterRequest filterRequest,
+            @RequestParam Long clubMemberId) {
+        List<MatchCreateResponse> responses = matchService.getFilteredMatches(filterRequest, clubMemberId);
         return ResponseEntity.ok(MatchCreateResponseWrapper.from(responses));
     }
 
     @PostMapping("/search")
     @Operation(summary = "매칭 검색", description = "검색어를 바탕으로 매칭 게시글을 조회합니다.")
-    public ResponseEntity<MatchCreateResponseWrapper> searchMatches(@RequestBody SearchRequest searchRequest) {
-        List<MatchCreateResponse> responses = matchService.searchMatches(searchRequest);
+    public ResponseEntity<MatchCreateResponseWrapper> searchMatches(
+            @RequestBody SearchRequest searchRequest,
+            @RequestParam Long clubMemberId) {
+        List<MatchCreateResponse> responses = matchService.searchMatches(searchRequest, clubMemberId);
         return ResponseEntity.ok(MatchCreateResponseWrapper.from(responses));
     }
 
