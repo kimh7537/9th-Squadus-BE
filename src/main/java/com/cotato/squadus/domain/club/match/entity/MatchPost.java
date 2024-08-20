@@ -32,9 +32,6 @@ public class MatchPost extends BaseTimeEntity {
     @OneToMany(mappedBy = "matchPost", cascade = CascadeType.ALL)
     private List<MatchRequest> matchRequests = new ArrayList<>();
 
-    @Enumerated(EnumType.STRING)
-    private SportsCategory sportsCategory;
-
     private String title;
 
     @Lob
@@ -54,22 +51,13 @@ public class MatchPost extends BaseTimeEntity {
     //시간 정보 저장
     private LocalTime matchStartTime;
 
-    private Integer currentParticipants; // 현재 참가 인원
-
     private Integer maxParticipants; // 최대 참가 인원
-
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "matcher_id")
-//    private ClubMember matcher;
 
 
     @Builder
-    public MatchPost(Club homeClub, SportsCategory sportsCategory, String title, String content,
-                     Tier tier, MatchPlace matchPlace, Boolean placeProvided, LocalDate matchStartDate, LocalTime matchStartTime,
-                     Integer currentParticipants, Integer maxParticipants) {
+    public MatchPost(Club homeClub, String title, String content,
+                     Tier tier, MatchPlace matchPlace, Boolean placeProvided, LocalDate matchStartDate, LocalTime matchStartTime, Integer maxParticipants) {
         this.homeClub = homeClub;
-//        this.awayClub = awayClub;
-        this.sportsCategory = sportsCategory;
         this.title = title;
         this.content = content;
         this.tier = tier;
@@ -77,7 +65,6 @@ public class MatchPost extends BaseTimeEntity {
         this.placeProvided = placeProvided;
         this.matchStartDate = matchStartDate;
         this.matchStartTime = matchStartTime;
-        this.currentParticipants = currentParticipants;
         this.maxParticipants = maxParticipants;
     }
 
@@ -88,6 +75,16 @@ public class MatchPost extends BaseTimeEntity {
     public void addMatchRequest(MatchRequest matchRequest) {
         this.matchRequests.add(matchRequest);
         matchRequest.setMatchPost(this);
+    }
+
+    public void update(String title, String content, MatchPlace matchPlace, Boolean placeProvided, LocalDate matchStartDate, LocalTime matchStartTime, Integer maxParticipants) {
+        this.title = title;
+        this.content = content;
+        this.matchPlace = matchPlace;
+        this.placeProvided = placeProvided;
+        this.matchStartDate = matchStartDate;
+        this.matchStartTime = matchStartTime;
+        this.maxParticipants = maxParticipants;
     }
 
 }

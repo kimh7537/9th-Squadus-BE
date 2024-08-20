@@ -6,7 +6,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class MatchRequestRequest {
-    private Long memberId;
-    private Long clubId;
+    private Long clubMemberId;
     private Long matchPostId;
 }
