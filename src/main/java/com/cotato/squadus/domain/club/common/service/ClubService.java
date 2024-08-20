@@ -294,7 +294,7 @@ public class ClubService {
             response.add(new ClubRankResponse(club.getLogo(), club.getClubName(), club.getMatchScore(), rank, rankChange));
 
             // 현재 순위를 업데이트
-            club.setClubRank(rank);
+            club.updateClubRank(rank);
             rank++;
         }
 
