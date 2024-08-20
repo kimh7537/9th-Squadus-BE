@@ -1,8 +1,9 @@
 package com.cotato.squadus.api.recruit.controller;
 
 
+import com.cotato.squadus.api.recruit.dto.RecruitingPostCreateRequest;
+import com.cotato.squadus.api.recruit.dto.RecruitingPostCreateResponse;
 import com.cotato.squadus.api.recruit.dto.RecruitingPostResponse;
-import com.cotato.squadus.api.recruit.dto.RecruitingPostResponseList;
 import com.cotato.squadus.common.config.auth.CustomOAuth2Member;
 import com.cotato.squadus.domain.club.recruit.service.RecruitingPostService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,5 +32,14 @@ public class RecruitingPostController {
         Page<RecruitingPostResponse> allRecruitingPosts = recruitingPostService.findAllRecruitingPosts(customOAuth2Member, pageable);
         return ResponseEntity.ok(allRecruitingPosts);
     }
+
+    @PostMapping
+    @Operation(summary = "동아리 홍보글 생성", description = "동아리 홍보글을 생성합니다")
+    public ResponseEntity<RecruitingPostCreateResponse> createRecruitingPost(@AuthenticationPrincipal CustomOAuth2Member customOAuth2Member, RecruitingPostCreateRequest recruitingPostCreateRequest) {
+        RecruitingPostCreateResponse recruitingPost = recruitingPostService.createRecruitingPost(customOAuth2Member, recruitingPostCreateRequest);
+        return ResponseEntity.ok(recruitingPost);
+    }
+
+
 
 }
