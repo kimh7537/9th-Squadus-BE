@@ -121,9 +121,11 @@ public class Club extends BaseTimeEntity {
         this.matchScore += points;
     }
 
-    public Club updateClub(String logo, String clubMessage) {
+    public Club updateClub(String logo, String clubMessage, Region region, Long maxMembers) {
         this.logo = logo;
         this.clubMessage = clubMessage;
+        this.region = region;
+        this.maxMembers = maxMembers;
         return this;
     }
 }

@@ -68,10 +68,31 @@ public class ClubController {
         return ResponseEntity.ok(clubApplyResponse);
     }
 
-    @PatchMapping("/{clubId}")
+//    @PatchMapping("/{clubId}")
+//    @Operation(summary = "동아리 기본정보 수정", description = "동아리의 기본 정보를 변경합니다.")
+//    public ResponseEntity<ClubUpdateResponse> updateClub(@AuthenticationPrincipal CustomOAuth2Member customOAuth2Member, @PathVariable Long clubId, @RequestBody ClubUpdateRequest clubUpdateRequest) {
+//        ClubUpdateResponse clubUpdateResponse = clubService.updateClub(customOAuth2Member, clubId, clubUpdateRequest);
+//        return ResponseEntity.ok(clubUpdateResponse);
+//    }
+
+    @PatchMapping(value = "/{clubId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "동아리 기본정보 수정", description = "동아리의 기본 정보를 변경합니다.")
-    public ResponseEntity<ClubUpdateResponse> updateClub(@AuthenticationPrincipal CustomOAuth2Member customOAuth2Member, @PathVariable Long clubId, @RequestBody ClubUpdateRequest clubUpdateRequest) {
-        ClubUpdateResponse clubUpdateResponse = clubService.updateClub(customOAuth2Member, clubId, clubUpdateRequest);
+    public ResponseEntity<ClubUpdateResponse> updateClub(
+            @AuthenticationPrincipal CustomOAuth2Member customOAuth2Member,
+            @PathVariable Long clubId,
+            @Parameter(description = "동아리 수정 요청 정보", schema = @Schema(implementation = ClubUpdateRequest.class))
+            @RequestPart("clubUpdateRequest") String clubUpdateRequestString,
+            @RequestPart(value = "logoImage", required = false) MultipartFile logoImage) {
+
+        // JSON String을 객체로 변환
+        ObjectMapper objectMapper = new ObjectMapper();
+        ClubUpdateRequest clubUpdateRequest;
+        try {
+            clubUpdateRequest = objectMapper.readValue(clubUpdateRequestString, ClubUpdateRequest.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Invalid JSON format", e);
+        }
+        ClubUpdateResponse clubUpdateResponse = clubService.updateClub(customOAuth2Member, clubId, clubUpdateRequest, logoImage);
         return ResponseEntity.ok(clubUpdateResponse);
     }
 }
