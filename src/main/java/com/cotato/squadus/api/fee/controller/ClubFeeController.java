@@ -59,6 +59,19 @@ public class ClubFeeController {
         return ResponseEntity.ok(clubFeePaymentInfo);
     }
 
+    @PatchMapping("/{feeTypeId}/payment")
+    @Operation(summary = "동아리 회비 입금 여부 수정", description = "동아리원의 회비 입금 여부를 수정합니다.")
+    public ResponseEntity<ClubFeePaymentUpdateResponse> updateClubFeePaymentInfo(
+            @AuthenticationPrincipal CustomOAuth2Member customOAuth2Member,
+            @PathVariable("clubId") Long clubId,
+            @PathVariable("feeTypeId") Long feeTypeId,
+            @RequestBody ClubFeePaymentUpdateRequest clubFeePaymentUpdateRequest) {
+
+        ClubFeePaymentUpdateResponse clubFeePaymentUpdateResponse = clubFeeService.updateClubFeePaymentInfo(customOAuth2Member, clubId, feeTypeId, clubFeePaymentUpdateRequest);
+        return ResponseEntity.ok(clubFeePaymentUpdateResponse);
+    }
+
+
 
 
 
