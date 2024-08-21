@@ -48,7 +48,7 @@ public class Club extends BaseTimeEntity {
     private Integer numberOfMembers;
 
     //동아리 매칭 점수, 티어를 위해 사용함
-    private Integer matchScore;
+    private Integer matchScore = 0;
 
     @ElementCollection
     private List<String> tags; // 별도의 테이블을 생성하여 컬렉션의 데이터를 저장
@@ -118,7 +118,7 @@ public class Club extends BaseTimeEntity {
 
     // 매칭 결과를 누적하여 점수 반영
     public void updateMatchScore(int points) {
-        this.matchScore += points;
+        this.matchScore = this.matchScore + points;
     }
 
     public Club updateClub(String logo, String clubMessage) {

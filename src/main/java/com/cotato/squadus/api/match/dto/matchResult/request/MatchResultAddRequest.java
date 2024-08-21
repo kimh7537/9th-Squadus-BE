@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 public class MatchResultAddRequest {
 
-    private Long memberId;
+    private Long clubMemberId;
     private Integer homeScore;
     private Integer awayScore;
 }
