@@ -130,4 +130,13 @@ public class Club extends BaseTimeEntity {
         this.tags = tags;
         return this;
     }
+
+    public void updateTier(ClubTier newTier) {
+        this.clubTier = newTier;
+    }
+
+    public void updateClubRank(Integer clubRank) {
+        this.clubRank = clubRank;
+    }
+
 }
