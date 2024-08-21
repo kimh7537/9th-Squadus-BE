@@ -76,36 +76,29 @@ public class MercenaryService {
 
 
 
-    public List<MercenaryCreateResponse> findAllMatches(Long memberId) {
+    public List<MercenaryCreateResponse> findAllMatches() {
 
-        ClubMember clubMember = clubMemberRepository.findClubMemberByClubMemberIdx(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("동아리 멤버를 찾을 수 없습니다."));
-
-        Club userClub = clubMember.getClub();
         LocalDateTime now = LocalDateTime.now();
 
         return mercenaryPostRepository.findAll().stream()
                 .filter(mercenaryPost -> {
                     LocalDateTime matchDateTime = LocalDateTime.of(mercenaryPost.getMatchStartDate(), mercenaryPost.getMatchStartTime());
-                    return !mercenaryPost.getHomeClub().equals(userClub) && matchDateTime.isAfter(now);
+                    return matchDateTime.isAfter(now);
                 })
                 .map(MercenaryCreateResponse::from)
                 .collect(Collectors.toList());
     }
 
 
-    public Page<MercenaryCreateResponse> findAllMatches(Long memberId, Pageable pageable) {
-        ClubMember clubMember = clubMemberRepository.findClubMemberByClubMemberIdx(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("동아리 멤버를 찾을 수 없습니다."));
+    public Page<MercenaryCreateResponse> findAllMatches(Pageable pageable) {
 
-        Club userClub = clubMember.getClub();
         LocalDate today = LocalDate.now();
         LocalTime nowTime = LocalTime.now();
 
         // 데이터베이스에서 직접 페이징 처리하여 가져오기
         Page<MercenaryPost> mercenaryPostsPage = mercenaryPostRepository
-                .findAllByHomeClubNotAndMatchStartDateAfterOrMatchStartDateEqualsAndMatchStartTimeAfter(
-                        userClub, today, nowTime, pageable);
+                .findAllByMatchStartDateAfterOrMatchStartDateEqualsAndMatchStartTimeAfter(
+                        today, nowTime, pageable);
 
 
         // 페이지 내용을 DTO로 변환

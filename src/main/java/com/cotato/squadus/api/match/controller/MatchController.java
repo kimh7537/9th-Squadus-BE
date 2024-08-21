@@ -33,19 +33,18 @@ public class MatchController {
 
     @GetMapping
     @Operation(summary = "모든 매칭 조회", description = "모든 매칭 게시글을 조회합니다.")
-    public ResponseEntity<MatchCreateResponseWrapper> getAllMatches(@RequestParam Long clubMemberId) {
-        List<MatchCreateResponse> responses = matchService.findAllMatches(clubMemberId);
+    public ResponseEntity<MatchCreateResponseWrapper> getAllMatches() {
+        List<MatchCreateResponse> responses = matchService.findAllMatches();
         return ResponseEntity.ok(MatchCreateResponseWrapper.from(responses));
     }
 
     @GetMapping("/paged")
     @Operation(summary = "모든 매칭 조회 (페이징)", description = "모든 매칭 게시글을 페이징 처리하여 조회합니다.")
     public ResponseEntity<MatchCreateResponseWrapper> getAllMatchesPaged(
-            @RequestParam Long clubMemberId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<MatchCreateResponse> responses = matchService.findAllMatches(clubMemberId, pageable);
+        Page<MatchCreateResponse> responses = matchService.findAllMatches(pageable);
         return ResponseEntity.ok(MatchCreateResponseWrapper.from(responses));
     }
 
