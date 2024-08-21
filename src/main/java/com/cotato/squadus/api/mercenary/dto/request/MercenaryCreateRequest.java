@@ -3,6 +3,8 @@ package com.cotato.squadus.api.mercenary.dto.request;
 import com.cotato.squadus.api.match.dto.matchPost.request.MatchCreateRequest;
 import com.cotato.squadus.domain.club.common.entity.Tier;
 import com.cotato.squadus.domain.club.common.enums.SportsCategory;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,6 +21,9 @@ public class MercenaryCreateRequest {
     private MatchPlaceRequest matchPlace;
     private Boolean placeProvided;
     private LocalDate matchStartDate;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
+    @Schema(description = "Match start time in format HH:mm", example = "10:00")
     private LocalTime matchStartTime;
     private Integer maxParticipants;
 
