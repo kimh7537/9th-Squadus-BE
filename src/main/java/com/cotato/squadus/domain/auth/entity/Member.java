@@ -76,4 +76,9 @@ public class Member {
         this.profileImage = profileImage;
         return this;
     }
+
+    public Member updateMemberRole(MemberRole memberRole) {
+        this.memberRole = memberRole;
+        return this;
+    }
 }
