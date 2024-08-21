@@ -17,11 +17,9 @@ import java.util.List;
 public interface MatchPostRepository extends JpaRepository<MatchPost, Long>, MatchPostRepositoryCustom {
 
 
-    @Query("SELECT m FROM MatchPost m WHERE m.homeClub <> :homeClub " +
-            "AND (m.matchStartDate > :date " +
-            "OR (m.matchStartDate = :date AND m.matchStartTime > :time))")
-    Page<MatchPost> findAllByHomeClubNotAndMatchStartDateAfterOrMatchStartDateEqualsAndMatchStartTimeAfter(
-            @Param("homeClub") Club homeClub,
+    @Query("SELECT m FROM MatchPost m WHERE m.matchStartDate > :date " +
+            "OR (m.matchStartDate = :date AND m.matchStartTime > :time)")
+    Page<MatchPost> findAllByMatchStartDateAfterOrMatchStartDateEqualsAndMatchStartTimeAfter(
             @Param("date") LocalDate date,
             @Param("time") LocalTime time,
             Pageable pageable);
