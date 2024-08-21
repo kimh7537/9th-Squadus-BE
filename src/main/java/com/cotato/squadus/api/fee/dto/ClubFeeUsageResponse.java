@@ -5,6 +5,7 @@ import com.cotato.squadus.domain.club.fee.entity.FeeUsage;
 import java.time.LocalDate;
 
 public record ClubFeeUsageResponse(
+        Long feeTypeId,
         Long feeUsageId,
         LocalDate usedAt,
         String description,
@@ -13,6 +14,7 @@ public record ClubFeeUsageResponse(
 
     public static ClubFeeUsageResponse from(FeeUsage feeUsage) {
         return new ClubFeeUsageResponse(
+                feeUsage.getFeeType().getFeeTypeId(),
                 feeUsage.getFeeUsageId(),
                 feeUsage.getUsedAt(),
                 feeUsage.getDescription(),

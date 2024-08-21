@@ -22,8 +22,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -172,7 +176,21 @@ public class ClubFeeService {
 
     }
 
-    public ClubFeeUsageResponseList findAllClubFeeUsage(CustomOAuth2Member customOAuth2Member, Long clubId, Long feeTypeId) {
+    public ClubFeeUsageResponseList findAllClubFeeUsage(CustomOAuth2Member customOAuth2Member, Long clubId) {
+
+        // clubId에 해당하는 모든 FeeUsage를 조회 및 변환
+        List<ClubFeeUsageResponse> allUsages = feeUsageRepository.findAllByFeeType_Club_ClubId(clubId)
+                .stream()
+                .map(ClubFeeUsageResponse::from)
+                .toList();
+
+        List<DateGroupedClubFeeUsageResponse> dateGroupedResponses = getDateGroupedClubFeeUsageResponses(allUsages);
+
+        return ClubFeeUsageResponseList.from(dateGroupedResponses);
+
+    }
+
+    public ClubFeeUsageResponseList findAllClubFeeUsageByFeeTypeId(CustomOAuth2Member customOAuth2Member, Long clubId, Long feeTypeId) {
 
         FeeType feeType = feeTypeRepository.findById(feeTypeId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 id를 가진 회비를 찾을 수 없습니다."));
@@ -181,8 +199,23 @@ public class ClubFeeService {
                 .map(ClubFeeUsageResponse::from)
                 .toList();
 
-        return ClubFeeUsageResponseList.from(clubFeeUsageResponseList);
+        List<DateGroupedClubFeeUsageResponse> dateGroupedResponses = getDateGroupedClubFeeUsageResponses(clubFeeUsageResponseList);
 
+        return ClubFeeUsageResponseList.from(dateGroupedResponses);
+
+    }
+
+    private List<DateGroupedClubFeeUsageResponse> getDateGroupedClubFeeUsageResponses(List<ClubFeeUsageResponse> clubFeeUsageResponseList) {
+        // 사용 내역을 날짜별로 그룹화
+        Map<LocalDate, List<ClubFeeUsageResponse>> groupedByDate = clubFeeUsageResponseList.stream()
+                .collect(Collectors.groupingBy(ClubFeeUsageResponse::usedAt));
+
+        // 날짜별로 그룹화된 데이터를 적절한 응답 형태로 변환
+        List<DateGroupedClubFeeUsageResponse> dateGroupedResponses = groupedByDate.entrySet().stream()
+                .map(entry -> new DateGroupedClubFeeUsageResponse(entry.getKey(), entry.getValue()))
+                .sorted(Comparator.comparing(DateGroupedClubFeeUsageResponse::date).reversed()) // 날짜별로 최신 순 정렬
+                .toList();
+        return dateGroupedResponses;
     }
 
     @Transactional
@@ -210,5 +243,6 @@ public class ClubFeeService {
         feeTypeRepository.save(feeType);
         return new ClubFeePaymentUpdateResponse(feeTypeId);
     }
+
 
 }
