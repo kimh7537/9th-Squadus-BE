@@ -41,8 +41,16 @@ public class ClubFeeService {
 
     public ClubFeeSummaryResponseList findAllClubFeeTypesSummary(CustomOAuth2Member customOAuth2Member, Long clubId) {
 
-        List<ClubFeeSummaryResponse> clubFeeSummaryResponseList = feeTypeRepository.findAllByClub_ClubId(clubId).stream().map(ClubFeeSummaryResponse::from).toList();
-        return ClubFeeSummaryResponseList.from(clubFeeSummaryResponseList);
+        List<ClubFeeSummaryResponse> clubFeeSummaryResponseList = feeTypeRepository.findAllByClub_ClubId(clubId)
+                .stream().
+                map(ClubFeeSummaryResponse::from)
+                .toList();
+
+        Long totalBalance = clubFeeSummaryResponseList.stream()
+                .mapToLong(ClubFeeSummaryResponse::balance)
+                .sum();
+
+        return ClubFeeSummaryResponseList.from(totalBalance, clubFeeSummaryResponseList);
     }
 
     @Transactional
