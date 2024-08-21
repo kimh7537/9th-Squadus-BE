@@ -278,48 +278,48 @@ public class ClubService {
     }
 
 
-    public List<ClubRankResponse> getMonthlyClubsByTierAndRank(SportsCategory sportsCategory, int year, int month) {
-        LocalDate startDate = LocalDate.of(year, month, 1);
-        LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
-
-        // 특정 월 동안의 매치 점수를 기준으로 클럽들을 가져옵니다.
-        List<Club> clubs = clubRepository.findBySportsCategoryAndMatchDateBetweenOrderByMatchScoreDesc(sportsCategory, startDate, endDate);
-        List<ClubRankResponse> response = new ArrayList<>();
-        int rank = 1;
-
-        for (Club club : clubs) {
-            int previousRank = getPreviousRank(club, year, month - 1); // 이전 달의 순위를 가져오는 로직
-            int rankChange = previousRank - rank; // 순위 변동 계산
-
-            response.add(new ClubRankResponse(club.getLogo(), club.getClubName(), club.getMatchScore(), rank, rankChange));
-
-            // 현재 순위를 업데이트
-            club.updateClubRank(rank);
-            rank++;
-        }
-
-        // 클럽의 최신 순위를 업데이트하여 저장 (선택 사항)
-        clubRepository.saveAll(clubs);
-
-        return response;
-    }
-
-    // 이전 달의 순위를 가져오는 메서드 (예시)
-    private int getPreviousRank(Club club, int year, int month) {
-        // 이전 달의 시작일과 종료일을 계산
-        LocalDate startDate = LocalDate.of(year, month, 1);
-        LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
-
-        // 이전 달의 데이터를 가져와서 순위를 계산하는 로직이 필요
-        List<Club> previousMonthClubs = clubRepository.findBySportsCategoryAndMatchDateBetweenOrderByMatchScoreDesc(club.getSportsCategory(), startDate, endDate);
-
-        // 클럽의 이전 달 순위를 계산하여 반환
-        for (int i = 0; i < previousMonthClubs.size(); i++) {
-            if (previousMonthClubs.get(i).getClubId().equals(club.getClubId())) {
-                return i + 1;
-            }
-        }
-        return -1; // 만약 이전 달 순위를 찾지 못한 경우
-    }
+//    public List<ClubRankResponse> getMonthlyClubsByTierAndRank(SportsCategory sportsCategory, int year, int month) {
+//        LocalDate startDate = LocalDate.of(year, month, 1);
+//        LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
+//
+//        // 특정 월 동안의 매치 점수를 기준으로 클럽들을 가져옵니다.
+//        List<Club> clubs = clubRepository.findBySportsCategoryAndMatchDateBetweenOrderByMatchScoreDesc(sportsCategory, startDate, endDate);
+//        List<ClubRankResponse> response = new ArrayList<>();
+//        int rank = 1;
+//
+//        for (Club club : clubs) {
+//            int previousRank = getPreviousRank(club, year, month - 1); // 이전 달의 순위를 가져오는 로직
+//            int rankChange = previousRank - rank; // 순위 변동 계산
+//
+//            response.add(new ClubRankResponse(club.getLogo(), club.getClubName(), club.getMatchScore(), rank, rankChange));
+//
+//            // 현재 순위를 업데이트
+//            club.updateClubRank(rank);
+//            rank++;
+//        }
+//
+//        // 클럽의 최신 순위를 업데이트하여 저장 (선택 사항)
+//        clubRepository.saveAll(clubs);
+//
+//        return response;
+//    }
+//
+//    // 이전 달의 순위를 가져오는 메서드 (예시)
+//    private int getPreviousRank(Club club, int year, int month) {
+//        // 이전 달의 시작일과 종료일을 계산
+//        LocalDate startDate = LocalDate.of(year, month, 1);
+//        LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
+//
+//        // 이전 달의 데이터를 가져와서 순위를 계산하는 로직이 필요
+//        List<Club> previousMonthClubs = clubRepository.findBySportsCategoryAndMatchDateBetweenOrderByMatchScoreDesc(club.getSportsCategory(), startDate, endDate);
+//
+//        // 클럽의 이전 달 순위를 계산하여 반환
+//        for (int i = 0; i < previousMonthClubs.size(); i++) {
+//            if (previousMonthClubs.get(i).getClubId().equals(club.getClubId())) {
+//                return i + 1;
+//            }
+//        }
+//        return -1; // 만약 이전 달 순위를 찾지 못한 경우
+//    }
 
 }
