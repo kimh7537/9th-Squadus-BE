@@ -47,11 +47,6 @@ public class ClubService {
     private final MemberService memberService;
     private final S3ImageService s3ImageService;
 
-    /**
-     *
-     * @param clubCreateRequest 동아리 생성 dto
-     * @return ClubCreateResponse 생성된 동아리 id
-     */
     @Transactional
     public ClubCreateResponse createClub(CustomOAuth2Member customOAuth2Member, ClubCreateRequest clubCreateRequest, MultipartFile logoImage) {
 
@@ -80,8 +75,9 @@ public class ClubService {
                 .sportsCategory(clubCreateRequest.getSportsCategory())
                 .logo(logo)
                 .clubTier(ClubTier.BRONZE)
-                .clubMessage(clubCreateRequest.getClubName() + "입니다.")
+                .clubMessage(clubCreateRequest.getClubMessage())
                 .maxMembers(clubCreateRequest.getMaxMembers())
+                .tags(clubCreateRequest.getTags())
                 .region(Region.builder()
                         .city(clubCreateRequest.getCity())
                         .district(clubCreateRequest.getDistrict())
@@ -106,24 +102,17 @@ public class ClubService {
         return new ClubCreateResponse(savedClub.getClubId());
     }
 
-    /**
-     *
-     * @param clubApplyRequest 동아리 가입 신청 dto
-     * @return ClubApplyResponse clubApplication id 담아서 리턴
-     * 동아리 가입 신청하는 매서드입니다.
-     * 초기에는 상태 PENDING으로 설정되고 나중에 동아리장이 가입 승인하면 바뀜
-     */
     @Transactional
-    public ClubApplyResponse joinClub(Long clubId, ClubApplyRequest clubApplyRequest) {
+    public ClubApplyResponse joinClub(CustomOAuth2Member customOAuth2Member, Long clubId, ClubApplyRequest clubApplyRequest) {
         Club club = clubRepository.findById(clubId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 고유번호를 가진 동아리를 찾을 수 없습니다."));
-        Member member = memberRepository.findById(clubApplyRequest.getMemberIdx())
-                .orElseThrow(() -> new EntityNotFoundException("해당 고유번호를 가진 회원을 찾을 수 없습니다."));
+        Member member = memberService.findMemberByUniqueId(customOAuth2Member.getUniqueId());
         ClubApplication clubApplication = ClubApplication.builder()
                 .member(member)
                 .club(club)
                 .appliedAt(LocalDateTime.now())
                 .applicationStatus(ApplicationStatus.PENDING)
+                .answers(clubApplyRequest.getAnswers())
                 .build();
         ClubApplication savedApplication = clubApplicationRepository.save(clubApplication);
         return new ClubApplyResponse(savedApplication.getApplicationIdx());
@@ -148,15 +137,27 @@ public class ClubService {
 
 
     @Transactional
-    public ClubUpdateResponse updateClub(CustomOAuth2Member customOAuth2Member, Long clubId, ClubUpdateRequest clubUpdateRequest) {
+    public ClubUpdateResponse updateClub(CustomOAuth2Member customOAuth2Member, Long clubId, ClubUpdateRequest clubUpdateRequest, MultipartFile logoImage) {
         clubAdminService.validateAdminMember(clubId);
 
         Club club = clubRepository.findById(clubId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 clubId를 가진 동아리가 존재하지 않습니다."));
 
+        // logo 설정
+        String logo = club.getLogo();
+        if (logoImage != null && !logoImage.isEmpty()) {
+            logo = s3ImageService.upload(logoImage);
+        }
+
         Club updateClub = club.updateClub(
-                clubUpdateRequest.logo(),
-                clubUpdateRequest.clubMessage()
+                logo,
+                clubUpdateRequest.clubMessage(),
+                Region.builder()
+                        .city(clubUpdateRequest.city())
+                        .district(clubUpdateRequest.district())
+                        .build(),
+                clubUpdateRequest.maxMembers(),
+                clubUpdateRequest.tags()
         );
 
         Club savedClub = clubRepository.save(updateClub);

@@ -3,6 +3,7 @@ package com.cotato.squadus.domain.auth.service;
 import com.cotato.squadus.common.config.RedisConfig;
 import com.cotato.squadus.common.config.auth.CustomOAuth2Member;
 import com.cotato.squadus.domain.auth.entity.Member;
+import com.cotato.squadus.domain.auth.enums.MemberRole;
 import com.cotato.squadus.domain.auth.enums.SchoolDomain;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -99,13 +100,14 @@ public class EmailSendService {
             // 회원의 university 필드를 업데이트
             Member memberByUniqueId = memberService.findMemberByUniqueId(customOauth2Member.getUniqueId());
             memberByUniqueId.updateUniversity(universityName);
+            memberByUniqueId.updateMemberRole(MemberRole.CERTIFIED_MEMBER);
             memberService.saveMember(memberByUniqueId);
             log.info("사용자 {}의 university 필드가 {}로 업데이트 되었습니다.", memberByUniqueId.getUsername(), universityName);
+            log.info("사용자 {}의 memberRole 필드가 {}로 업데이트 되었습니다.", memberByUniqueId.getUsername(), MemberRole.CERTIFIED_MEMBER);
         }
 
         return isAuthSuccessful;
     }
-
     private boolean isValidSchoolEmail(String email) {
         if (email == null || !email.contains("@")) {
             return false;

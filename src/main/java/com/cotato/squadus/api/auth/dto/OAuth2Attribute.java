@@ -65,7 +65,7 @@ public class OAuth2Attribute {
                 .username(username)
                 .email(email)
                 .uniqueId(uniqueId)
-                .memberRole(MemberRole.CERTIFIED_MEMBER.toString())
+                .memberRole(MemberRole.MEMBER.toString())
                 .profileImage("default profile img")
                 .university("uncertified")
                 .build();
