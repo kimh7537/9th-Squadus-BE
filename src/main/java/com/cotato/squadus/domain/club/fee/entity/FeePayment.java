@@ -1,7 +1,6 @@
 package com.cotato.squadus.domain.club.fee.entity;
 
 
-import com.cotato.squadus.domain.club.common.entity.Club;
 import com.cotato.squadus.domain.club.common.entity.ClubMember;
 import jakarta.persistence.*;
 import lombok.Builder;
