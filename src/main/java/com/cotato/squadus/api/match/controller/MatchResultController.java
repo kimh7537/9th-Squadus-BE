@@ -21,7 +21,7 @@ public class MatchResultController {
     private final MatchResultService matchResultService;
 
     @GetMapping("/{matchPostId}/details")
-    @Operation(summary = "매칭 상세보기", description = "매칭이 승낙된 두 동아리의 상세 정보를 조회합니다.")
+    @Operation(summary = "매칭 상세보기", description = "매칭이 승낙된 두 동아리의 상세 정보를 조회합니다.(매칭 확정 상세 페이지")
     public ResponseEntity<MatchDetailResponse> getMatchDetail(@PathVariable Long matchPostId) {
         MatchDetailResponse response = matchResultService.getMatchDetail(matchPostId);
         return ResponseEntity.ok(response);
@@ -39,7 +39,7 @@ public class MatchResultController {
 
 
     @PostMapping("/{matchPostId}/add-result")
-    @Operation(summary = "매치 결과 추가", description = "경기 결과를 추가합니다. MatchPost 작성 Club의 임원만 추가 가능합니다.")
+    @Operation(summary = "매치 결과 추가", description = "경기 결과를 추가합니다. MatchPost를 작성한 Club의 임원만 추가 가능합니다.")
     public ResponseEntity<MatchResultResponse> addMatchResult(@PathVariable Long matchPostId, @RequestBody MatchResultAddRequest matchResultAddRequest) {
         MatchResultResponse matchResult = matchResultService.addMatchResult(matchPostId, matchResultAddRequest);
         return ResponseEntity.ok(matchResult);
@@ -56,7 +56,7 @@ public class MatchResultController {
 
     
     @GetMapping("/{matchPostId}/final-result")
-    @Operation(summary = "매치 승리 결과", description = "매치의 최종 승리 결과를 가져옵니다. MatchPost 작성 Club의 임원만 추가 가능합니다. 모든 경기 입력 완료 버튼")
+    @Operation(summary = "매치 승리 결과", description = "매치의 최종 승리 결과를 가져옵니다. MatchPost를 작성한 Club의 임원만 추가 가능합니다. '모든 경기 입력 완료' 버튼")
     public ResponseEntity<MatchFinalResultResponse> getFinalMatchResult(@PathVariable Long matchPostId, @RequestParam Long clubMemberId)  {
         MatchFinalResultResponse response = matchResultService.getFinalMatchResult(matchPostId, clubMemberId);
         return ResponseEntity.ok(response);

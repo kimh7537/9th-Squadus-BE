@@ -64,7 +64,7 @@ public class MatchResultService {
                 .orElseThrow(() -> new EntityNotFoundException("매칭 게시글을 찾을 수 없습니다."));
 
         // Home 팀의 Admin인지 확인
-        clubAdminMemberRepository.findActiveAdminByClubIdAndClubMemberId(matchPost.getHomeClub().getClubId(), matchResultAddRequest.getMemberId())
+        clubAdminMemberRepository.findActiveAdminByClubIdAndClubMemberId(matchPost.getHomeClub().getClubId(), matchResultAddRequest.getClubMemberId())
                 .orElseThrow(() ->  new AppException(ErrorCode.CLUB_ACCESS_DENIED));
 
         MatchRequest acceptedRequest = matchPost.getMatchRequests().stream()
@@ -92,7 +92,7 @@ public class MatchResultService {
         MatchPost matchPost = matchResult.getMatchPost();
 
         // Home 팀의 Admin인지 확인
-        clubAdminMemberRepository.findActiveAdminByClubIdAndClubMemberId(matchPost.getHomeClub().getClubId(), matchResultAddRequest.getMemberId())
+        clubAdminMemberRepository.findActiveAdminByClubIdAndClubMemberId(matchPost.getHomeClub().getClubId(), matchResultAddRequest.getClubMemberId())
                 .orElseThrow(() -> new AppException(ErrorCode.CLUB_ACCESS_DENIED));
 
         // 기존 점수를 수정
@@ -104,6 +104,7 @@ public class MatchResultService {
 
 
 
+    @Transactional
     public MatchFinalResultResponse getFinalMatchResult(Long matchPostId, Long memberId) {
         MatchPost matchPost = matchPostRepository.findById(matchPostId)
                 .orElseThrow(() -> new EntityNotFoundException("매칭 게시글을 찾을 수 없습니다."));
@@ -181,6 +182,8 @@ public class MatchResultService {
 
         matchResultRepository.saveAll(matchResults);
     }
+
+
 
     @Transactional
     public void rejectFinalResult(Long matchPostId, Long memberId) {
