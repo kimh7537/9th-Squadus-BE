@@ -35,10 +35,17 @@ public class ClubFeeController {
         return ResponseEntity.ok(createdClubFee);
     }
 
+    @GetMapping("/usages")
+    @Operation(summary = "동아리 회비 전체에 대한 사용내역 조회", description = "clubId를 지정하여 해당 동아리의 회비 사용내역 전체를 조회합니다.")
+    public ResponseEntity<ClubFeeUsageResponseList> findAllClubFeeUsage(@AuthenticationPrincipal CustomOAuth2Member customOAuth2Member, @PathVariable("clubId") Long clubId) {
+        ClubFeeUsageResponseList clubFeeUsageResponseList = clubFeeService.findAllClubFeeUsage(customOAuth2Member, clubId);
+        return ResponseEntity.ok(clubFeeUsageResponseList);
+    }
+
     @GetMapping("/{feeTypeId}/usage")
-    @Operation(summary = "동아리 회비 사용내역 조회", description = "회비의 id를 지정하여 동아리 회비의 사용내역을 조회합니다.")
-    public ResponseEntity<ClubFeeUsageResponseList> findAllClubFeeUsage(@AuthenticationPrincipal CustomOAuth2Member customOAuth2Member, @PathVariable("clubId") Long clubId, @PathVariable("feeTypeId") Long feeTypeId) {
-        ClubFeeUsageResponseList clubFeeUsageResponseList = clubFeeService.findAllClubFeeUsage(customOAuth2Member, clubId, feeTypeId);
+    @Operation(summary = "동아리 회비 하나에 대한 사용내역 조회", description = "회비의 id를 지정하여 해당하는 동아리 회비의 사용내역을 조회합니다.")
+    public ResponseEntity<ClubFeeUsageResponseList> findAllClubFeeUsageByFeeTypeId(@AuthenticationPrincipal CustomOAuth2Member customOAuth2Member, @PathVariable("clubId") Long clubId, @PathVariable("feeTypeId") Long feeTypeId) {
+        ClubFeeUsageResponseList clubFeeUsageResponseList = clubFeeService.findAllClubFeeUsageByFeeTypeId(customOAuth2Member, clubId, feeTypeId);
         return ResponseEntity.ok(clubFeeUsageResponseList);
     }
 
@@ -58,6 +65,19 @@ public class ClubFeeController {
         ClubFeePaymentInfoResponseList clubFeePaymentInfo = clubFeeService.findClubFeePaymentInfo(customOAuth2Member, clubId, feeTypeId);
         return ResponseEntity.ok(clubFeePaymentInfo);
     }
+
+    @PatchMapping("/{feeTypeId}/payment")
+    @Operation(summary = "동아리 회비 입금 여부 수정", description = "동아리원의 회비 입금 여부를 수정합니다.")
+    public ResponseEntity<ClubFeePaymentUpdateResponse> updateClubFeePaymentInfo(
+            @AuthenticationPrincipal CustomOAuth2Member customOAuth2Member,
+            @PathVariable("clubId") Long clubId,
+            @PathVariable("feeTypeId") Long feeTypeId,
+            @RequestBody ClubFeePaymentUpdateRequest clubFeePaymentUpdateRequest) {
+
+        ClubFeePaymentUpdateResponse clubFeePaymentUpdateResponse = clubFeeService.updateClubFeePaymentInfo(customOAuth2Member, clubId, feeTypeId, clubFeePaymentUpdateRequest);
+        return ResponseEntity.ok(clubFeePaymentUpdateResponse);
+    }
+
 
 
 

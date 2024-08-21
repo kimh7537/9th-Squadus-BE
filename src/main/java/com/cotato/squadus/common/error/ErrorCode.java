@@ -91,6 +91,7 @@ public enum ErrorCode {
     ENUM_NOT_RESOLVED(HttpStatus.BAD_REQUEST, "S-005", "입력한 Enum이 존재하지 않습니다."),
 
     NO_BALANCE_ERROR(HttpStatus.BAD_REQUEST, "F-001", "회비의 잔액보다 사용내역의 금액이 더 큽니다."),
+    PAYMENT_CHANGE_DENIED(HttpStatus.BAD_REQUEST, "F-002", "이미 사용중인 회비의 입금현황을 변경할 수 없습니다."),
     ;
 
     private final HttpStatus httpStatus;

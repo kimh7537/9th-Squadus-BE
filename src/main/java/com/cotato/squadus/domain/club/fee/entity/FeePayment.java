@@ -1,7 +1,6 @@
 package com.cotato.squadus.domain.club.fee.entity;
 
 
-import com.cotato.squadus.domain.club.common.entity.Club;
 import com.cotato.squadus.domain.club.common.entity.ClubMember;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -27,6 +26,10 @@ public class FeePayment {
     @ManyToOne
     @JoinColumn(name = "club_member_idx")
     private ClubMember clubMember;
+
+    public void updateIsPaid(Boolean isPaid) {
+        this.isPaid = isPaid;
+    }
 
     @Builder
     public FeePayment(Boolean isPaid, FeeType feeType, ClubMember clubMember) {

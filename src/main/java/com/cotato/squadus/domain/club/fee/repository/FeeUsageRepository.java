@@ -9,4 +9,6 @@ import java.util.List;
 public interface FeeUsageRepository extends JpaRepository<FeeUsage, Long> {
 
     List<FeeUsage> findAllByFeeType(FeeType feeType);
+
+    List<FeeUsage> findAllByFeeType_Club_ClubId(Long clubId);
 }
