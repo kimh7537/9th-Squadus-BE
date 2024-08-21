@@ -128,7 +128,7 @@ public class ClubFeeService {
         if (clubFeeUsageRequest.price() > feeType.getBalance()) {
             throw new AppException(ErrorCode.NO_BALANCE_ERROR);
         }
-        feeType.updateBalance(clubFeeUsageRequest.price()); // price 만큼 사용
+        feeType.updateBalance(-clubFeeUsageRequest.price()); // price 만큼 사용
 
         FeeUsage feeUsage = FeeUsage.builder()
                 .feeType(feeType)
@@ -176,4 +176,31 @@ public class ClubFeeService {
         return ClubFeeUsageResponseList.from(clubFeeUsageResponseList);
 
     }
+
+    @Transactional
+    public ClubFeePaymentUpdateResponse updateClubFeePaymentInfo(CustomOAuth2Member customOAuth2Member, Long clubId, Long feeTypeId, ClubFeePaymentUpdateRequest clubFeePaymentUpdateRequest) {
+        List<FeePayment> feePayments = feePaymentRepository.findAllByFeeType_FeeTypeId(feeTypeId);
+        FeeType feeType = feeTypeRepository.findById(feeTypeId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 아이디를 가진 feeType을 찾을 수 없습니다."));
+
+        Long totalPrice = 0L;
+        if(!feeType.getBalance().equals(0L)) {
+            throw new AppException(ErrorCode.PAYMENT_CHANGE_DENIED);
+        }
+        for (FeePayment feePayment : feePayments) {
+            Long clubMemberIdx = feePayment.getClubMember().getClubMemberIdx();
+            if(clubFeePaymentUpdateRequest.paymentsInfo().get(clubMemberIdx)) {
+                feePayment.updateIsPaid(true);
+                totalPrice += feeType.getPrice();
+            } else {
+                feePayment.updateIsPaid(false);
+            }
+            feePaymentRepository.save(feePayment);
+        }
+        feeType.updateTotalPrice(totalPrice);
+        feeType.updateBalance(totalPrice);
+        feeTypeRepository.save(feeType);
+        return new ClubFeePaymentUpdateResponse(feeTypeId);
+    }
+
 }

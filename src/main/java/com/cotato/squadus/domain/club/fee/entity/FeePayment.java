@@ -28,6 +28,10 @@ public class FeePayment {
     @JoinColumn(name = "club_member_idx")
     private ClubMember clubMember;
 
+    public void updateIsPaid(Boolean isPaid) {
+        this.isPaid = isPaid;
+    }
+
     @Builder
     public FeePayment(Boolean isPaid, FeeType feeType, ClubMember clubMember) {
         this.isPaid = isPaid;
