@@ -77,8 +77,8 @@ public class MatchRequestController {
 
     @PostMapping("/{requestId}/decision")
     @Operation(summary = "매칭 요청 승낙/거절", description = "특정 동아리의 임원이 받은 매칭 요청에 대해 승낙 또는 거절을 합니다.")
-    public ResponseEntity<Void> decideMatchRequest(@PathVariable Long requestId, @RequestParam String decision, @RequestParam Long memberId) {
-        matchRequestService.decideMatchRequest(requestId, decision, memberId);
+    public ResponseEntity<Void> decideMatchRequest(@PathVariable Long requestId, @RequestParam String decision, @RequestParam Long clubMemberId) {
+        matchRequestService.decideMatchRequest(requestId, decision, clubMemberId);
         return ResponseEntity.noContent().build();
     }
 
