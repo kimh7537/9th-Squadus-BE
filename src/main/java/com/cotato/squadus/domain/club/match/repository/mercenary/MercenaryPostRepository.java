@@ -16,11 +16,9 @@ import java.util.List;
 @Repository
 public interface MercenaryPostRepository extends JpaRepository<MercenaryPost, Long>, MercenaryPostRepositoryCustom {
 
-    @Query("SELECT m FROM MercenaryPost m WHERE m.homeClub <> :homeClub " +
-            "AND (m.matchStartDate > :date " +
-            "OR (m.matchStartDate = :date AND m.matchStartTime > :time))")
-    Page<MercenaryPost> findAllByHomeClubNotAndMatchStartDateAfterOrMatchStartDateEqualsAndMatchStartTimeAfter(
-            @Param("homeClub") Club homeClub,
+    @Query("SELECT m FROM MercenaryPost m WHERE m.matchStartDate > :date " +
+            "OR (m.matchStartDate = :date AND m.matchStartTime > :time)")
+    Page<MercenaryPost> findAllByMatchStartDateAfterOrMatchStartDateEqualsAndMatchStartTimeAfter(
             @Param("date") LocalDate date,
             @Param("time") LocalTime time,
             Pageable pageable);
