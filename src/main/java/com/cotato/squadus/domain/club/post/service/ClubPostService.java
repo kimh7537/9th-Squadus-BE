@@ -70,9 +70,15 @@ public class ClubPostService {
 
         ClubAdminMember clubAdminMember = clubAdminService.validateAdminMember(clubId);
 
-        String imageUrl = s3ImageService.upload(image);
+        String imageUrl;
+        if (image != null && !image.isEmpty()) {
+            imageUrl = s3ImageService.upload(image);
+        } else {
+            imageUrl = "no image";
+        }
 
-        ClubPost clubPost = ClubPost.builder()
+
+            ClubPost clubPost = ClubPost.builder()
                 .club(club)
                 .title(clubPostCreateRequest.title())
                 .content(clubPostCreateRequest.content())
