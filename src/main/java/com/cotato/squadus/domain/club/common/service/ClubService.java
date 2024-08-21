@@ -98,16 +98,16 @@ public class ClubService {
     }
 
     @Transactional
-    public ClubApplyResponse joinClub(Long clubId, ClubApplyRequest clubApplyRequest) {
+    public ClubApplyResponse joinClub(CustomOAuth2Member customOAuth2Member, Long clubId, ClubApplyRequest clubApplyRequest) {
         Club club = clubRepository.findById(clubId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 고유번호를 가진 동아리를 찾을 수 없습니다."));
-        Member member = memberRepository.findById(clubApplyRequest.getMemberIdx())
-                .orElseThrow(() -> new EntityNotFoundException("해당 고유번호를 가진 회원을 찾을 수 없습니다."));
+        Member member = memberService.findMemberByUniqueId(customOAuth2Member.getUniqueId());
         ClubApplication clubApplication = ClubApplication.builder()
                 .member(member)
                 .club(club)
                 .appliedAt(LocalDateTime.now())
                 .applicationStatus(ApplicationStatus.PENDING)
+                .answers(clubApplyRequest.getAnswers())
                 .build();
         ClubApplication savedApplication = clubApplicationRepository.save(clubApplication);
         return new ClubApplyResponse(savedApplication.getApplicationIdx());
