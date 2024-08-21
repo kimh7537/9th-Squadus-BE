@@ -37,7 +37,8 @@ public class SecurityConfig {
             "/v1/api/matches/**",
             "/v1/api/mercenary/**",
             "/v1/api/mercenary-requests/**",
-            "/v1/api/match-requests/**"
+            "/v1/api/match-requests/**",
+            "/v1/api/match-results/**"
     };
 
     private final CustomOAuth2MemberService customOAuth2MemberService;

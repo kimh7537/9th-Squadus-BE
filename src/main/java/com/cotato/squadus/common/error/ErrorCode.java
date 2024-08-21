@@ -49,9 +49,10 @@ public enum ErrorCode {
     CLUB_POST_COMMENT_ACCESS_DENIED(HttpStatus.FORBIDDEN, "C-002", "해당 동아리 공지에 접근할 수 있는 권한이 없습니다."),
     CLUB_POST_AUTHOR(HttpStatus.BAD_REQUEST, "C-003", "자신의 글은 좋아요할 수 없습니다."),
     CLUB_POST_COMMENT_AUTHOR(HttpStatus.BAD_REQUEST, "C-004", "자신의 댓글은 좋아요할 수 없습니다."),
-
+    
     //매칭 관련
     DUPLICATE_REQUEST(HttpStatus.CONFLICT, "M-302", "이미 해당 용병 게시글에 신청하셨습니다."),
+    CLUB_MATCH_FINALIZE(HttpStatus.CONFLICT, "M-303", "이미 매칭이 확정된 요청을 처리할 수 없습니다."),
 
     // 기수 운영 (세션 -> 출석)
     INVALID_DATE(HttpStatus.BAD_REQUEST, "G-101", "시작날짜가 끝 날짜보다 뒤입니다"),

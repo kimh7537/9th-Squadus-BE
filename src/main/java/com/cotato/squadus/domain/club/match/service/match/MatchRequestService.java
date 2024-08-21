@@ -15,6 +15,7 @@ import com.cotato.squadus.domain.club.match.repository.match.MatchRequestReposit
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MatchRequestService {
 
     private final MatchRequestRepository matchRequestRepository;
@@ -140,11 +142,17 @@ public class MatchRequestService {
                 .orElseThrow(() -> new EntityNotFoundException("매칭 요청을 찾을 수 없습니다."));
 
         clubAdminMemberRepository.findActiveAdminByClubIdAndClubMemberId(
-                        matchRequest.getClub().getClubId(), memberId)
-                .orElseThrow(() -> new AccessDeniedException("매칭 요청에 대해 결정할 권한이 없습니다."));
+                        matchRequest.getMatchPost().getHomeClub().getClubId(), memberId)
+                .orElseThrow(() -> new AppException(ErrorCode.CLUB_ACCESS_DENIED));
+
+        // matchPost가 이미 최종 확정되었는지 확인
+        if (matchRequest.getMatchPost().getIsFinalized()) {
+            throw new AppException(ErrorCode.CLUB_MATCH_FINALIZE);
+        }
 
         if ("ACCEPTED".equalsIgnoreCase(decision)) {
             matchRequest.accept();
+            matchRequest.getMatchPost().finalizeMatch();
         } else if ("REJECTED".equalsIgnoreCase(decision)) {
             matchRequest.reject();
         } else {

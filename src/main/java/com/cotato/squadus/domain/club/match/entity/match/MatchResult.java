@@ -57,11 +57,11 @@ public class MatchResult {
         this.isfinalizedAway = true;
     }
 
-    public void setIsFinalizedHome(boolean b) {
-        this.isFinalizedHome = b;
+    public void setIsFinalizedHome(boolean isFinalizedHome) {
+        this.isFinalizedHome = isFinalizedHome;
     }
 
-    public void setIsfinalizedAway(boolean b) {
-        this.isfinalizedAway = b;
+    public void setIsfinalizedAway(boolean isfinalizedAway) {
+        this.isfinalizedAway = isfinalizedAway;
     }
 }
