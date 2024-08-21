@@ -37,7 +37,12 @@ public class ArticleService {
     @Transactional
     public ArticleResponse createArticle(ArticleRequest articleRequest, MultipartFile multipartFile) {
 
-        String imageUrl = s3ImageService.upload(multipartFile);
+        String imageUrl;
+        if (multipartFile != null && !multipartFile.isEmpty()) {
+            imageUrl = s3ImageService.upload(multipartFile);
+        } else {
+            imageUrl = "no image";
+        }
 
         Article article = Article.builder()
                 .title(articleRequest.getTitle())
