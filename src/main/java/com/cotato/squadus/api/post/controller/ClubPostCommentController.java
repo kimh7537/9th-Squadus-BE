@@ -25,7 +25,7 @@ public class ClubPostCommentController {
     @GetMapping()
     @Operation(summary = "동아리 공지 댓글 전체 조회", description = "clubId와 postId를 바탕으로 동아리 공지 댓글 전체를 조회합니다")
     public ResponseEntity<ClubPostCommentListResponse> getAllClubPostComments(@PathVariable Long clubId, @PathVariable Long postId) {
-        clubMemberService.validateClubMember(clubId);
+//        clubMemberService.validateClubMember(clubId);
         List<ClubPostCommentResponse> allClubPostComments = clubPostCommentService.findAllClubPostComments(postId);
         log.info("공지에 대한 전체 댓글 조회 : {}", allClubPostComments);
         return ResponseEntity.ok(ClubPostCommentListResponse.from(allClubPostComments));
@@ -37,7 +37,7 @@ public class ClubPostCommentController {
             @PathVariable Long clubId,
             @PathVariable Long postId,
             @RequestBody ClubPostCommentCreateRequest clubPostCommentCreateRequest) {
-        clubMemberService.validateClubMember(clubId);
+//        clubMemberService.validateClubMember(clubId);
         ClubPostCommentCreateResponse clubPostCommentCreateResponse = clubPostCommentService.createClubPostComment(clubId, postId, clubPostCommentCreateRequest);
         return ResponseEntity.ok(clubPostCommentCreateResponse);
     }
@@ -45,7 +45,7 @@ public class ClubPostCommentController {
     @PatchMapping("/{commentId}/like")
     @Operation(summary = "동아리 공지 댓글 좋아요", description = "clubId, postId, commentId를 바탕으로 동아리 공지 댓글에 대한 좋아요를 1 증가시킵니다")
     public ResponseEntity<ClubPostCommentLikeResponse> increaseClubPostCommentLike(@PathVariable Long clubId, @PathVariable Long postId, @PathVariable Long commentId) {
-        clubMemberService.validateClubMember(clubId);
+//        clubMemberService.validateClubMember(clubId);
         ClubPostCommentLikeResponse clubPostCommentLikeResponse = clubPostCommentService.increaseClubPostCommentLike(clubId, commentId);
         return ResponseEntity.ok(clubPostCommentLikeResponse);
     }
