@@ -63,8 +63,8 @@ public class ClubController {
 
     @PostMapping("/{clubId}")
     @Operation(summary = "동아리 가입 신청", description = "clubId와 동아리 가입에 대한 정보를 바탕으로 동아리 가입을 신청합니다")
-    public ResponseEntity<ClubApplyResponse> joinClub(@PathVariable Long clubId, @RequestBody ClubApplyRequest clubApplyRequest) {
-        ClubApplyResponse clubApplyResponse = clubService.joinClub(clubId, clubApplyRequest);
+    public ResponseEntity<ClubApplyResponse> joinClub(@AuthenticationPrincipal CustomOAuth2Member customOAuth2Member, @PathVariable Long clubId, @RequestBody ClubApplyRequest clubApplyRequest) {
+        ClubApplyResponse clubApplyResponse = clubService.joinClub(customOAuth2Member, clubId, clubApplyRequest);
         return ResponseEntity.ok(clubApplyResponse);
     }
 
