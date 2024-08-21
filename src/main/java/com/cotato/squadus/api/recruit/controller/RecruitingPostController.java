@@ -35,7 +35,7 @@ public class RecruitingPostController {
 
     @PostMapping
     @Operation(summary = "동아리 홍보글 생성", description = "동아리 홍보글을 생성합니다")
-    public ResponseEntity<RecruitingPostCreateResponse> createRecruitingPost(@AuthenticationPrincipal CustomOAuth2Member customOAuth2Member, RecruitingPostCreateRequest recruitingPostCreateRequest) {
+    public ResponseEntity<RecruitingPostCreateResponse> createRecruitingPost(@AuthenticationPrincipal CustomOAuth2Member customOAuth2Member, @RequestBody RecruitingPostCreateRequest recruitingPostCreateRequest) {
         RecruitingPostCreateResponse recruitingPost = recruitingPostService.createRecruitingPost(customOAuth2Member, recruitingPostCreateRequest);
         return ResponseEntity.ok(recruitingPost);
     }

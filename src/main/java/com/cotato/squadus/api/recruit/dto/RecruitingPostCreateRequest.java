@@ -1,13 +1,13 @@
 package com.cotato.squadus.api.recruit.dto;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Map;
 
 public record RecruitingPostCreateRequest(
         Long clubId,
         String title,
         LocalDate startDate,
         LocalDate endDate,
-        List<String> questions
+        Map<Integer, String> questions
 ) {
 }

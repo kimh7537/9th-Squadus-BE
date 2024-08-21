@@ -9,8 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @Entity
 @Getter
@@ -43,11 +43,12 @@ public class RecruitingPost extends BaseTimeEntity {
 
     @ElementCollection
     @CollectionTable(name = "recruiting_post_questions", joinColumns = @JoinColumn(name = "post_id"))
+    @MapKeyColumn(name = "question_index")
     @Column(name = "question")
-    private List<String> questions = new ArrayList<>();
+    private Map<Integer, String> questions = new HashMap<>();
 
     @Builder
-    public RecruitingPost(String title, Boolean isActive, LocalDate startDate, LocalDate endDate, ClubAdminMember author, Club club, List<String> questions) {
+    public RecruitingPost(String title, Boolean isActive, LocalDate startDate, LocalDate endDate, ClubAdminMember author, Club club, Map<Integer,String> questions) {
         this.title = title;
         this.isActive = isActive;
         this.startDate = startDate;
