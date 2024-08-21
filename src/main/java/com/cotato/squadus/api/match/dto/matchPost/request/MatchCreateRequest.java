@@ -2,6 +2,7 @@ package com.cotato.squadus.api.match.dto.matchPost.request;
 
 import com.cotato.squadus.domain.club.common.entity.Tier;
 import com.cotato.squadus.domain.club.common.enums.SportsCategory;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,6 +20,7 @@ public class MatchCreateRequest {
     private MatchPlaceRequest matchPlace;
     private Boolean placeProvided;
     private LocalDate matchStartDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
     private LocalTime matchStartTime;
     private Integer maxParticipants;
 
