@@ -94,6 +94,7 @@ public class ClubController {
 
 
     @GetMapping("/ranking/{sportsCategory}")
+    @Operation(summary = "랭킹 목록 조회", description = "랭킹 페이지로 들어가면 ALL TIME 기준의 랭킹 정보를 순위대로 얻을 수 있다.")
     public ResponseEntity<List<ClubRankResponse>> getRanking(@PathVariable SportsCategory sportsCategory) {
         List<ClubRankResponse> ranking = clubService.getRanking(sportsCategory);
         return ResponseEntity.ok(ranking);
