@@ -11,6 +11,7 @@ public interface ClubRepository extends JpaRepository<Club, Long> {
 
     List<Club> findBySportsCategoryOrderByMatchScoreDesc(SportsCategory sportsCategory);
 
+    long countBySportsCategory(SportsCategory sportsCategory);
 //    List<Club> findBySportsCategoryAndMatchDateBetweenOrderByMatchScoreDesc(SportsCategory sportsCategory, LocalDate startDate, LocalDate endDate);
 
 }
