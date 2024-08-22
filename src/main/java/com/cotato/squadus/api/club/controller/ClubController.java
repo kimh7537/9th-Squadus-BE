@@ -3,6 +3,7 @@ package com.cotato.squadus.api.club.controller;
 import com.cotato.squadus.api.club.dto.*;
 import com.cotato.squadus.common.config.auth.CustomOAuth2Member;
 import com.cotato.squadus.domain.auth.service.ClubMemberService;
+import com.cotato.squadus.domain.club.common.enums.SportsCategory;
 import com.cotato.squadus.domain.club.common.service.ClubService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,6 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Tag(name = "동아리", description = "동아리 관련 API")
 @RestController
@@ -88,4 +91,14 @@ public class ClubController {
         ClubUpdateResponse clubUpdateResponse = clubService.updateClub(customOAuth2Member, clubId, clubUpdateRequest, logoImage);
         return ResponseEntity.ok(clubUpdateResponse);
     }
+
+
+    @GetMapping("/ranking/{sportsCategory}")
+    @Operation(summary = "랭킹 목록 조회", description = "랭킹 페이지로 들어가면 ALL TIME 기준의 랭킹 정보를 순위대로 얻을 수 있다.")
+    public ResponseEntity<List<ClubRankResponse>> getRanking(@PathVariable SportsCategory sportsCategory) {
+        List<ClubRankResponse> ranking = clubService.getRanking(sportsCategory);
+        return ResponseEntity.ok(ranking);
+    }
+
+
 }

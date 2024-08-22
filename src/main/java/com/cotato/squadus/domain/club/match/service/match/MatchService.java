@@ -77,36 +77,29 @@ public class MatchService {
     }
 
 
-    public List<MatchCreateResponse> findAllMatches(Long memberId) {
+    public List<MatchCreateResponse> findAllMatches() {
 
-        ClubMember clubMember = clubMemberRepository.findClubMemberByClubMemberIdx(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("동아리 멤버를 찾을 수 없습니다."));
-
-        Club userClub = clubMember.getClub();
         LocalDateTime now = LocalDateTime.now();
 
         return matchPostRepository.findAll().stream()
                 .filter(matchPost -> {
                     LocalDateTime matchDateTime = LocalDateTime.of(matchPost.getMatchStartDate(), matchPost.getMatchStartTime());
-                    return !matchPost.getHomeClub().equals(userClub) && matchDateTime.isAfter(now);
+                    return matchDateTime.isAfter(now);
                 })
                 .map(MatchCreateResponse::from)
                 .collect(Collectors.toList());
     }
 
 
-    public Page<MatchCreateResponse> findAllMatches(Long memberId, Pageable pageable) {
-        ClubMember clubMember = clubMemberRepository.findClubMemberByClubMemberIdx(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("동아리 멤버를 찾을 수 없습니다."));
+    public Page<MatchCreateResponse> findAllMatches(Pageable pageable) {
 
-        Club userClub = clubMember.getClub();
         LocalDate today = LocalDate.now();
         LocalTime nowTime = LocalTime.now();
 
         // 데이터베이스에서 직접 필터링 및 페이징 처리하여 가져오기
         Page<MatchPost> matchPostPage = matchPostRepository
-                .findAllByHomeClubNotAndMatchStartDateAfterOrMatchStartDateEqualsAndMatchStartTimeAfter(
-                        userClub, today, nowTime, pageable);
+                .findAllByMatchStartDateAfterOrMatchStartDateEqualsAndMatchStartTimeAfter(
+                        today, nowTime, pageable);
 
         // 페이지 내용을 DTO로 변환
         return matchPostPage.map(MatchCreateResponse::from);

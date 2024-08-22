@@ -8,6 +8,7 @@ import com.cotato.squadus.common.error.ErrorCode;
 import com.cotato.squadus.common.error.exception.AppException;
 import com.cotato.squadus.domain.club.common.entity.Club;
 import com.cotato.squadus.domain.club.common.repository.ClubAdminMemberRepository;
+import com.cotato.squadus.domain.club.common.service.ClubService;
 import com.cotato.squadus.domain.club.match.entity.match.MatchPost;
 import com.cotato.squadus.domain.club.match.entity.match.MatchRequest;
 import com.cotato.squadus.domain.club.match.entity.match.MatchResult;
@@ -30,6 +31,7 @@ public class MatchResultService {
     private final MatchResultRepository matchResultRepository;
     private final MatchPostRepository matchPostRepository;
     private final ClubAdminMemberRepository clubAdminMemberRepository;
+    private final ClubService clubService;
 
     public MatchDetailResponse getMatchDetail(Long matchPostId) {
         MatchPost matchPost = matchPostRepository.findById(matchPostId)
@@ -180,6 +182,8 @@ public class MatchResultService {
             awayClub.updateMatchScore(5);
         }
 
+        clubService.updateClubMatchScore(matchPost.getHomeClub().getClubId());
+        clubService.updateClubMatchScore(awayClub.getClubId());
         matchResultRepository.saveAll(matchResults);
     }
 

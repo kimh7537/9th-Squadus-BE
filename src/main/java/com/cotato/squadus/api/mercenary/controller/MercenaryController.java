@@ -35,20 +35,19 @@ public class MercenaryController {
     }
 
     @GetMapping
-    @Operation(summary = "모든 용병 매칭 조회", description = "모든 용병 매칭 게시글을 조회합니다. 자신이 속한 동아리에서 올린 정보는 보이지 않습니다.")
-    public ResponseEntity<MercenaryCreateResponseWrapper> getAllMatches(@RequestParam Long clubMemberId) {
-        List<MercenaryCreateResponse> responses = mercenaryService.findAllMatches(clubMemberId);
+    @Operation(summary = "모든 용병 매칭 조회", description = "모든 용병 매칭 게시글을 조회합니다")
+    public ResponseEntity<MercenaryCreateResponseWrapper> getAllMatches() {
+        List<MercenaryCreateResponse> responses = mercenaryService.findAllMatches();
         return ResponseEntity.ok(MercenaryCreateResponseWrapper.from(responses));
     }
 
     @GetMapping("/paged")
     @Operation(summary = "모든 용병 매칭 조회 (페이징)", description = "모든 용병 매칭 게시글을 페이징(10개) 처리하여 조회합니다.")
     public ResponseEntity<MercenaryCreateResponseWrapper> getAllMatchesPaged(
-            @RequestParam Long clubMemberId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<MercenaryCreateResponse> responses = mercenaryService.findAllMatches(clubMemberId, pageable);
+        Page<MercenaryCreateResponse> responses = mercenaryService.findAllMatches(pageable);
         return ResponseEntity.ok(MercenaryCreateResponseWrapper.from(responses));
     }
 
