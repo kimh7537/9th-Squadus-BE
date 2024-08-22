@@ -70,11 +70,24 @@ public class EmailSendService {
         String customerMail = email;
         String title = "학교 인증을 위한 이메일입니다";
         String content =
-                "이메일을 인증하기 위한 절차입니다." +
+                "<b>안녕하세요!</b> \uD83D\uDC4B" +
                         "<br><br>" +
-                        "인증 번호는 " + authNumber + "입니다." +
+                        "이메일 인증을 완료하기 위해 아래 절차를 진행해 주세요:" +
+                        "<br><br>" +
+                        "<b>1. 인증 번호 입력</b> \uD83D\uDCDD" +
                         "<br>" +
-                        "학교 인증 칸에 해당 번호를 입력해주세요.";
+                        "인증 번호 : " + "<b>" + authNumber + "</b>" +
+                        "<br><br>" +
+                        "2. 학교 인증 칸에 해당 번호를 입력해 주세요. \uD83D\uDD11" +
+                        "<br><br>" +
+                        "인증 절차가 완료되면, 추가적인 안내를 드리겠습니다." +
+                        "<br><br>" +
+                        "감사합니다! \uD83D\uDE0A";
+//                "이메일을 인증하기 위한 절차입니다." +
+//                        "<br><br>" +
+//                        "인증 번호는 " + authNumber + "입니다." +
+//                        "<br>" +
+//                        "학교 인증 칸에 해당 번호를 입력해주세요.";
         mailSend(serviceName, customerMail, title, content);
         return Integer.toString(authNumber);
     }
