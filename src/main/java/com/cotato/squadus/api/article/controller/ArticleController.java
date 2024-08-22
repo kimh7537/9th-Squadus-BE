@@ -47,7 +47,7 @@ public class ArticleController {
             @Parameter(description = "아티클 생성 정보", schema = @Schema(implementation = ArticleRequest.class))
             @RequestPart("articleRequest") String articleRequestString,
             @Parameter(description = "multipart/form-data 형식의 이미지를 input으로 받습니다. 이때 key 값은 image입니다.")
-            @RequestPart("image") MultipartFile imageFile) {
+            @RequestPart(value = "image", required = false) MultipartFile imageFile) {
         // JSON String을 객체로 변환
         ObjectMapper objectMapper = new ObjectMapper();
         ArticleRequest articleRequest;

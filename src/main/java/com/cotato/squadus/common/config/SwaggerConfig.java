@@ -42,6 +42,7 @@ public class SwaggerConfig {
                         .name(refreshHeaderName));
 
         return new OpenAPI()
+                .addServersItem(new Server().url("https://squadus.kro.kr").description("운영 서버"))
                 .addServersItem(new Server().url("http://localhost:8080").description("Local Server"))
                 .addServersItem(new Server().url("http://15.165.165.240:8080").description("AWS Server"))
                 .addSecurityItem(securityRequirement)
