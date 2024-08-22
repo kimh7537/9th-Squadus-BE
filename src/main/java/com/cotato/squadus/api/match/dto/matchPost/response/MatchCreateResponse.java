@@ -15,6 +15,7 @@ public record MatchCreateResponse(
         LocalDate matchStartDate,
         LocalTime matchStartTime,
         Integer maxParticipants,
+        Long clubIdx,
         String sportsCategory,
         String clubName,
         String clubLogo
@@ -30,6 +31,7 @@ public record MatchCreateResponse(
                 matchPost.getMatchStartDate(),
                 matchPost.getMatchStartTime(),
                 matchPost.getMaxParticipants(),
+                matchPost.getHomeClub().getClubId(),
                 matchPost.getHomeClub().getSportsCategory().name(),
                 matchPost.getHomeClub().getClubName(),
                 matchPost.getHomeClub().getLogo()

@@ -16,6 +16,7 @@ public record MercenaryCreateResponse(
         LocalTime matchStartTime,
         Integer maxParticipants,
         Integer currentParticipants,
+        Long clubIdx,
         String sportsCategory,
         String clubName,
         String clubLogo
@@ -31,6 +32,7 @@ public record MercenaryCreateResponse(
                 mercenaryPost.getMatchStartTime(),
                 mercenaryPost.getMaxParticipants(),
                 mercenaryPost.getCurrentParticipants(),
+                mercenaryPost.getHomeClub().getClubId(),
                 mercenaryPost.getHomeClub().getSportsCategory().name(),
                 mercenaryPost.getHomeClub().getClubName(),
                 mercenaryPost.getHomeClub().getLogo()
