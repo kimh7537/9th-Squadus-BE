@@ -99,10 +99,8 @@ public class ClubService {
 
         Club savedClub = clubRepository.save(club);
 
-        long clubCount = clubRepository.countBySportsCategory(club.getSportsCategory());
-        if (clubCount >= 5) {
-            updateClubMatchScore(savedClub.getClubId());
-        }
+
+        updateClubScore(club.getSportsCategory(), club.getClubId(), club.getMatchScore());
 
         log.info("동아리 생성됨, clubId : {}", savedClub.getClubId());
         return new ClubCreateResponse(savedClub.getClubId());
