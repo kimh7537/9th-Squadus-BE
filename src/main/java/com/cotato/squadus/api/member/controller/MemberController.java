@@ -1,5 +1,6 @@
 package com.cotato.squadus.api.member.controller;
 
+import com.cotato.squadus.api.member.dto.MemberClubApplicationListResponse;
 import com.cotato.squadus.api.member.dto.MemberClubListResponse;
 import com.cotato.squadus.api.member.dto.MemberInfoResponse;
 import com.cotato.squadus.common.config.auth.CustomOAuth2Member;
@@ -38,6 +39,13 @@ public class MemberController {
     public ResponseEntity<MemberClubListResponse> findJoinedClubs(@AuthenticationPrincipal CustomOAuth2Member customOAuth2Member) {
         MemberClubListResponse memberClubListResponse = memberService.findJoinedClubs(customOAuth2Member);
         return ResponseEntity.ok(memberClubListResponse);
+    }
+
+    @GetMapping("/applications")
+    @Operation(summary = "유저가 가입 신청한 동아리 조회", description = "동아리 가입 신청에 대한 정보를 리스트로 조회")
+    public ResponseEntity<MemberClubApplicationListResponse> findAppliedClubs(@AuthenticationPrincipal CustomOAuth2Member customOAuth2Member) {
+        MemberClubApplicationListResponse appliedClubs = memberService.findAppliedClubs(customOAuth2Member);
+        return ResponseEntity.ok(appliedClubs);
     }
 
     @PostMapping(value = "/profile-image",
