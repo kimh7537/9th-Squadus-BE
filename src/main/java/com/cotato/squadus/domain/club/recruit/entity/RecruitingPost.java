@@ -41,7 +41,7 @@ public class RecruitingPost extends BaseTimeEntity {
     private Club club;
 
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "recruiting_post_questions", joinColumns = @JoinColumn(name = "post_id"))
     @MapKeyColumn(name = "question_index")
     @Column(name = "question")

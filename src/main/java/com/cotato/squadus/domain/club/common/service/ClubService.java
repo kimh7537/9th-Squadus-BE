@@ -20,6 +20,8 @@ import com.cotato.squadus.domain.auth.enums.ApplicationStatus;
 import com.cotato.squadus.domain.club.common.entity.Club;
 import com.cotato.squadus.domain.club.common.entity.ClubApplication;
 import com.cotato.squadus.domain.auth.entity.Member;
+import com.cotato.squadus.domain.club.recruit.entity.RecruitingPost;
+import com.cotato.squadus.domain.club.recruit.repository.RecruitingPostRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,13 +41,13 @@ import java.util.stream.Collectors;
 public class ClubService {
 
     private final ClubRepository clubRepository;
-    private final MemberRepository memberRepository;
     private final ClubApplicationRepository clubApplicationRepository;
     private final RedisTemplate<String, String> redisTemplate;
     private final ClubMemberService clubMemberService;
     private final ClubAdminService clubAdminService;
     private final MemberService memberService;
     private final S3ImageService s3ImageService;
+    private final RecruitingPostRepository recruitingPostRepository;
 
     @Transactional
     public ClubCreateResponse createClub(CustomOAuth2Member customOAuth2Member, ClubCreateRequest clubCreateRequest, MultipartFile logoImage) {
@@ -111,13 +113,20 @@ public class ClubService {
         Club club = clubRepository.findById(clubId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 고유번호를 가진 동아리를 찾을 수 없습니다."));
         Member member = memberService.findMemberByUniqueId(customOAuth2Member.getUniqueId());
+
+        RecruitingPost recruitingPost = recruitingPostRepository.findById(clubApplyRequest.getRecruitingPostId())
+                .orElseThrow(() -> new EntityNotFoundException("해당 고유번호를 가진 홍보 게시글을 찾을 수 없습니다."));
+
         ClubApplication clubApplication = ClubApplication.builder()
                 .member(member)
                 .club(club)
                 .appliedAt(LocalDateTime.now())
                 .applicationStatus(ApplicationStatus.PENDING)
+                .questions(recruitingPost.getQuestions())
                 .answers(clubApplyRequest.getAnswers())
+                .recruitingPost(recruitingPost)
                 .build();
+
         ClubApplication savedApplication = clubApplicationRepository.save(clubApplication);
         return new ClubApplyResponse(savedApplication.getApplicationIdx());
     }

@@ -1,6 +1,7 @@
 package com.cotato.squadus.api.recruit.dto;
 
 import com.cotato.squadus.domain.club.common.entity.Region;
+import com.cotato.squadus.domain.club.common.enums.ClubCategory;
 import com.cotato.squadus.domain.club.common.enums.ClubTier;
 import com.cotato.squadus.domain.club.common.enums.SportsCategory;
 import com.cotato.squadus.domain.club.recruit.entity.RecruitingPost;
@@ -17,6 +18,7 @@ public record RecruitingPostResponse(
         LocalDate startDate,
         LocalDate endDate,
         SportsCategory sportsCategory,
+        ClubCategory clubCategory,
         Region region,
         ClubTier clubTier,
         List<String> tags
@@ -32,6 +34,7 @@ public record RecruitingPostResponse(
                 recruitingPost.getStartDate(),
                 recruitingPost.getEndDate(),
                 recruitingPost.getClub().getSportsCategory(),
+                recruitingPost.getClub().getClubCategory(),
                 recruitingPost.getClub().getRegion(),
                 recruitingPost.getClub().getClubTier(),
                 recruitingPost.getClub().getTags()

@@ -2,12 +2,14 @@ package com.cotato.squadus.domain.club.recruit.service;
 
 import com.cotato.squadus.api.recruit.dto.RecruitingPostCreateRequest;
 import com.cotato.squadus.api.recruit.dto.RecruitingPostCreateResponse;
+import com.cotato.squadus.api.recruit.dto.RecruitingPostInfoResponse;
 import com.cotato.squadus.api.recruit.dto.RecruitingPostResponse;
 import com.cotato.squadus.common.config.auth.CustomOAuth2Member;
 import com.cotato.squadus.domain.club.common.entity.Club;
 import com.cotato.squadus.domain.club.common.service.ClubService;
 import com.cotato.squadus.domain.club.recruit.entity.RecruitingPost;
 import com.cotato.squadus.domain.club.recruit.repository.RecruitingPostRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -29,6 +31,13 @@ public class RecruitingPostService {
     public Page<RecruitingPostResponse> findAllRecruitingPosts(CustomOAuth2Member customOAuth2Member, Pageable pageable) {
         return recruitingPostRepository.findAll(pageable)
                 .map(RecruitingPostResponse::from);
+    }
+
+    public RecruitingPostInfoResponse findRecruitingPostByPostId(CustomOAuth2Member customOAuth2Member, Long postId) {
+        RecruitingPost recruitingPost = recruitingPostRepository.findById(postId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 id를 가진 홍보 게시글을 찾을 수 없습니다."));
+
+        return RecruitingPostInfoResponse.from(recruitingPost);
     }
 
     @Transactional

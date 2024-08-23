@@ -1,6 +1,9 @@
 package com.cotato.squadus.domain.club.admin.service;
 
+import com.cotato.squadus.api.admin.dto.ClubApplicationInfoResponse;
+import com.cotato.squadus.api.admin.dto.ClubApplicationListResponse;
 import com.cotato.squadus.api.admin.dto.ClubJoinApprovalResponse;
+import com.cotato.squadus.api.admin.dto.ClubJoinDenialResponse;
 import com.cotato.squadus.common.error.ErrorCode;
 import com.cotato.squadus.common.error.exception.AppException;
 import com.cotato.squadus.domain.auth.enums.ApplicationStatus;
@@ -16,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -50,6 +55,19 @@ public class ClubAdminService {
         return new ClubJoinApprovalResponse(savedMember.getClubMemberIdx());
     }
 
+    @Transactional
+    public ClubJoinDenialResponse denyApply(Long clubId, Long applicationId) {
+        validateAdminMember(clubId);
+
+        ClubApplication clubApplication = clubApplicationRepository.findById(applicationId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 고유번호를 가진 지원서를 찾을 수 없습니다."));
+
+        clubApplication.updateApplicationState(ApplicationStatus.REJECTED);
+        clubApplicationRepository.save(clubApplication);
+
+        return new ClubJoinDenialResponse(clubApplication.getApplicationIdx());
+    }
+
     // 신규 가입한 동아리원에 대한 정보 반영
     private void updateClubInfo(Long clubId, ClubMember clubMember) {
         Club club = clubRepository.findById(clubId)
@@ -69,4 +87,16 @@ public class ClubAdminService {
         return (ClubAdminMember) clubMember;
     }
 
+
+    public ClubApplicationListResponse findAllClubApplyByRecruitingPostId(Long clubId, Long recruitingPostId) {
+
+        List<ClubApplicationInfoResponse> list = clubApplicationRepository.findByRecruitingPost_PostId(recruitingPostId)
+                .stream()
+                .map(ClubApplicationInfoResponse::from)
+                .toList();
+
+        return ClubApplicationListResponse.from(list);
+
+
+    }
 }

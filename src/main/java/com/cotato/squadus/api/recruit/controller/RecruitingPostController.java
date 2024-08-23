@@ -3,6 +3,7 @@ package com.cotato.squadus.api.recruit.controller;
 
 import com.cotato.squadus.api.recruit.dto.RecruitingPostCreateRequest;
 import com.cotato.squadus.api.recruit.dto.RecruitingPostCreateResponse;
+import com.cotato.squadus.api.recruit.dto.RecruitingPostInfoResponse;
 import com.cotato.squadus.api.recruit.dto.RecruitingPostResponse;
 import com.cotato.squadus.common.config.auth.CustomOAuth2Member;
 import com.cotato.squadus.domain.club.recruit.service.RecruitingPostService;
@@ -31,6 +32,13 @@ public class RecruitingPostController {
     public ResponseEntity<Page<RecruitingPostResponse>> findAllRecruitingPosts(@AuthenticationPrincipal CustomOAuth2Member customOAuth2Member, @PageableDefault(size = 10) Pageable pageable) {
         Page<RecruitingPostResponse> allRecruitingPosts = recruitingPostService.findAllRecruitingPosts(customOAuth2Member, pageable);
         return ResponseEntity.ok(allRecruitingPosts);
+    }
+
+    @GetMapping("/{recruitingPostId}")
+    @Operation(summary = "동아리 홍보글 단건 조회", description = "홍보글의 id를 통해 동아리 홍보글 하나에 대한 정보를 조회합니다.")
+    public ResponseEntity<RecruitingPostInfoResponse> findRecruitingPostByPostId(@AuthenticationPrincipal CustomOAuth2Member customOAuth2Member, @PathVariable Long recruitingPostId) {
+        RecruitingPostInfoResponse recruitingPostByPostId = recruitingPostService.findRecruitingPostByPostId(customOAuth2Member, recruitingPostId);
+        return ResponseEntity.ok(recruitingPostByPostId);
     }
 
     @PostMapping

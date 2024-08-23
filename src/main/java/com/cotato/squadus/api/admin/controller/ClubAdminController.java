@@ -1,6 +1,8 @@
 package com.cotato.squadus.api.admin.controller;
 
+import com.cotato.squadus.api.admin.dto.ClubApplicationListResponse;
 import com.cotato.squadus.api.admin.dto.ClubJoinApprovalResponse;
+import com.cotato.squadus.api.admin.dto.ClubJoinDenialResponse;
 import com.cotato.squadus.domain.club.admin.service.ClubAdminService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,5 +23,19 @@ public class ClubAdminController {
     public ResponseEntity<ClubJoinApprovalResponse> approveClubMember(@PathVariable Long clubId, @PathVariable Long applicationId) {
         ClubJoinApprovalResponse clubJoinApprovalResponse = clubAdminService.approveApply(clubId, applicationId);
         return ResponseEntity.ok(clubJoinApprovalResponse);
+    }
+
+    @PostMapping("/denial/{applicationId}")
+    @Operation(summary = "동아리 가입 신청 거절", description = "applicationId를 통해 가입을 거절합니다.")
+    public ResponseEntity<ClubJoinDenialResponse> denyClubMember(@PathVariable Long clubId, @PathVariable Long applicationId) {
+        ClubJoinDenialResponse clubJoinDenialResponse = clubAdminService.denyApply(clubId, applicationId);
+        return ResponseEntity.ok(clubJoinDenialResponse);
+    }
+
+    @GetMapping("/applications/{recruitingPostId}")
+    @Operation(summary = "동아리 가입 신청 내역 조회", description = "clubId를 통해 해당 동아리의 가입 신청 내역을 조회합니다.")
+    public ResponseEntity<ClubApplicationListResponse> findAllClubApplyByRecruitingPostId(@PathVariable Long clubId, @PathVariable Long recruitingPostId) {
+        ClubApplicationListResponse allClubApplyByRecruitingPostId = clubAdminService.findAllClubApplyByRecruitingPostId(clubId, recruitingPostId);
+        return ResponseEntity.ok(allClubApplyByRecruitingPostId);
     }
 }
