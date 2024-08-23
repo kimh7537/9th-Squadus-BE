@@ -66,4 +66,10 @@ public class ArticleService {
                 .map(article -> new ArticleSummaryResponse(article.getArticleIdx(), article.getTitle(), article.getSubtitle()))
                 .collect(Collectors.toList());
     }
+
+    public List<ArticleResponse> getAllArticlesWithAllData() {
+        return articleRepository.findAll().stream()
+                .map(ArticleResponse::from)
+                .collect(Collectors.toList());
+    }
 }

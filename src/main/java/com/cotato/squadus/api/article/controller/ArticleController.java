@@ -1,9 +1,6 @@
 package com.cotato.squadus.api.article.controller;
 
-import com.cotato.squadus.api.article.dto.ArticleListResponse;
-import com.cotato.squadus.api.article.dto.ArticleRequest;
-import com.cotato.squadus.api.article.dto.ArticleResponse;
-import com.cotato.squadus.api.article.dto.ArticleSummaryResponse;
+import com.cotato.squadus.api.article.dto.*;
 import com.cotato.squadus.api.post.dto.ClubPostCreateRequest;
 import com.cotato.squadus.domain.club.article.service.ArticleService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -78,4 +75,15 @@ public class ArticleController {
         log.info("모든 기사 요약 조회");
         return ResponseEntity.ok(ArticleListResponse.from(articles));
     }
+
+    @GetMapping("/allData")
+    @Operation(summary = "아티클 요약x 전체 조회(페이징 없음)", description = "모든 아티클을 요약 없이 조회합니다.")
+    public ResponseEntity<ArticleResponseListWrapper> getAllArticlesWithAllData() {
+        List<ArticleResponse> articles = articleService.getAllArticlesWithAllData();
+        log.info("모든 기사 요약 조회");
+        return ResponseEntity.ok(ArticleResponseListWrapper.from(articles));
+    }
+
+
+
 }
