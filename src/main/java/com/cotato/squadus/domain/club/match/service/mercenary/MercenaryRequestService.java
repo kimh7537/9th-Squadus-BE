@@ -3,9 +3,13 @@ package com.cotato.squadus.domain.club.match.service.mercenary;
 import com.cotato.squadus.api.mercenary.dto.response.MercenaryRequestAndMercenaryPostResponse;
 import com.cotato.squadus.api.mercenary.dto.response.MercenaryRequestResponse;
 import com.cotato.squadus.api.mercenary.dto.response.ReceivedMercenaryRequestResponse;
+import com.cotato.squadus.common.config.auth.CustomOAuth2Member;
 import com.cotato.squadus.common.error.ErrorCode;
 import com.cotato.squadus.common.error.exception.AppException;
+import com.cotato.squadus.domain.auth.entity.Member;
+import com.cotato.squadus.domain.auth.repository.MemberRepository;
 import com.cotato.squadus.domain.club.common.entity.Club;
+import com.cotato.squadus.domain.club.common.entity.ClubMember;
 import com.cotato.squadus.domain.club.common.repository.ClubAdminMemberRepository;
 import com.cotato.squadus.domain.club.common.repository.ClubRepository;
 import com.cotato.squadus.domain.club.match.entity.mercenary.MercenaryPost;
@@ -35,6 +39,7 @@ public class MercenaryRequestService {
     private final ClubAdminMemberRepository clubAdminMemberRepository;
     private final ClubRepository clubRepository;
     private final MercenaryPostRepository mercenaryPostRepository;
+    private final MemberRepository memberRepository;
 
     public Page<MercenaryRequestResponse> getMyRequests(Long memberId, Pageable pageable) {
         Page<MercenaryRequest> requestsPage = mercenaryRequestRepository.findAllByClubMember_ClubMemberIdx(memberId, pageable);
@@ -51,7 +56,11 @@ public class MercenaryRequestService {
     }
 
 
-    public List<MercenaryRequestResponse> getAllMyRequests(Long memberId) {
+    public List<MercenaryRequestResponse> getAllMyRequests(CustomOAuth2Member customOAuth2Member) {
+        Member member = memberRepository.findByUniqueId(customOAuth2Member.getUniqueId())
+                .orElseThrow(() -> new EntityNotFoundException("해당 uniqueId를 가진 회원이 존재하지 않습니다."));
+        List<ClubMember> clubMemberships = member.getClubMemberships();
+
         return mercenaryRequestRepository.findAllByClubMember_ClubMemberIdx(memberId)
                 .stream()
                 .filter(mercenaryRequest -> isPostValid(mercenaryRequest.getMercenaryPost()))

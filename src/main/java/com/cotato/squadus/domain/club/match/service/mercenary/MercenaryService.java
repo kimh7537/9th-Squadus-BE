@@ -106,14 +106,7 @@ public class MercenaryService {
     }
 
 
-    public List<MercenaryCreateResponse> getFilteredMatches(FilterRequest filterRequest, Long clubMemberId) {
-
-        // 사용자의 ClubMember 정보를 가져옵니다.
-        ClubMember clubMember = clubMemberRepository.findClubMemberByClubMemberIdx(clubMemberId)
-                .orElseThrow(() -> new EntityNotFoundException("동아리 멤버를 찾을 수 없습니다."));
-
-        // 사용자의 동아리를 가져옵니다.
-        Club userClub = clubMember.getClub();
+    public List<MercenaryCreateResponse> getFilteredMatches(FilterRequest filterRequest) {
 
         SportsCategory sportsCategory = null;
         ClubTier tier = null;
@@ -138,27 +131,21 @@ public class MercenaryService {
         return mercenaryPosts.stream()
                 .filter(mercenaryPost -> {
                     LocalDateTime matchDateTime = LocalDateTime.of(mercenaryPost.getMatchStartDate(), mercenaryPost.getMatchStartTime());
-                    return !mercenaryPost.getHomeClub().equals(userClub) && matchDateTime.isAfter(now);
+                    return matchDateTime.isAfter(now);
                 })
                 .map(MercenaryCreateResponse::from)
                 .collect(Collectors.toList());
     }
 
 
-    public List<MercenaryCreateResponse> searchMatches(SearchRequest searchRequest, Long clubMemberId) {
+    public List<MercenaryCreateResponse> searchMatches(SearchRequest searchRequest) {
 
-        // 사용자의 ClubMember 정보를 가져옵니다.
-        ClubMember clubMember = clubMemberRepository.findClubMemberByClubMemberIdx(clubMemberId)
-                .orElseThrow(() -> new EntityNotFoundException("동아리 멤버를 찾을 수 없습니다."));
-
-        // 사용자의 동아리를 가져옵니다.
-        Club userClub = clubMember.getClub();
         LocalDateTime now = LocalDateTime.now();
 
         return mercenaryPostRepository.customFindByKeyword(searchRequest.getKeyword()).stream()
                 .filter(mercenaryPost -> {
                     LocalDateTime matchDateTime = LocalDateTime.of(mercenaryPost.getMatchStartDate(), mercenaryPost.getMatchStartTime());
-                    return !mercenaryPost.getHomeClub().equals(userClub) && matchDateTime.isAfter(now);
+                    return matchDateTime.isAfter(now);
                 }) // 사용자의 동아리에서 작성한 글 제외
                 .map(MercenaryCreateResponse::from)
                 .collect(Collectors.toList());

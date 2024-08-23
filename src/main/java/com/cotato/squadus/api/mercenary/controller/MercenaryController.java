@@ -55,18 +55,16 @@ public class MercenaryController {
     @PostMapping("/filter")
     @Operation(summary = "필터링된 용병 매칭 조회", description = "필터를 적용하여 용병 매칭 게시글을 조회합니다. 필터 4개를 한번에 조회할 수 있습니다. 필터를 하지 않는 부분은 null로 reqeust해주면 자동으로 필터링을 진행한다.")
     public ResponseEntity<MercenaryCreateResponseWrapper> getMatchesByFilter(
-            @RequestBody FilterRequest filterRequest,
-            @RequestParam Long clubMemberId) {
-        List<MercenaryCreateResponse> responses = mercenaryService.getFilteredMatches(filterRequest, clubMemberId);
+            @RequestBody FilterRequest filterRequest) {
+        List<MercenaryCreateResponse> responses = mercenaryService.getFilteredMatches(filterRequest);
         return ResponseEntity.ok(MercenaryCreateResponseWrapper.from(responses));
     }
 
     @PostMapping("/search")
     @Operation(summary = "용병 매칭 검색", description = "검색어를 바탕으로 용병 매칭 게시글을 조회합니다.")
     public ResponseEntity<MercenaryCreateResponseWrapper> searchMatches(
-            @RequestBody SearchRequest searchRequest,
-            @RequestParam Long clubMemberId) {
-        List<MercenaryCreateResponse> responses = mercenaryService.searchMatches(searchRequest, clubMemberId);
+            @RequestBody SearchRequest searchRequest) {
+        List<MercenaryCreateResponse> responses = mercenaryService.searchMatches(searchRequest);
         return ResponseEntity.ok(MercenaryCreateResponseWrapper.from(responses));
     }
 
