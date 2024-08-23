@@ -7,6 +7,7 @@ import com.cotato.squadus.api.mercenary.dto.request.MercenaryRequestRequest;
 import com.cotato.squadus.api.mercenary.dto.response.MercenaryCreateResponse;
 import com.cotato.squadus.api.mercenary.dto.response.MercenaryCreateResponseWrapper;
 import com.cotato.squadus.api.mercenary.dto.response.MercenaryRequestResponse;
+import com.cotato.squadus.common.config.auth.CustomOAuth2Member;
 import com.cotato.squadus.domain.club.match.service.mercenary.MercenaryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -55,25 +57,25 @@ public class MercenaryController {
     @PostMapping("/filter")
     @Operation(summary = "필터링된 용병 매칭 조회", description = "필터를 적용하여 용병 매칭 게시글을 조회합니다. 필터 4개를 한번에 조회할 수 있습니다. 필터를 하지 않는 부분은 null로 reqeust해주면 자동으로 필터링을 진행한다.")
     public ResponseEntity<MercenaryCreateResponseWrapper> getMatchesByFilter(
-            @RequestBody FilterRequest filterRequest,
-            @RequestParam Long clubMemberId) {
-        List<MercenaryCreateResponse> responses = mercenaryService.getFilteredMatches(filterRequest, clubMemberId);
+            @RequestBody FilterRequest filterRequest) {
+        List<MercenaryCreateResponse> responses = mercenaryService.getFilteredMatches(filterRequest);
         return ResponseEntity.ok(MercenaryCreateResponseWrapper.from(responses));
     }
 
     @PostMapping("/search")
     @Operation(summary = "용병 매칭 검색", description = "검색어를 바탕으로 용병 매칭 게시글을 조회합니다.")
     public ResponseEntity<MercenaryCreateResponseWrapper> searchMatches(
-            @RequestBody SearchRequest searchRequest,
-            @RequestParam Long clubMemberId) {
-        List<MercenaryCreateResponse> responses = mercenaryService.searchMatches(searchRequest, clubMemberId);
+            @RequestBody SearchRequest searchRequest) {
+        List<MercenaryCreateResponse> responses = mercenaryService.searchMatches(searchRequest);
         return ResponseEntity.ok(MercenaryCreateResponseWrapper.from(responses));
     }
 
     @PostMapping("/request")
     @Operation(summary = "용병 매칭 요청", description = "특정 용병 매칭 게시글에 대해 매칭 요청을 보냅니다.")
-    public ResponseEntity<MercenaryRequestResponse> sendMatchRequest(@RequestBody MercenaryRequestRequest mercenaryRequestRequest) {
-        MercenaryRequestResponse response = mercenaryService.sendMatchRequest(mercenaryRequestRequest);
+    public ResponseEntity<MercenaryRequestResponse> sendMatchRequest(
+            @RequestBody MercenaryRequestRequest mercenaryRequestRequest,
+            @AuthenticationPrincipal CustomOAuth2Member customOAuth2Member) {
+        MercenaryRequestResponse response = mercenaryService.sendMatchRequest(mercenaryRequestRequest, customOAuth2Member);
         return ResponseEntity.ok(response);
     }
 }

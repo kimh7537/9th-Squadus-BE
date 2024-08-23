@@ -2,6 +2,7 @@ package com.cotato.squadus.api.mercenary.controller;
 
 import com.cotato.squadus.api.mercenary.dto.request.MercenaryCreateRequest;
 import com.cotato.squadus.api.mercenary.dto.response.*;
+import com.cotato.squadus.common.config.auth.CustomOAuth2Member;
 import com.cotato.squadus.domain.club.match.service.mercenary.MercenaryRequestService;
 import com.cotato.squadus.domain.club.match.service.mercenary.MercenaryService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,27 +30,25 @@ public class MercenaryRequestController {
     @GetMapping("/paged")
     @Operation(summary = "개인이 신청한 용병 매치 목록 조회 (페이징)", description = "개인이 신청한 용병 매칭 글 목록을 페이징 처리하여 조회합니다.")
     public ResponseEntity<MercenaryRequestResponseWrapper> getMyRequests(
-            @RequestParam Long clubMemberId,
+            @AuthenticationPrincipal CustomOAuth2Member customOAuth2Member,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<MercenaryRequestResponse> responses = mercenaryRequestService.getMyRequests(clubMemberId, pageable);
+        Page<MercenaryRequestResponse> responses = mercenaryRequestService.getMyRequests(customOAuth2Member, pageable);
         return ResponseEntity.ok(MercenaryRequestResponseWrapper.from(responses));
     }
 
     @GetMapping
     @Operation(summary = "개인이 신청한 용병 매치 목록 조회 (전체)", description = "개인이 신청한 용병 매칭 글 목록을 페이징 없이 전체 조회합니다.")
-    public ResponseEntity<MercenaryRequestResponseWrapper> getAllMyRequests(@RequestParam Long clubMemberId) {
-        List<MercenaryRequestResponse> responses = mercenaryRequestService.getAllMyRequests(clubMemberId);
+    public ResponseEntity<MercenaryRequestResponseWrapper> getAllMyRequests(@AuthenticationPrincipal CustomOAuth2Member customOAuth2Member) {
+        List<MercenaryRequestResponse> responses = mercenaryRequestService.getAllMyRequests(customOAuth2Member);
         return ResponseEntity.ok(MercenaryRequestResponseWrapper.from(responses));
     }
 
-
-
     @DeleteMapping("/{requestId}")
     @Operation(summary = "용병 매칭 요청 취소", description = "개인이 요청한 용병 매칭 요청을 취소합니다.")
-    public ResponseEntity<Void> cancelMercenaryRequest(@PathVariable Long requestId, @RequestParam Long clubMemberId) {
-        mercenaryRequestService.cancelMatchRequest(requestId, clubMemberId);
+    public ResponseEntity<Void> cancelMercenaryRequest(@PathVariable Long requestId, @AuthenticationPrincipal CustomOAuth2Member customOAuth2Member) {
+        mercenaryRequestService.cancelMatchRequest(requestId, customOAuth2Member);
         return ResponseEntity.noContent().build();
     }
 
@@ -76,14 +76,14 @@ public class MercenaryRequestController {
 
 
     @PostMapping("/{requestId}/decision")
-    @Operation(summary = "매칭 요청 승낙/거절", description = "특정 동아리의 임원이 받은 매칭 요청에 대해 승낙 또는 거절을 합니다.")
+    @Operation(summary = "매칭 요청 승낙/거절", description = "특정 동아리의 임원(clubMemberId)이 받은 매칭 요청에 대해 승낙 또는 거절을 합니다.")
     public ResponseEntity<Void> decideMatchRequest(@PathVariable Long requestId, @RequestParam String decision, @RequestParam Long clubMemberId) {
         mercenaryRequestService.decideMatchRequest(requestId, decision, clubMemberId);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{mercenaryIdx}")
-    @Operation(summary = "용병 매칭 게시글 수정", description = "특정 용병 매칭 게시글을 수정합니다.")
+    @Operation(summary = "용병 매칭 게시글 수정", description = "특정 동아리의 임원(clubMemberId)이 특정 용병 매칭 게시글을 수정합니다.")
     public ResponseEntity<MercenaryCreateResponse> updateMercenaryPost(
             @PathVariable Long mercenaryIdx,
             @RequestBody MercenaryCreateRequest mercenaryCreateRequest) {
@@ -92,7 +92,7 @@ public class MercenaryRequestController {
     }
 
     @DeleteMapping("/{mercenaryIdx}/delete")
-    @Operation(summary = "용병 매칭 게시글 삭제", description = "특정 용병 매칭 게시글을 삭제합니다.")
+    @Operation(summary = "용병 매칭 게시글 삭제", description = "특정 동아리의 임원(clubMemberId)이 특정 용병 매칭 게시글을 삭제합니다.")
     public ResponseEntity<Void> deleteMercenaryPost(
             @PathVariable Long mercenaryIdx,
             @RequestParam Long clubMemberId) {
