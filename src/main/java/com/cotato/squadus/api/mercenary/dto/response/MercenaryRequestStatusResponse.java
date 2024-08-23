@@ -5,15 +5,15 @@ import com.cotato.squadus.domain.club.match.enums.MatchingStatus;
 
 public record MercenaryRequestStatusResponse(
         Long mercenaryRequestId,
-        String clubName,
+//        String clubName,
         String university,
         MatchingStatus status
 ) {
     public static MercenaryRequestStatusResponse from(MercenaryRequest mercenaryRequest) {
         return new MercenaryRequestStatusResponse(
                 mercenaryRequest.getMercenaryRequestIdx(),
-                mercenaryRequest.getClubMember().getClub().getClubName(), //쿼리 발생
-                mercenaryRequest.getClubMember().getMember().getUniversity(), //쿼리 발생
+//                mercenaryRequest.getClubMember().getClub().getClubName(), //쿼리 발생
+                mercenaryRequest.getMember().getUniversity(), //쿼리 발생
                 mercenaryRequest.getStatus()
         );
     }

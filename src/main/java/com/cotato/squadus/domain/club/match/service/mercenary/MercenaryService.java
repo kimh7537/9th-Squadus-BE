@@ -6,8 +6,11 @@ import com.cotato.squadus.api.mercenary.dto.request.MercenaryCreateRequest;
 import com.cotato.squadus.api.mercenary.dto.request.MercenaryRequestRequest;
 import com.cotato.squadus.api.mercenary.dto.response.MercenaryCreateResponse;
 import com.cotato.squadus.api.mercenary.dto.response.MercenaryRequestResponse;
+import com.cotato.squadus.common.config.auth.CustomOAuth2Member;
 import com.cotato.squadus.common.error.ErrorCode;
 import com.cotato.squadus.common.error.exception.AppException;
+import com.cotato.squadus.domain.auth.entity.Member;
+import com.cotato.squadus.domain.auth.repository.MemberRepository;
 import com.cotato.squadus.domain.club.common.entity.Club;
 import com.cotato.squadus.domain.club.common.entity.ClubMember;
 import com.cotato.squadus.domain.club.common.enums.ClubTier;
@@ -43,6 +46,7 @@ public class MercenaryService {
     private final ClubRepository clubRepository;
     private final ClubMemberRepository clubMemberRepository;
     private final ClubAdminMemberRepository clubAdminMemberRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional
     public MercenaryCreateResponse createMatch(MercenaryCreateRequest mercenaryCreateRequest) {
@@ -153,29 +157,22 @@ public class MercenaryService {
 
 
     @Transactional
-    public MercenaryRequestResponse sendMatchRequest(MercenaryRequestRequest mercenaryRequestRequest) {
+    public MercenaryRequestResponse sendMatchRequest(MercenaryRequestRequest mercenaryRequestRequest, CustomOAuth2Member customOAuth2Member) {
 
-        //매칭을 요청한 ClubMember
-        ClubMember clubMember = clubMemberRepository.findById(mercenaryRequestRequest.getClubMemberId())
-                .orElseThrow(() -> new EntityNotFoundException("동아리 멤버를 찾을 수 없습니다."));
+        Member member = memberRepository.findByUniqueId(customOAuth2Member.getUniqueId())
+                .orElseThrow(() -> new EntityNotFoundException("해당 uniqueId를 가진 회원이 존재하지 않습니다."));
 
         //다른 동아리에서 작성한 매칭 게시글
         MercenaryPost mercenaryPost = mercenaryPostRepository.findById(mercenaryRequestRequest.getMercenaryPostId())
                 .orElseThrow(() -> new EntityNotFoundException("매칭 게시글을 찾을 수 없습니다."));
 
-        // ClubMember가 속한 동아리가 mercenaryPost의 작성 동아리인지 확인
-        if (mercenaryPost.getHomeClub().equals(clubMember.getClub())) {
-            throw new AppException(ErrorCode.CLUB_ACCESS_DENIED);
-        }
-
         // 이미 신청한 용병 요청이 있는지 확인
-        if (mercenaryRequestRepository.findTop1ByClubMemberAndMercenaryPost(clubMember, mercenaryPost).isPresent()) {
+        if (mercenaryRequestRepository.findTop1ByMemberAndMercenaryPost(member, mercenaryPost).isPresent()) {
             throw new AppException(ErrorCode.DUPLICATE_REQUEST);
         }
 
-
         MercenaryRequest mercenaryRequest = MercenaryRequest.builder()
-                .clubMember(clubMember)
+                .member(member)
                 .mercenaryPost(mercenaryPost)
                 .status(MatchingStatus.PENDING)
                 .build();

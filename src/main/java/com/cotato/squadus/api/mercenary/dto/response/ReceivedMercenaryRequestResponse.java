@@ -6,7 +6,7 @@ import com.cotato.squadus.domain.club.match.enums.MatchingStatus;
 public record ReceivedMercenaryRequestResponse(
         String matchingStatus,
         Long requestId,
-        Long clubMemberId,
+        Long memberId,
         String requestName,
         String requesterUniversity
 ) {
@@ -14,9 +14,9 @@ public record ReceivedMercenaryRequestResponse(
         return new ReceivedMercenaryRequestResponse(
                 mercenaryRequest.getStatus().name(),
                 mercenaryRequest.getMercenaryRequestIdx(),
-                mercenaryRequest.getClubMember().getClubMemberIdx(),
-                mercenaryRequest.getClubMember().getMember().getUsername(),   // 요청자 이름
-                mercenaryRequest.getClubMember().getMember().getUniversity()  // 요청자 소속 대학
+                mercenaryRequest.getMember().getMemberIdx(),
+                mercenaryRequest.getMember().getUsername(),   // 요청자 이름
+                mercenaryRequest.getMember().getUniversity()  // 요청자 소속 대학
         );
     }
 }

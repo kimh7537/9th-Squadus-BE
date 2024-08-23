@@ -1,5 +1,6 @@
 package com.cotato.squadus.domain.club.match.repository.mercenary;
 
+import com.cotato.squadus.domain.auth.entity.Member;
 import com.cotato.squadus.domain.club.common.entity.ClubMember;
 import com.cotato.squadus.domain.club.match.entity.mercenary.MercenaryPost;
 import com.cotato.squadus.domain.club.match.entity.mercenary.MercenaryRequest;
@@ -12,10 +13,12 @@ import java.util.Optional;
 
 public interface MercenaryRequestRepository extends JpaRepository<MercenaryRequest, Long> {
 
-    Page<MercenaryRequest> findAllByClubMember_ClubMemberIdx(Long clubMemberIdx, Pageable pageable);
+    Page<MercenaryRequest> findAllByMember_MemberIdx(Member member, Pageable pageable);
 
-    List<MercenaryRequest> findAllByClubMember_ClubMemberIdx(Long clubMemberIdx);
+    List<MercenaryRequest> findAllByMember_MemberIdx(Member member);
 
-    Optional<MercenaryRequest> findTop1ByClubMemberAndMercenaryPost(ClubMember clubMember, MercenaryPost mercenaryPost);
+    Optional<MercenaryRequest> findTop1ByMemberAndMercenaryPost(Member member, MercenaryPost mercenaryPost);
+
+//    Optional<MercenaryRequest> findTop1ByClubMemberAndMercenaryPost(ClubMember clubMember, MercenaryPost mercenaryPost);
 
 }

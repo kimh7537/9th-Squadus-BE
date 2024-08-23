@@ -7,6 +7,7 @@ import com.cotato.squadus.api.mercenary.dto.request.MercenaryRequestRequest;
 import com.cotato.squadus.api.mercenary.dto.response.MercenaryCreateResponse;
 import com.cotato.squadus.api.mercenary.dto.response.MercenaryCreateResponseWrapper;
 import com.cotato.squadus.api.mercenary.dto.response.MercenaryRequestResponse;
+import com.cotato.squadus.common.config.auth.CustomOAuth2Member;
 import com.cotato.squadus.domain.club.match.service.mercenary.MercenaryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -70,8 +72,10 @@ public class MercenaryController {
 
     @PostMapping("/request")
     @Operation(summary = "용병 매칭 요청", description = "특정 용병 매칭 게시글에 대해 매칭 요청을 보냅니다.")
-    public ResponseEntity<MercenaryRequestResponse> sendMatchRequest(@RequestBody MercenaryRequestRequest mercenaryRequestRequest) {
-        MercenaryRequestResponse response = mercenaryService.sendMatchRequest(mercenaryRequestRequest);
+    public ResponseEntity<MercenaryRequestResponse> sendMatchRequest(
+            @RequestBody MercenaryRequestRequest mercenaryRequestRequest,
+            @AuthenticationPrincipal CustomOAuth2Member customOAuth2Member) {
+        MercenaryRequestResponse response = mercenaryService.sendMatchRequest(mercenaryRequestRequest, customOAuth2Member);
         return ResponseEntity.ok(response);
     }
 }
