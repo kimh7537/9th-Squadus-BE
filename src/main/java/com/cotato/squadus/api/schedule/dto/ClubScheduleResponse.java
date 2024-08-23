@@ -1,6 +1,7 @@
 package com.cotato.squadus.api.schedule.dto;
 
 import com.cotato.squadus.domain.club.schedule.entity.ClubSchedule;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -14,7 +15,11 @@ public record ClubScheduleResponse(
         String location,
         String equipment,
         LocalDate date,
+
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
         LocalTime startTime,
+
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
         LocalTime endTime
 ) {
     public static ClubScheduleResponse from(ClubSchedule schedule) {
