@@ -8,4 +8,6 @@ import java.util.List;
 public interface ClubApplicationRepository extends JpaRepository<ClubApplication, Long> {
 
     List<ClubApplication> findByRecruitingPost_PostId(Long postId);
+
+    List<ClubApplication> findByMember_MemberIdx(Long memberIdx);
 }
