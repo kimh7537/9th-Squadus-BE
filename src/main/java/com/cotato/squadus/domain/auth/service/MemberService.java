@@ -1,14 +1,14 @@
 package com.cotato.squadus.domain.auth.service;
 
-import com.cotato.squadus.api.member.dto.MemberClubListResponse;
-import com.cotato.squadus.api.member.dto.MemberClubResponse;
-import com.cotato.squadus.api.member.dto.MemberInfoResponse;
+import com.cotato.squadus.api.member.dto.*;
 import com.cotato.squadus.common.config.auth.CustomOAuth2Member;
 import com.cotato.squadus.common.config.jwt.JWTUtil;
 import com.cotato.squadus.common.s3.S3ImageService;
 import com.cotato.squadus.domain.auth.entity.Member;
 import com.cotato.squadus.domain.auth.repository.MemberRepository;
+import com.cotato.squadus.domain.club.common.entity.ClubApplication;
 import com.cotato.squadus.domain.club.common.entity.ClubMember;
+import com.cotato.squadus.domain.club.common.repository.ClubApplicationRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +27,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final JWTUtil jwtUtil;
     private final S3ImageService s3ImageService;
+    private final ClubApplicationRepository clubApplicationRepository;
 
     @Transactional
     public Long saveMember(Member member) {
@@ -74,5 +75,18 @@ public class MemberService {
         member.updateProfileImage("default profile img");
         memberRepository.save(member);
         return MemberInfoResponse.from(member);
+    }
+
+    public MemberClubApplicationListResponse findAppliedClubs(CustomOAuth2Member customOAuth2Member) {
+        Member member = memberRepository.findByUniqueId(customOAuth2Member.getUniqueId())
+                .orElseThrow(() -> new EntityNotFoundException("해당 uniqueId를 가진 회원이 존재하지 않습니다."));
+
+        List<ClubApplication> clubApplications = clubApplicationRepository.findByMember_MemberIdx(member.getMemberIdx());
+
+        List<MemberClubApplicationInfoResponse> memberClubApplicationInfoResponses = clubApplications.stream()
+                .map(MemberClubApplicationInfoResponse::from)
+                .toList();
+
+        return MemberClubApplicationListResponse.from(memberClubApplicationInfoResponses);
     }
 }
