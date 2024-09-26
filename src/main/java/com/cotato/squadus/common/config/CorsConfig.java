@@ -18,7 +18,7 @@ public class CorsConfig {
         config.setAllowedOrigins(List.of(
                 "http://localhost:3000",
                 "http://15.165.165.240",
-                "https://squadus.kro.kr" // 이 줄을 추가하여 해당 도메인도 허용
+                "https://squadus.kro.kr"
         ));
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
