@@ -16,11 +16,11 @@ public class ClubPost extends BaseTimeEntity {
     @Id @GeneratedValue
     private Long postId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "club_member_idx")
     private ClubAdminMember author;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "club_id")
     private Club club;
 

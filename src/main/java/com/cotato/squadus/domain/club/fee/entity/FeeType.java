@@ -42,7 +42,7 @@ public class FeeType extends BaseTimeEntity {
     private Long totalPrice; // 납부 총 금액
     private Long balance; // 잔액
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "club_id")
     private Club club;
 
