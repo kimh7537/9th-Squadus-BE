@@ -29,7 +29,6 @@ public class ClubPostController {
     public ResponseEntity<ClubPostListResponse> getAllClubPostsByClubId(@PathVariable Long clubId) {
 //        clubMemberService.validateClubMember(clubId);
         ClubPostListResponse allClubPostsByClubId = clubPostService.findAllClubPostsByClubId(clubId);
-        log.info("ClubId로 동아리 공지 전체 조회 : {} ", allClubPostsByClubId);
         return ResponseEntity.ok(allClubPostsByClubId);
     }
 
