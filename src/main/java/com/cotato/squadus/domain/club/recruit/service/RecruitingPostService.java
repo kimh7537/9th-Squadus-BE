@@ -29,7 +29,7 @@ public class RecruitingPostService {
 
 
     public Page<RecruitingPostResponse> findAllRecruitingPosts(CustomOAuth2Member customOAuth2Member, Pageable pageable) {
-        return recruitingPostRepository.findAll(pageable)
+        return recruitingPostRepository.findAllWithClub(pageable)
                 .map(RecruitingPostResponse::from);
     }
 
