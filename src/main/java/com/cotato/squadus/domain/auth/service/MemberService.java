@@ -81,7 +81,7 @@ public class MemberService {
         Member member = memberRepository.findByUniqueId(customOAuth2Member.getUniqueId())
                 .orElseThrow(() -> new EntityNotFoundException("해당 uniqueId를 가진 회원이 존재하지 않습니다."));
 
-        List<ClubApplication> clubApplications = clubApplicationRepository.findByMember_MemberIdx(member.getMemberIdx());
+        List<ClubApplication> clubApplications = clubApplicationRepository.findByMember_MemberIdxFetchClubAndRecruitingPost(member.getMemberIdx());
 
         List<MemberClubApplicationInfoResponse> memberClubApplicationInfoResponses = clubApplications.stream()
                 .map(MemberClubApplicationInfoResponse::from)
