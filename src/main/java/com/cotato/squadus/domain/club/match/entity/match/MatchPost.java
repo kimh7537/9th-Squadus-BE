@@ -1,18 +1,32 @@
 package com.cotato.squadus.domain.club.match.entity.match;
 
-import com.cotato.squadus.common.entity.BaseTimeEntity;
-import com.cotato.squadus.domain.club.common.entity.Club;
-import com.cotato.squadus.domain.club.common.entity.Tier;
-import com.cotato.squadus.domain.club.match.entity.MatchPlace;
-import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.cotato.squadus.common.entity.BaseTimeEntity;
+import com.cotato.squadus.domain.club.common.entity.Club;
+import com.cotato.squadus.domain.club.common.entity.Tier;
+import com.cotato.squadus.domain.club.match.entity.MatchPlace;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
@@ -20,85 +34,86 @@ import java.util.List;
 @Table(name = "match_post")
 public class MatchPost extends BaseTimeEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long matchIdx;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long matchIdx;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "home_club_id")
-    private Club homeClub;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "home_club_id")
+	private Club homeClub;
 
-    @OneToMany(mappedBy = "matchPost", cascade = CascadeType.ALL)
-    private List<MatchRequest> matchRequests = new ArrayList<>();
+	@OneToMany(mappedBy = "matchPost", cascade = CascadeType.ALL)
+	private List<MatchRequest> matchRequests = new ArrayList<>();
 
-    private String title;
+	private String title;
 
-    @Lob
-    private String content;
+	@Lob
+	private String content;
 
-    @Enumerated(EnumType.STRING)
-    private Tier tier;
+	@Enumerated(EnumType.STRING)
+	private Tier tier;
 
-    @Embedded
-    private MatchPlace matchPlace;
+	@Embedded
+	private MatchPlace matchPlace;
 
-    private Boolean placeProvided;
+	private Boolean placeProvided;
 
-    //월, 일 정보 저장
-    private LocalDate matchStartDate;
+	//월, 일 정보 저장
+	private LocalDate matchStartDate;
 
-    //시간 정보 저장
-    private LocalTime matchStartTime;
+	//시간 정보 저장
+	private LocalTime matchStartTime;
 
-    private Integer maxParticipants; // 최대 참가 인원
+	private Integer maxParticipants; // 최대 참가 인원
 
-    private Boolean isFinalized = false;
+	private Boolean isFinalized = false;
 
-    private Integer homeWins = 0;
-    private Integer awayWins = 0;
+	private Integer homeWins = 0;
+	private Integer awayWins = 0;
 
+	@Builder
+	public MatchPost(Club homeClub, String title, String content,
+		Tier tier, MatchPlace matchPlace, Boolean placeProvided, LocalDate matchStartDate, LocalTime matchStartTime,
+		Integer maxParticipants) {
+		this.homeClub = homeClub;
+		this.title = title;
+		this.content = content;
+		this.tier = tier;
+		this.matchPlace = matchPlace;
+		this.placeProvided = placeProvided;
+		this.matchStartDate = matchStartDate;
+		this.matchStartTime = matchStartTime;
+		this.maxParticipants = maxParticipants;
+	}
 
-    @Builder
-    public MatchPost(Club homeClub, String title, String content,
-                     Tier tier, MatchPlace matchPlace, Boolean placeProvided, LocalDate matchStartDate, LocalTime matchStartTime, Integer maxParticipants) {
-        this.homeClub = homeClub;
-        this.title = title;
-        this.content = content;
-        this.tier = tier;
-        this.matchPlace = matchPlace;
-        this.placeProvided = placeProvided;
-        this.matchStartDate = matchStartDate;
-        this.matchStartTime = matchStartTime;
-        this.maxParticipants = maxParticipants;
-    }
+	public void setHomeClub(Club homeClub) {
+		this.homeClub = homeClub;
+	}
 
-    public void setHomeClub(Club homeClub) {
-        this.homeClub = homeClub;
-    }
+	public void addMatchRequest(MatchRequest matchRequest) {
+		this.matchRequests.add(matchRequest);
+		matchRequest.setMatchPost(this);
+	}
 
-    public void addMatchRequest(MatchRequest matchRequest) {
-        this.matchRequests.add(matchRequest);
-        matchRequest.setMatchPost(this);
-    }
+	public void update(String title, String content, MatchPlace matchPlace, Boolean placeProvided,
+		LocalDate matchStartDate, LocalTime matchStartTime, Integer maxParticipants) {
+		this.title = title;
+		this.content = content;
+		this.matchPlace = matchPlace;
+		this.placeProvided = placeProvided;
+		this.matchStartDate = matchStartDate;
+		this.matchStartTime = matchStartTime;
+		this.maxParticipants = maxParticipants;
+	}
 
-    public void update(String title, String content, MatchPlace matchPlace, Boolean placeProvided, LocalDate matchStartDate, LocalTime matchStartTime, Integer maxParticipants) {
-        this.title = title;
-        this.content = content;
-        this.matchPlace = matchPlace;
-        this.placeProvided = placeProvided;
-        this.matchStartDate = matchStartDate;
-        this.matchStartTime = matchStartTime;
-        this.maxParticipants = maxParticipants;
-    }
+	//매칭을 최종 확정하는 메서드
+	public void finalizeMatch() {
+		this.isFinalized = true;
+	}
 
-    //매칭을 최종 확정하는 메서드
-    public void finalizeMatch(){
-        this.isFinalized = true;
-    }
-
-    public void updateWinCounts(int homeWins, int awayWins) {
-        this.homeWins = homeWins;
-        this.awayWins = awayWins;
-    }
+	public void updateWinCounts(int homeWins, int awayWins) {
+		this.homeWins = homeWins;
+		this.awayWins = awayWins;
+	}
 
 }

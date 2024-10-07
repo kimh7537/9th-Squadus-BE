@@ -6,6 +6,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ScheduleCommentRequest {
-    private Long memberId;
-    private String content;
+	private Long memberId;
+	private String content;
 }

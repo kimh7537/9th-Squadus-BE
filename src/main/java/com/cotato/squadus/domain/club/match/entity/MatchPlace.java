@@ -11,13 +11,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MatchPlace {
 
-    private String city; // 시/도
+	private String city; // 시/도
 
-    private String district; // 군/구
+	private String district; // 군/구
 
-    @Builder
-    public MatchPlace(String city, String district) {
-        this.city = city;
-        this.district = district;
-    }
+	@Builder
+	public MatchPlace(String city, String district) {
+		this.city = city;
+		this.district = district;
+	}
 }

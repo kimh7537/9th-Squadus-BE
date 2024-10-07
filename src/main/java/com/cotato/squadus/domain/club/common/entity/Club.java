@@ -1,5 +1,13 @@
 package com.cotato.squadus.domain.club.common.entity;
 
+import static jakarta.persistence.CascadeType.*;
+import static jakarta.persistence.FetchType.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import com.cotato.squadus.common.entity.BaseTimeEntity;
 import com.cotato.squadus.domain.club.common.enums.ClubCategory;
 import com.cotato.squadus.domain.club.common.enums.ClubTier;
@@ -9,16 +17,22 @@ import com.cotato.squadus.domain.club.match.entity.match.MatchPost;
 import com.cotato.squadus.domain.club.match.entity.mercenary.MercenaryPost;
 import com.cotato.squadus.domain.club.post.entity.ClubPost;
 import com.cotato.squadus.domain.club.schedule.entity.ClubSchedule;
-import jakarta.persistence.*;
+
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import java.util.ArrayList;
-import java.util.List;
-import static jakarta.persistence.CascadeType.*;
-import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @Getter
@@ -27,116 +41,118 @@ import static jakarta.persistence.FetchType.LAZY;
 @EntityListeners(AuditingEntityListener.class)
 public class Club extends BaseTimeEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long clubId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long clubId;
 
-    private String clubName;
+	private String clubName;
 
-    private String university;
+	private String university;
 
-    @Enumerated(EnumType.STRING)
-    private ClubTier clubTier;
+	@Enumerated(EnumType.STRING)
+	private ClubTier clubTier;
 
-    private Integer clubRank;
+	private Integer clubRank;
 
-    @Lob
-    private String clubMessage;
+	@Lob
+	private String clubMessage;
 
-    private Long maxMembers;
+	private Long maxMembers;
 
-    private Integer numberOfMembers;
+	private Integer numberOfMembers;
 
-    //동아리 매칭 점수, 티어를 위해 사용함
-    private Integer matchScore = 0;
+	//동아리 매칭 점수, 티어를 위해 사용함
+	private Integer matchScore = 0;
 
-    @ElementCollection
-    private List<String> tags; // 별도의 테이블을 생성하여 컬렉션의 데이터를 저장
+	@ElementCollection
+	private List<String> tags; // 별도의 테이블을 생성하여 컬렉션의 데이터를 저장
 
-    @Enumerated(EnumType.STRING)
-    private ClubCategory clubCategory;
+	@Enumerated(EnumType.STRING)
+	private ClubCategory clubCategory;
 
-    @Enumerated(EnumType.STRING)
-    private SportsCategory sportsCategory;
+	@Enumerated(EnumType.STRING)
+	private SportsCategory sportsCategory;
 
-    @Embedded
-    private Region region; // 활동 지역
+	@Embedded
+	private Region region; // 활동 지역
 
-    //s3로 이미지 저장
-    private String logo;
+	//s3로 이미지 저장
+	private String logo;
 
-    @OneToMany(mappedBy = "club", cascade = ALL)
-    private List<ClubSchedule> clubSchedules;
+	@OneToMany(mappedBy = "club", cascade = ALL)
+	private List<ClubSchedule> clubSchedules;
 
-    @OneToMany(mappedBy = "club", cascade = ALL)
-    private List<ClubMember> clubMembers = new ArrayList<>();
+	@OneToMany(mappedBy = "club", cascade = ALL)
+	private List<ClubMember> clubMembers = new ArrayList<>();
 
-    @OneToMany(mappedBy = "club", fetch = LAZY, cascade = ALL)
-    private List<ClubPost> clubPosts = new ArrayList<>();
+	@OneToMany(mappedBy = "club", fetch = LAZY, cascade = ALL)
+	private List<ClubPost> clubPosts = new ArrayList<>();
 
-    @OneToMany(mappedBy = "homeClub", fetch = LAZY, cascade = ALL)
-    private List<MatchPost> matchPosts = new ArrayList<>();
+	@OneToMany(mappedBy = "homeClub", fetch = LAZY, cascade = ALL)
+	private List<MatchPost> matchPosts = new ArrayList<>();
 
-    @OneToMany(mappedBy = "homeClub", fetch = LAZY, cascade = ALL)
-    private List<MercenaryPost> mercenaryPosts = new ArrayList<>();
+	@OneToMany(mappedBy = "homeClub", fetch = LAZY, cascade = ALL)
+	private List<MercenaryPost> mercenaryPosts = new ArrayList<>();
 
-    @OneToMany(mappedBy = "club", fetch = LAZY, cascade = ALL)
-    private List<FeeType> feeTypes = new ArrayList<>();
+	@OneToMany(mappedBy = "club", fetch = LAZY, cascade = ALL)
+	private List<FeeType> feeTypes = new ArrayList<>();
 
-    @Builder
-    private Club(String clubName, String university, ClubCategory clubCategory, SportsCategory sportsCategory, String logo, ClubTier clubTier, Integer clubRank, String clubMessage, Long maxMembers, Region region, List<String> tags) {
-        this.clubName = clubName;
-        this.university = university;
-        this.clubCategory = clubCategory;
-        this.sportsCategory = sportsCategory;
-        this.logo = logo;
-        this.clubTier = clubTier;
-        this.clubRank = clubRank;
-        this.clubMessage = clubMessage;
-        this.maxMembers = maxMembers;
-        this.numberOfMembers = 1;
-        this.region = region;
-        this.tags = tags;
-    }
+	@Builder
+	private Club(String clubName, String university, ClubCategory clubCategory, SportsCategory sportsCategory,
+		String logo, ClubTier clubTier, Integer clubRank, String clubMessage, Long maxMembers, Region region,
+		List<String> tags) {
+		this.clubName = clubName;
+		this.university = university;
+		this.clubCategory = clubCategory;
+		this.sportsCategory = sportsCategory;
+		this.logo = logo;
+		this.clubTier = clubTier;
+		this.clubRank = clubRank;
+		this.clubMessage = clubMessage;
+		this.maxMembers = maxMembers;
+		this.numberOfMembers = 1;
+		this.region = region;
+		this.tags = tags;
+	}
 
-    public void addClubMember(ClubMember clubMember) {
-        this.clubMembers.add(clubMember);
-    }
+	public void addClubMember(ClubMember clubMember) {
+		this.clubMembers.add(clubMember);
+	}
 
-    public void addMatchPost(MatchPost matchPost) {
-        this.matchPosts.add(matchPost);
-        matchPost.setHomeClub(this);
-    }
+	public void addMatchPost(MatchPost matchPost) {
+		this.matchPosts.add(matchPost);
+		matchPost.setHomeClub(this);
+	}
 
-    public void addMercenaryPost(MercenaryPost mercenaryPost) {
-        this.mercenaryPosts.add(mercenaryPost);
-        mercenaryPost.setHomeClub(this);
-    }
+	public void addMercenaryPost(MercenaryPost mercenaryPost) {
+		this.mercenaryPosts.add(mercenaryPost);
+		mercenaryPost.setHomeClub(this);
+	}
 
-    public void addNumberOfMembers() {
-        this.numberOfMembers++;
-    }
+	public void addNumberOfMembers() {
+		this.numberOfMembers++;
+	}
 
-    // 매칭 결과를 누적하여 점수 반영
-    public void updateMatchScore(int points) {
-        this.matchScore = this.matchScore + points;
-    }
+	// 매칭 결과를 누적하여 점수 반영
+	public void updateMatchScore(int points) {
+		this.matchScore = this.matchScore + points;
+	}
 
-    public Club updateClub(String logo, String clubMessage, Region region, Long maxMembers, List<String> tags) {
-        this.logo = logo;
-        this.clubMessage = clubMessage;
-        this.region = region;
-        this.maxMembers = maxMembers;
-        this.tags = tags;
-        return this;
-    }
+	public Club updateClub(String logo, String clubMessage, Region region, Long maxMembers, List<String> tags) {
+		this.logo = logo;
+		this.clubMessage = clubMessage;
+		this.region = region;
+		this.maxMembers = maxMembers;
+		this.tags = tags;
+		return this;
+	}
 
-    public void updateTier(ClubTier newTier) {
-        this.clubTier = newTier;
-    }
+	public void updateTier(ClubTier newTier) {
+		this.clubTier = newTier;
+	}
 
-    public void updateClubRank(Integer clubRank) {
-        this.clubRank = clubRank;
-    }
+	public void updateClubRank(Integer clubRank) {
+		this.clubRank = clubRank;
+	}
 
 }

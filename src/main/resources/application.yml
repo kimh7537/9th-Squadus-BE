@@ -2,13 +2,13 @@ spring:
   jwt:
     secret: ${JWT_SECRET}
 
-#    access:
-#      expiration: 80
-#      header: Authorization
-#
-#    refresh:
-#      expiration: 90
-#      header: Authorization-refresh
+  #    access:
+  #      expiration: 80
+  #      header: Authorization
+  #
+  #    refresh:
+  #      expiration: 90
+  #      header: Authorization-refresh
   mail:
     host: smtp.gmail.com
     username: ${MAIL_ADDRESS}

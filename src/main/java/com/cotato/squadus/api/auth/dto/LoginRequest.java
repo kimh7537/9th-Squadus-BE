@@ -2,6 +2,7 @@ package com.cotato.squadus.api.auth.dto;
 
 import com.cotato.squadus.domain.auth.entity.Member;
 import com.cotato.squadus.domain.auth.enums.MemberRole;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,24 +11,23 @@ import lombok.Setter;
 @Setter
 public class LoginRequest {
 
-    private String uniqueId;
-    private String username;
-    private String email;
-    private MemberRole memberRole;
+	private String uniqueId;
+	private String username;
+	private String email;
+	private MemberRole memberRole;
 
-    public LoginRequest(Member member) {
-        this.uniqueId = member.getUniqueId();
-        this.username = member.getUsername();
-        this.email = member.getEmail();
-        this.memberRole = member.getMemberRole();
-    }
+	public LoginRequest(Member member) {
+		this.uniqueId = member.getUniqueId();
+		this.username = member.getUsername();
+		this.email = member.getEmail();
+		this.memberRole = member.getMemberRole();
+	}
 
-    @Builder
-    public LoginRequest(String uniqueId, String username, MemberRole memberRole) {
-        this.uniqueId = uniqueId;
-        this.username = username;
-        this.memberRole = memberRole;
-    }
-
+	@Builder
+	public LoginRequest(String uniqueId, String username, MemberRole memberRole) {
+		this.uniqueId = uniqueId;
+		this.username = username;
+		this.memberRole = memberRole;
+	}
 
 }

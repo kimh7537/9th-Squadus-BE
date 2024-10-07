@@ -1,24 +1,41 @@
 package com.cotato.squadus.api.club.controller;
 
-import com.cotato.squadus.api.club.dto.*;
+import java.util.List;
+
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.cotato.squadus.api.club.dto.ClubApplyRequest;
+import com.cotato.squadus.api.club.dto.ClubApplyResponse;
+import com.cotato.squadus.api.club.dto.ClubCreateRequest;
+import com.cotato.squadus.api.club.dto.ClubCreateResponse;
+import com.cotato.squadus.api.club.dto.ClubInfoResponse;
+import com.cotato.squadus.api.club.dto.ClubMemberInfoResponseList;
+import com.cotato.squadus.api.club.dto.ClubRankResponse;
+import com.cotato.squadus.api.club.dto.ClubUpdateRequest;
+import com.cotato.squadus.api.club.dto.ClubUpdateResponse;
 import com.cotato.squadus.common.config.auth.CustomOAuth2Member;
 import com.cotato.squadus.domain.auth.service.ClubMemberService;
 import com.cotato.squadus.domain.club.common.enums.SportsCategory;
 import com.cotato.squadus.domain.club.common.service.ClubService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @Tag(name = "동아리", description = "동아리 관련 API")
 @RestController
@@ -26,79 +43,79 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ClubController {
 
-    private final ClubService clubService;
-    private final ClubMemberService clubMemberService;
+	private final ClubService clubService;
+	private final ClubMemberService clubMemberService;
 
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "동아리 생성", description = "동아리에 대한 정보를 바탕으로 동아리를 생성합니다")
-    public ResponseEntity<ClubCreateResponse> createClub(
-            @AuthenticationPrincipal CustomOAuth2Member customOAuth2Member,
-            @Parameter(description = "동아리 생성 요청 정보", schema = @Schema(implementation = ClubCreateRequest.class))
-            @RequestPart("clubCreateRequest") String clubCreateRequestString,
-            @RequestPart(value = "logoImage", required = false) MultipartFile logoImage) {
+	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	@Operation(summary = "동아리 생성", description = "동아리에 대한 정보를 바탕으로 동아리를 생성합니다")
+	public ResponseEntity<ClubCreateResponse> createClub(
+		@AuthenticationPrincipal CustomOAuth2Member customOAuth2Member,
+		@Parameter(description = "동아리 생성 요청 정보", schema = @Schema(implementation = ClubCreateRequest.class))
+		@RequestPart("clubCreateRequest") String clubCreateRequestString,
+		@RequestPart(value = "logoImage", required = false) MultipartFile logoImage) {
 
-        // JSON String을 객체로 변환
-        ObjectMapper objectMapper = new ObjectMapper();
-        ClubCreateRequest clubCreateRequest;
-        try {
-            clubCreateRequest = objectMapper.readValue(clubCreateRequestString, ClubCreateRequest.class);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Invalid JSON format", e);
-        }
-        ClubCreateResponse clubCreateResponse = clubService.createClub(customOAuth2Member, clubCreateRequest, logoImage);
-        return ResponseEntity.ok(clubCreateResponse);
-    }
+		// JSON String을 객체로 변환
+		ObjectMapper objectMapper = new ObjectMapper();
+		ClubCreateRequest clubCreateRequest;
+		try {
+			clubCreateRequest = objectMapper.readValue(clubCreateRequestString, ClubCreateRequest.class);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException("Invalid JSON format", e);
+		}
+		ClubCreateResponse clubCreateResponse = clubService.createClub(customOAuth2Member, clubCreateRequest,
+			logoImage);
+		return ResponseEntity.ok(clubCreateResponse);
+	}
 
-    @GetMapping("/{clubId}")
-    @Operation(summary = "동아리 기본 정보 조회", description = "clubId를 바탕으로 동아리에 대한 정보를 반환합니다.")
-    public ResponseEntity<ClubInfoResponse> findClubInfo(@PathVariable Long clubId) {
-        ClubInfoResponse clubInfoResponse = clubService.findClubInfo(clubId);
-        return ResponseEntity.ok(clubInfoResponse);
-    }
+	@GetMapping("/{clubId}")
+	@Operation(summary = "동아리 기본 정보 조회", description = "clubId를 바탕으로 동아리에 대한 정보를 반환합니다.")
+	public ResponseEntity<ClubInfoResponse> findClubInfo(@PathVariable Long clubId) {
+		ClubInfoResponse clubInfoResponse = clubService.findClubInfo(clubId);
+		return ResponseEntity.ok(clubInfoResponse);
+	}
 
-    @GetMapping("/{clubId}/members")
-    @Operation(summary = "동아리원 전체 조회", description = "clubId를 바탕으로 동아리원을 조회합니다.")
-    public ResponseEntity<ClubMemberInfoResponseList> findAllClubMemberInfo(@PathVariable Long clubId) {
-        ClubMemberInfoResponseList clubMemberInfoResponseList = clubMemberService.findAllClubMemberInfo(clubId);
-        return ResponseEntity.ok(clubMemberInfoResponseList);
-    }
+	@GetMapping("/{clubId}/members")
+	@Operation(summary = "동아리원 전체 조회", description = "clubId를 바탕으로 동아리원을 조회합니다.")
+	public ResponseEntity<ClubMemberInfoResponseList> findAllClubMemberInfo(@PathVariable Long clubId) {
+		ClubMemberInfoResponseList clubMemberInfoResponseList = clubMemberService.findAllClubMemberInfo(clubId);
+		return ResponseEntity.ok(clubMemberInfoResponseList);
+	}
 
+	@PostMapping("/{clubId}")
+	@Operation(summary = "동아리 가입 신청", description = "clubId와 동아리 가입에 대한 정보를 바탕으로 동아리 가입을 신청합니다")
+	public ResponseEntity<ClubApplyResponse> joinClub(@AuthenticationPrincipal CustomOAuth2Member customOAuth2Member,
+		@PathVariable Long clubId, @RequestBody ClubApplyRequest clubApplyRequest) {
+		ClubApplyResponse clubApplyResponse = clubService.joinClub(customOAuth2Member, clubId, clubApplyRequest);
+		return ResponseEntity.ok(clubApplyResponse);
+	}
 
-    @PostMapping("/{clubId}")
-    @Operation(summary = "동아리 가입 신청", description = "clubId와 동아리 가입에 대한 정보를 바탕으로 동아리 가입을 신청합니다")
-    public ResponseEntity<ClubApplyResponse> joinClub(@AuthenticationPrincipal CustomOAuth2Member customOAuth2Member, @PathVariable Long clubId, @RequestBody ClubApplyRequest clubApplyRequest) {
-        ClubApplyResponse clubApplyResponse = clubService.joinClub(customOAuth2Member, clubId, clubApplyRequest);
-        return ResponseEntity.ok(clubApplyResponse);
-    }
+	@PatchMapping(value = "/{clubId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	@Operation(summary = "동아리 기본정보 수정", description = "동아리의 기본 정보를 변경합니다.")
+	public ResponseEntity<ClubUpdateResponse> updateClub(
+		@AuthenticationPrincipal CustomOAuth2Member customOAuth2Member,
+		@PathVariable Long clubId,
+		@Parameter(description = "동아리 수정 요청 정보", schema = @Schema(implementation = ClubUpdateRequest.class))
+		@RequestPart("clubUpdateRequest") String clubUpdateRequestString,
+		@RequestPart(value = "logoImage", required = false) MultipartFile logoImage) {
 
-    @PatchMapping(value = "/{clubId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "동아리 기본정보 수정", description = "동아리의 기본 정보를 변경합니다.")
-    public ResponseEntity<ClubUpdateResponse> updateClub(
-            @AuthenticationPrincipal CustomOAuth2Member customOAuth2Member,
-            @PathVariable Long clubId,
-            @Parameter(description = "동아리 수정 요청 정보", schema = @Schema(implementation = ClubUpdateRequest.class))
-            @RequestPart("clubUpdateRequest") String clubUpdateRequestString,
-            @RequestPart(value = "logoImage", required = false) MultipartFile logoImage) {
+		// JSON String을 객체로 변환
+		ObjectMapper objectMapper = new ObjectMapper();
+		ClubUpdateRequest clubUpdateRequest;
+		try {
+			clubUpdateRequest = objectMapper.readValue(clubUpdateRequestString, ClubUpdateRequest.class);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException("Invalid JSON format", e);
+		}
+		ClubUpdateResponse clubUpdateResponse = clubService.updateClub(customOAuth2Member, clubId, clubUpdateRequest,
+			logoImage);
+		return ResponseEntity.ok(clubUpdateResponse);
+	}
 
-        // JSON String을 객체로 변환
-        ObjectMapper objectMapper = new ObjectMapper();
-        ClubUpdateRequest clubUpdateRequest;
-        try {
-            clubUpdateRequest = objectMapper.readValue(clubUpdateRequestString, ClubUpdateRequest.class);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Invalid JSON format", e);
-        }
-        ClubUpdateResponse clubUpdateResponse = clubService.updateClub(customOAuth2Member, clubId, clubUpdateRequest, logoImage);
-        return ResponseEntity.ok(clubUpdateResponse);
-    }
-
-
-    @GetMapping("/ranking/{sportsCategory}")
-    @Operation(summary = "랭킹 목록 조회", description = "랭킹 페이지로 들어가면 ALL TIME 기준의 랭킹 정보를 순위대로 얻을 수 있다.")
-    public ResponseEntity<List<ClubRankResponse>> getRanking(@PathVariable SportsCategory sportsCategory) {
-        List<ClubRankResponse> ranking = clubService.getRanking(sportsCategory);
-        return ResponseEntity.ok(ranking);
-    }
-
+	@GetMapping("/ranking/{sportsCategory}")
+	@Operation(summary = "랭킹 목록 조회", description = "랭킹 페이지로 들어가면 ALL TIME 기준의 랭킹 정보를 순위대로 얻을 수 있다.")
+	public ResponseEntity<List<ClubRankResponse>> getRanking(@PathVariable SportsCategory sportsCategory) {
+		List<ClubRankResponse> ranking = clubService.getRanking(sportsCategory);
+		return ResponseEntity.ok(ranking);
+	}
 
 }

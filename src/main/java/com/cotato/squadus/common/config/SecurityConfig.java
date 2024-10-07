@@ -1,13 +1,5 @@
 package com.cotato.squadus.common.config;
 
-import com.cotato.squadus.common.config.auth.CustomOAuth2MemberService;
-import com.cotato.squadus.common.config.auth.CustomSuccessHandler;
-import com.cotato.squadus.common.config.filter.CustomLogoutFilter;
-import com.cotato.squadus.common.config.filter.JWTFilter;
-import com.cotato.squadus.common.config.jwt.JWTUtil;
-import com.cotato.squadus.domain.auth.enums.AdminStatus;
-import com.cotato.squadus.common.config.jwt.RefreshRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,82 +10,91 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 
+import com.cotato.squadus.common.config.auth.CustomOAuth2MemberService;
+import com.cotato.squadus.common.config.auth.CustomSuccessHandler;
+import com.cotato.squadus.common.config.filter.CustomLogoutFilter;
+import com.cotato.squadus.common.config.filter.JWTFilter;
+import com.cotato.squadus.common.config.jwt.JWTUtil;
+import com.cotato.squadus.common.config.jwt.RefreshRepository;
+import com.cotato.squadus.domain.auth.enums.AdminStatus;
+
+import lombok.RequiredArgsConstructor;
+
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private static final String[] WHITE_LIST = {
-            "/v1/api/auth/**",
-            "/v1/api/member/**",
-            "/v1/api/clubs/**",
-            "/v1/api/articles/**",
-            "/v1/api/email/**",
-            "/v1/api/image/**",
-            "/swagger-ui/**",
-            "/v3/api-docs/**",
-            "/login",
-            "oauth2/**",
-            "/v1/api/matches/**",
-            "/v1/api/mercenary/**",
-            "/v1/api/mercenary-requests/**",
-            "/v1/api/match-requests/**",
-            "/v1/api/match-results/**"
-    };
+	private static final String[] WHITE_LIST = {
+		"/v1/api/auth/**",
+		"/v1/api/member/**",
+		"/v1/api/clubs/**",
+		"/v1/api/articles/**",
+		"/v1/api/email/**",
+		"/v1/api/image/**",
+		"/swagger-ui/**",
+		"/v3/api-docs/**",
+		"/login",
+		"oauth2/**",
+		"/v1/api/matches/**",
+		"/v1/api/mercenary/**",
+		"/v1/api/mercenary-requests/**",
+		"/v1/api/match-requests/**",
+		"/v1/api/match-results/**"
+	};
 
-    private final CustomOAuth2MemberService customOAuth2MemberService;
-    private final CustomSuccessHandler customSuccessHandler;
-    private final JWTUtil jwtUtil;
-    private final RefreshRepository refreshRepository;
+	private final CustomOAuth2MemberService customOAuth2MemberService;
+	private final CustomSuccessHandler customSuccessHandler;
+	private final JWTUtil jwtUtil;
+	private final RefreshRepository refreshRepository;
 
+	@Bean
+	public BCryptPasswordEncoder bCryptPasswordEncoder() {
 
-    @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
 
-        return new BCryptPasswordEncoder();
-    }
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+		//csrf disable
+		http
+			.csrf((auth) -> auth.disable());
 
-        //csrf disable
-        http
-                .csrf((auth) -> auth.disable());
+		//From 로그인 방식 disable
+		http
+			.formLogin((auth) -> auth.disable());
 
-        //From 로그인 방식 disable
-        http
-                .formLogin((auth) -> auth.disable());
+		//http basic 인증 방식 disable
+		http
+			.httpBasic((auth) -> auth.disable());
 
-        //http basic 인증 방식 disable
-        http
-                .httpBasic((auth) -> auth.disable());
+		http
+			.addFilterBefore(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
-        http
-                .addFilterBefore(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+		http
+			.oauth2Login((oauth2) -> oauth2
+				.userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
+					.userService(customOAuth2MemberService))
+				.successHandler(customSuccessHandler)
+			);
 
-        http
-                .oauth2Login((oauth2) -> oauth2
-                        .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
-                                .userService(customOAuth2MemberService))
-                        .successHandler(customSuccessHandler)
-                );
+		//경로별 인가 작업
+		http
+			.authorizeHttpRequests((auth) -> auth
+				.requestMatchers("/v1/api/email/**").permitAll()
+				.requestMatchers(WHITE_LIST).permitAll()
+				.requestMatchers("/admin").hasRole(AdminStatus.CURRENT.name())
+				.requestMatchers("/reissue").permitAll()
+				.anyRequest().authenticated());
 
-        //경로별 인가 작업
-        http
-                .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/v1/api/email/**").permitAll()
-                        .requestMatchers(WHITE_LIST).permitAll()
-                        .requestMatchers("/admin").hasRole(AdminStatus.CURRENT.name())
-                        .requestMatchers("/reissue").permitAll()
-                        .anyRequest().authenticated());
+		http
+			.addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRepository), LogoutFilter.class);
 
-        http
-                .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRepository), LogoutFilter.class);
+		http
+			.sessionManagement((session) -> session
+				.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-        http
-                .sessionManagement((session) -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
-        return http.build();
-    }
+		return http.build();
+	}
 }

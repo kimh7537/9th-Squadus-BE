@@ -6,5 +6,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class MercenaryRequestRequest {
-    private Long mercenaryPostId;
+	private Long mercenaryPostId;
 }
