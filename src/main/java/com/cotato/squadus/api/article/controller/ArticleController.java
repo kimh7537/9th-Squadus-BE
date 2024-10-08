@@ -1,25 +1,35 @@
 package com.cotato.squadus.api.article.controller;
 
-import com.cotato.squadus.api.article.dto.*;
-import com.cotato.squadus.api.post.dto.ClubPostCreateRequest;
-import com.cotato.squadus.domain.club.article.service.ArticleService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import com.cotato.squadus.api.article.dto.ArticleListResponse;
+import com.cotato.squadus.api.article.dto.ArticleRequest;
+import com.cotato.squadus.api.article.dto.ArticleResponse;
+import com.cotato.squadus.api.article.dto.ArticleResponseListWrapper;
+import com.cotato.squadus.api.article.dto.ArticleSummaryResponse;
+import com.cotato.squadus.domain.club.article.service.ArticleService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Tag(name = "아티클", description = "아티클 관련 API")
 @Slf4j
@@ -28,62 +38,60 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ArticleController {
 
-    private final ArticleService articleService;
+	private final ArticleService articleService;
 
-    @GetMapping("/{articleId}")
-    @Operation(summary = "아티클 단건 조회", description = "articleId를 바탕으로 아티클 하나에 대한 정보를 조회합니다")
-    public ResponseEntity<ArticleResponse> getArticleById(@PathVariable Long articleId) {
-        ArticleResponse article = articleService.findArticleById(articleId);
-        log.info("ArticleId로 기사 조회 : {} ", article);
-        return ResponseEntity.ok(article);
-    }
+	@GetMapping("/{articleId}")
+	@Operation(summary = "아티클 단건 조회", description = "articleId를 바탕으로 아티클 하나에 대한 정보를 조회합니다")
+	public ResponseEntity<ArticleResponse> getArticleById(@PathVariable Long articleId) {
+		ArticleResponse article = articleService.findArticleById(articleId);
+		log.info("ArticleId로 기사 조회 : {} ", article);
+		return ResponseEntity.ok(article);
+	}
 
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "아티클 단건 생성", description = "article에 대한 정보를 바탕으로 아티클 하나를 생성합니다")
-    public ResponseEntity<ArticleResponse> createArticle(
-            @Parameter(description = "아티클 생성 정보", schema = @Schema(implementation = ArticleRequest.class))
-            @RequestPart("articleRequest") String articleRequestString,
-            @Parameter(description = "multipart/form-data 형식의 이미지를 input으로 받습니다. 이때 key 값은 image입니다.")
-            @RequestPart(value = "image", required = false) MultipartFile imageFile) {
-        // JSON String을 객체로 변환
-        ObjectMapper objectMapper = new ObjectMapper();
-        ArticleRequest articleRequest;
-        try {
-            articleRequest = objectMapper.readValue(articleRequestString, ArticleRequest.class);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Invalid JSON format", e);
-        }
+	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@Operation(summary = "아티클 단건 생성", description = "article에 대한 정보를 바탕으로 아티클 하나를 생성합니다")
+	public ResponseEntity<ArticleResponse> createArticle(
+		@Parameter(description = "아티클 생성 정보", schema = @Schema(implementation = ArticleRequest.class))
+		@RequestPart("articleRequest") String articleRequestString,
+		@Parameter(description = "multipart/form-data 형식의 이미지를 input으로 받습니다. 이때 key 값은 image입니다.")
+		@RequestPart(value = "image", required = false) MultipartFile imageFile) {
+		// JSON String을 객체로 변환
+		ObjectMapper objectMapper = new ObjectMapper();
+		ArticleRequest articleRequest;
+		try {
+			articleRequest = objectMapper.readValue(articleRequestString, ArticleRequest.class);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException("Invalid JSON format", e);
+		}
 
-        ArticleResponse article = articleService.createArticle(articleRequest, imageFile);
-        log.info("새 기사 생성 : {} ", article);
-        return ResponseEntity.ok(article);
-    }
+		ArticleResponse article = articleService.createArticle(articleRequest, imageFile);
+		log.info("새 기사 생성 : {} ", article);
+		return ResponseEntity.ok(article);
+	}
 
-    @GetMapping
-    @Operation(summary = "아티클 요약 전체 조회(페이징 단위: 10)", description = "article에 대한 정보를 10개 단위로 페이징 하여 조회합니다.")
-    public ResponseEntity<Page<ArticleSummaryResponse>> getAllArticleSummaries(
-            @PageableDefault(size = 10) Pageable pageable) {
-        Page<ArticleSummaryResponse> articles = articleService.findAllArticleSummaries(pageable);
-        log.info("모든 기사 요약 조회, 페이지 정보 : {} ", pageable);
-        return ResponseEntity.ok(articles);
-    }
+	@GetMapping
+	@Operation(summary = "아티클 요약 전체 조회(페이징 단위: 10)", description = "article에 대한 정보를 10개 단위로 페이징 하여 조회합니다.")
+	public ResponseEntity<Page<ArticleSummaryResponse>> getAllArticleSummaries(
+		@PageableDefault(size = 10) Pageable pageable) {
+		Page<ArticleSummaryResponse> articles = articleService.findAllArticleSummaries(pageable);
+		log.info("모든 기사 요약 조회, 페이지 정보 : {} ", pageable);
+		return ResponseEntity.ok(articles);
+	}
 
-    @GetMapping("/all")
-    @Operation(summary = "아티클 요약 전체 조회(페이징 없음)", description = "모든 아티클을 조회합니다.")
-    public ResponseEntity<ArticleListResponse> getAllArticles() {
-        List<ArticleSummaryResponse> articles = articleService.getAllArticles();
-        log.info("모든 기사 요약 조회");
-        return ResponseEntity.ok(ArticleListResponse.from(articles));
-    }
+	@GetMapping("/all")
+	@Operation(summary = "아티클 요약 전체 조회(페이징 없음)", description = "모든 아티클을 조회합니다.")
+	public ResponseEntity<ArticleListResponse> getAllArticles() {
+		List<ArticleSummaryResponse> articles = articleService.getAllArticles();
+		log.info("모든 기사 요약 조회");
+		return ResponseEntity.ok(ArticleListResponse.from(articles));
+	}
 
-    @GetMapping("/allData")
-    @Operation(summary = "아티클 요약x 전체 조회(페이징 없음)", description = "모든 아티클을 요약 없이 조회합니다.")
-    public ResponseEntity<ArticleResponseListWrapper> getAllArticlesWithAllData() {
-        List<ArticleResponse> articles = articleService.getAllArticlesWithAllData();
-        log.info("모든 기사 요약 조회");
-        return ResponseEntity.ok(ArticleResponseListWrapper.from(articles));
-    }
-
-
+	@GetMapping("/allData")
+	@Operation(summary = "아티클 요약x 전체 조회(페이징 없음)", description = "모든 아티클을 요약 없이 조회합니다.")
+	public ResponseEntity<ArticleResponseListWrapper> getAllArticlesWithAllData() {
+		List<ArticleResponse> articles = articleService.getAllArticlesWithAllData();
+		log.info("모든 기사 요약 조회");
+		return ResponseEntity.ok(ArticleResponseListWrapper.from(articles));
+	}
 
 }

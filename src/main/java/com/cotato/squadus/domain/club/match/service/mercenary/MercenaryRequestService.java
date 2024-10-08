@@ -1,5 +1,16 @@
 package com.cotato.squadus.domain.club.match.service.mercenary;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
 import com.cotato.squadus.api.mercenary.dto.response.MercenaryRequestAndMercenaryPostResponse;
 import com.cotato.squadus.api.mercenary.dto.response.MercenaryRequestResponse;
 import com.cotato.squadus.api.mercenary.dto.response.ReceivedMercenaryRequestResponse;
@@ -9,173 +20,158 @@ import com.cotato.squadus.common.error.exception.AppException;
 import com.cotato.squadus.domain.auth.entity.Member;
 import com.cotato.squadus.domain.auth.repository.MemberRepository;
 import com.cotato.squadus.domain.club.common.entity.Club;
-import com.cotato.squadus.domain.club.common.entity.ClubMember;
 import com.cotato.squadus.domain.club.common.repository.ClubAdminMemberRepository;
 import com.cotato.squadus.domain.club.common.repository.ClubRepository;
 import com.cotato.squadus.domain.club.match.entity.mercenary.MercenaryPost;
 import com.cotato.squadus.domain.club.match.entity.mercenary.MercenaryRequest;
 import com.cotato.squadus.domain.club.match.repository.mercenary.MercenaryPostRepository;
 import com.cotato.squadus.domain.club.match.repository.mercenary.MercenaryRequestRepository;
+
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class MercenaryRequestService {
 
-    private static final Logger log = LoggerFactory.getLogger(MercenaryRequestService.class);
-    private final MercenaryRequestRepository mercenaryRequestRepository;
-    private final ClubAdminMemberRepository clubAdminMemberRepository;
-    private final ClubRepository clubRepository;
-    private final MercenaryPostRepository mercenaryPostRepository;
-    private final MemberRepository memberRepository;
+	private static final Logger log = LoggerFactory.getLogger(MercenaryRequestService.class);
+	private final MercenaryRequestRepository mercenaryRequestRepository;
+	private final ClubAdminMemberRepository clubAdminMemberRepository;
+	private final ClubRepository clubRepository;
+	private final MercenaryPostRepository mercenaryPostRepository;
+	private final MemberRepository memberRepository;
 
-    public Page<MercenaryRequestResponse> getMyRequests(CustomOAuth2Member customOAuth2Member, Pageable pageable) {
-        Member member = memberRepository.findByUniqueId(customOAuth2Member.getUniqueId())
-                .orElseThrow(() -> new EntityNotFoundException("해당 uniqueId를 가진 회원이 존재하지 않습니다."));
-        Page<MercenaryRequest> requestsPage = mercenaryRequestRepository.findAllByMember_MemberIdx(member, pageable);
+	public Page<MercenaryRequestResponse> getMyRequests(CustomOAuth2Member customOAuth2Member, Pageable pageable) {
+		Member member = memberRepository.findByUniqueId(customOAuth2Member.getUniqueId())
+			.orElseThrow(() -> new EntityNotFoundException("해당 uniqueId를 가진 회원이 존재하지 않습니다."));
+		Page<MercenaryRequest> requestsPage = mercenaryRequestRepository.findAllByMember_MemberIdx(member, pageable);
 
-        // 유효한 MercenaryPost만 필터링하여 새로운 리스트로 변환
-        List<MercenaryRequestResponse> filteredResponses = requestsPage
-                .stream()
-                .filter(mercenaryRequest -> isPostValid(mercenaryRequest.getMercenaryPost()))
-                .map(MercenaryRequestResponse::from)
-                .collect(Collectors.toList());
+		// 유효한 MercenaryPost만 필터링하여 새로운 리스트로 변환
+		List<MercenaryRequestResponse> filteredResponses = requestsPage
+			.stream()
+			.filter(mercenaryRequest -> isPostValid(mercenaryRequest.getMercenaryPost()))
+			.map(MercenaryRequestResponse::from)
+			.collect(Collectors.toList());
 
-        // 필터링된 리스트를 Page 객체로 변환하여 반환
-        return new PageImpl<>(filteredResponses, pageable, requestsPage.getTotalElements());
-    }
+		// 필터링된 리스트를 Page 객체로 변환하여 반환
+		return new PageImpl<>(filteredResponses, pageable, requestsPage.getTotalElements());
+	}
 
+	public List<MercenaryRequestResponse> getAllMyRequests(CustomOAuth2Member customOAuth2Member) {
+		Member member = memberRepository.findByUniqueId(customOAuth2Member.getUniqueId())
+			.orElseThrow(() -> new EntityNotFoundException("해당 uniqueId를 가진 회원이 존재하지 않습니다."));
 
-    public List<MercenaryRequestResponse> getAllMyRequests(CustomOAuth2Member customOAuth2Member) {
-        Member member = memberRepository.findByUniqueId(customOAuth2Member.getUniqueId())
-                .orElseThrow(() -> new EntityNotFoundException("해당 uniqueId를 가진 회원이 존재하지 않습니다."));
+		return mercenaryRequestRepository.findAllByMember_MemberIdx(member)
+			.stream()
+			.filter(mercenaryRequest -> isPostValid(mercenaryRequest.getMercenaryPost()))
+			.map(MercenaryRequestResponse::from)
+			.collect(Collectors.toList());
+	}
 
-        return mercenaryRequestRepository.findAllByMember_MemberIdx(member)
-                .stream()
-                .filter(mercenaryRequest -> isPostValid(mercenaryRequest.getMercenaryPost()))
-                .map(MercenaryRequestResponse::from)
-                .collect(Collectors.toList());
-    }
+	@Transactional
+	public void cancelMatchRequest(Long requestId, CustomOAuth2Member customOAuth2Member) {
+		Member member = memberRepository.findByUniqueId(customOAuth2Member.getUniqueId())
+			.orElseThrow(() -> new EntityNotFoundException("해당 uniqueId를 가진 회원이 존재하지 않습니다."));
 
+		MercenaryRequest mercenaryRequest = mercenaryRequestRepository.findById(requestId)
+			.orElseThrow(() -> new EntityNotFoundException("매칭 요청을 찾을 수 없습니다."));
 
+		// 요청을 취소하려는 사용자가 이 요청을 만든 사용자인지 확인
+		if (!mercenaryRequest.getMember().getMemberIdx().equals(member.getMemberIdx())) {
+			throw new AppException(ErrorCode.CLUB_ACCESS_DENIED);
+		}
 
-    @Transactional
-    public void cancelMatchRequest(Long requestId, CustomOAuth2Member customOAuth2Member) {
-        Member member = memberRepository.findByUniqueId(customOAuth2Member.getUniqueId())
-                .orElseThrow(() -> new EntityNotFoundException("해당 uniqueId를 가진 회원이 존재하지 않습니다."));
+		mercenaryRequestRepository.delete(mercenaryRequest);
+	}
 
-        MercenaryRequest mercenaryRequest = mercenaryRequestRepository.findById(requestId)
-                .orElseThrow(() -> new EntityNotFoundException("매칭 요청을 찾을 수 없습니다."));
+	public Page<MercenaryRequestAndMercenaryPostResponse> getReceivedMatchRequests(Long clubId, Pageable pageable) {
 
-        // 요청을 취소하려는 사용자가 이 요청을 만든 사용자인지 확인
-        if (!mercenaryRequest.getMember().getMemberIdx().equals(member.getMemberIdx())) {
-            throw new AppException(ErrorCode.CLUB_ACCESS_DENIED);
-        }
+		Club club = clubRepository.findById(clubId)
+			.orElseThrow(() -> new EntityNotFoundException("동아리를 찾을 수 없습니다."));
 
-        mercenaryRequestRepository.delete(mercenaryRequest);
-    }
+		List<MercenaryPost> mercenaryPosts = mercenaryPostRepository.findByHomeClub(club);
 
+		LocalDateTime now = LocalDateTime.now();
 
+		List<MercenaryRequestAndMercenaryPostResponse> allResponses = mercenaryPosts.stream()
+			.filter(
+				mercenaryPost -> LocalDateTime.of(mercenaryPost.getMatchStartDate(), mercenaryPost.getMatchStartTime())
+					.isAfter(now))
+			.map(mercenaryPost -> {
+				List<ReceivedMercenaryRequestResponse> receivedRequests = mercenaryPost.getMercenaryRequests()
+					.stream()
+					.map(ReceivedMercenaryRequestResponse::from)
+					.collect(Collectors.toList());
 
-    public Page<MercenaryRequestAndMercenaryPostResponse> getReceivedMatchRequests(Long clubId, Pageable pageable) {
+				return MercenaryRequestAndMercenaryPostResponse.from(
+					mercenaryPost,
+					receivedRequests
+				);
+			})
+			.collect(Collectors.toList());
 
-        Club club = clubRepository.findById(clubId)
-                .orElseThrow(() -> new EntityNotFoundException("동아리를 찾을 수 없습니다."));
+		// allResponses 리스트를 pageable에 맞게 자름
+		int start = (int)pageable.getOffset();
+		int end = Math.min(start + pageable.getPageSize(), allResponses.size());
 
-        List<MercenaryPost> mercenaryPosts = mercenaryPostRepository.findByHomeClub(club);
+		List<MercenaryRequestAndMercenaryPostResponse> paginatedList = allResponses.subList(start, end);
 
-        LocalDateTime now = LocalDateTime.now();
+		return new PageImpl<>(paginatedList, pageable, allResponses.size());
+	}
 
-        List<MercenaryRequestAndMercenaryPostResponse> allResponses = mercenaryPosts.stream()
-                .filter(mercenaryPost -> LocalDateTime.of(mercenaryPost.getMatchStartDate(), mercenaryPost.getMatchStartTime()).isAfter(now))
-                .map(mercenaryPost -> {
-                    List<ReceivedMercenaryRequestResponse> receivedRequests = mercenaryPost.getMercenaryRequests()
-                            .stream()
-                            .map(ReceivedMercenaryRequestResponse::from)
-                            .collect(Collectors.toList());
+	public List<MercenaryRequestAndMercenaryPostResponse> getAllReceivedMatchRequests(Long clubId) {
 
-                    return MercenaryRequestAndMercenaryPostResponse.from(
-                            mercenaryPost,
-                            receivedRequests
-                    );
-                })
-                .collect(Collectors.toList());
+		Club club = clubRepository.findById(clubId)
+			.orElseThrow(() -> new EntityNotFoundException("동아리를 찾을 수 없습니다."));
 
-        // allResponses 리스트를 pageable에 맞게 자름
-        int start = (int) pageable.getOffset();
-        int end = Math.min(start + pageable.getPageSize(), allResponses.size());
+		List<MercenaryPost> mercenaryPosts = club.getMercenaryPosts();
 
-        List<MercenaryRequestAndMercenaryPostResponse> paginatedList = allResponses.subList(start, end);
+		LocalDateTime now = LocalDateTime.now();
 
-        return new PageImpl<>(paginatedList, pageable, allResponses.size());
-    }
+		return mercenaryPosts.stream()
+			.filter(
+				mercenaryPost -> LocalDateTime.of(mercenaryPost.getMatchStartDate(), mercenaryPost.getMatchStartTime())
+					.isAfter(now))
+			.map(mercenaryPost -> {
+				List<ReceivedMercenaryRequestResponse> receivedRequests = mercenaryPost.getMercenaryRequests()
+					.stream()
+					.map(ReceivedMercenaryRequestResponse::from)
+					.collect(Collectors.toList());
 
+				return MercenaryRequestAndMercenaryPostResponse.from(
+					mercenaryPost,
+					receivedRequests
+				);
+			})
+			.collect(Collectors.toList());
+	}
 
-    public List<MercenaryRequestAndMercenaryPostResponse> getAllReceivedMatchRequests(Long clubId) {
+	@Transactional
+	public void decideMatchRequest(Long requestId, String decision, Long memberId) {
+		MercenaryRequest mercenaryRequest = mercenaryRequestRepository.findById(requestId)
+			.orElseThrow(() -> new EntityNotFoundException("매칭 요청을 찾을 수 없습니다."));
 
-        Club club = clubRepository.findById(clubId)
-                .orElseThrow(() -> new EntityNotFoundException("동아리를 찾을 수 없습니다."));
+		// 해당 용병 요청이 속한 Club의 Admin 권한 확인
+		clubAdminMemberRepository.findActiveAdminByClubIdAndClubMemberId(
+				mercenaryRequest.getMercenaryPost().getHomeClub().getClubId(), memberId)
+			.orElseThrow(() -> new AppException(ErrorCode.CLUB_ACCESS_DENIED));
 
-        List<MercenaryPost> mercenaryPosts = club.getMercenaryPosts();
+		if ("ACCEPTED".equalsIgnoreCase(decision)) {
+			mercenaryRequest.accept();
+			mercenaryRequest.getMercenaryPost().incrementParticipants(); // 현재 인원 증가
+		} else if ("REJECTED".equalsIgnoreCase(decision)) {
+			mercenaryRequest.reject();
+		} else {
+			throw new IllegalArgumentException("결정은 ACCEPTED 또는 REJECTED이어야 합니다.");
+		}
 
-        LocalDateTime now = LocalDateTime.now();
+		mercenaryRequestRepository.save(mercenaryRequest);
+	}
 
-        return mercenaryPosts.stream()
-                .filter(mercenaryPost -> LocalDateTime.of(mercenaryPost.getMatchStartDate(), mercenaryPost.getMatchStartTime()).isAfter(now))
-                .map(mercenaryPost -> {
-                    List<ReceivedMercenaryRequestResponse> receivedRequests = mercenaryPost.getMercenaryRequests()
-                            .stream()
-                            .map(ReceivedMercenaryRequestResponse::from)
-                            .collect(Collectors.toList());
-
-                    return MercenaryRequestAndMercenaryPostResponse.from(
-                            mercenaryPost,
-                            receivedRequests
-                    );
-                })
-                .collect(Collectors.toList());
-    }
-
-
-
-
-    @Transactional
-    public void decideMatchRequest(Long requestId, String decision, Long memberId) {
-        MercenaryRequest mercenaryRequest = mercenaryRequestRepository.findById(requestId)
-                .orElseThrow(() -> new EntityNotFoundException("매칭 요청을 찾을 수 없습니다."));
-
-        // 해당 용병 요청이 속한 Club의 Admin 권한 확인
-        clubAdminMemberRepository.findActiveAdminByClubIdAndClubMemberId(
-                        mercenaryRequest.getMercenaryPost().getHomeClub().getClubId(), memberId)
-                .orElseThrow(() -> new AppException(ErrorCode.CLUB_ACCESS_DENIED));
-
-
-        if ("ACCEPTED".equalsIgnoreCase(decision)) {
-            mercenaryRequest.accept();
-            mercenaryRequest.getMercenaryPost().incrementParticipants(); // 현재 인원 증가
-        } else if ("REJECTED".equalsIgnoreCase(decision)) {
-            mercenaryRequest.reject();
-        } else {
-            throw new IllegalArgumentException("결정은 ACCEPTED 또는 REJECTED이어야 합니다.");
-        }
-
-        mercenaryRequestRepository.save(mercenaryRequest);
-    }
-
-    private boolean isPostValid(MercenaryPost mercenaryPost) {
-        LocalDateTime postDateTime = LocalDateTime.of(mercenaryPost.getMatchStartDate(), mercenaryPost.getMatchStartTime());
-        return postDateTime.isAfter(LocalDateTime.now());
-    }
+	private boolean isPostValid(MercenaryPost mercenaryPost) {
+		LocalDateTime postDateTime = LocalDateTime.of(mercenaryPost.getMatchStartDate(),
+			mercenaryPost.getMatchStartTime());
+		return postDateTime.isAfter(LocalDateTime.now());
+	}
 }

@@ -1,17 +1,17 @@
 package com.cotato.squadus.api.match.dto.matchPost.response;
 
-import org.springframework.data.domain.Page;
-
 import java.util.List;
 
-public record MatchCreateResponseWrapper(
-        List<MatchCreateResponse> matches
-) {
-    public static MatchCreateResponseWrapper from(List<MatchCreateResponse> responses) {
-        return new MatchCreateResponseWrapper(responses);
-    }
+import org.springframework.data.domain.Page;
 
-    public static MatchCreateResponseWrapper from(Page<MatchCreateResponse> responses) {
-        return new MatchCreateResponseWrapper(responses.getContent());
-    }
+public record MatchCreateResponseWrapper(
+	List<MatchCreateResponse> matches
+) {
+	public static MatchCreateResponseWrapper from(List<MatchCreateResponse> responses) {
+		return new MatchCreateResponseWrapper(responses);
+	}
+
+	public static MatchCreateResponseWrapper from(Page<MatchCreateResponse> responses) {
+		return new MatchCreateResponseWrapper(responses.getContent());
+	}
 }

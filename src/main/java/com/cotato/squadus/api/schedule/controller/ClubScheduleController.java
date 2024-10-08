@@ -1,20 +1,29 @@
 package com.cotato.squadus.api.schedule.controller;
 
+import java.time.LocalDate;
+import java.util.List;
+
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.cotato.squadus.api.schedule.dto.ClubScheduleListResponse;
 import com.cotato.squadus.api.schedule.dto.ClubScheduleRequest;
 import com.cotato.squadus.api.schedule.dto.ClubScheduleResponse;
 import com.cotato.squadus.domain.club.schedule.service.ClubScheduleService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
-import java.time.YearMonth;
-import java.util.List;
 
 @Tag(name = "동아리 일정", description = "동아리 일정 관련 API")
 @Slf4j
@@ -23,57 +32,61 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ClubScheduleController {
 
-    private final ClubScheduleService clubScheduleService;
+	private final ClubScheduleService clubScheduleService;
 
-    @GetMapping
-    @Operation(summary = "동아리 일정 전체 조회", description = "clubId를 바탕으로 동아리 공지 댓글 전체를 조회합니다")
-    public ResponseEntity<ClubScheduleListResponse> getAllSchedules(@PathVariable Long clubId) {
-        List<ClubScheduleResponse> schedules = clubScheduleService.findAllSchedules(clubId);
-        return ResponseEntity.ok(ClubScheduleListResponse.from(schedules));
-    }
+	@GetMapping
+	@Operation(summary = "동아리 일정 전체 조회", description = "clubId를 바탕으로 동아리 공지 댓글 전체를 조회합니다")
+	public ResponseEntity<ClubScheduleListResponse> getAllSchedules(@PathVariable Long clubId) {
+		List<ClubScheduleResponse> schedules = clubScheduleService.findAllSchedules(clubId);
+		return ResponseEntity.ok(ClubScheduleListResponse.from(schedules));
+	}
 
-    @GetMapping("/date")
-    @Operation(summary = "동아리 일정 날짜로 조회", description = "clubId와 설정한 날짜를 바탕으로 동아리 일정을 조회합니다")
-    public ResponseEntity<ClubScheduleListResponse> getSchedulesByDate(@PathVariable Long clubId,
-                                                                       @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        List<ClubScheduleResponse> schedules = clubScheduleService.findSchedulesByDate(clubId, date);
-        return ResponseEntity.ok(ClubScheduleListResponse.from(schedules));
-    }
+	@GetMapping("/date")
+	@Operation(summary = "동아리 일정 날짜로 조회", description = "clubId와 설정한 날짜를 바탕으로 동아리 일정을 조회합니다")
+	public ResponseEntity<ClubScheduleListResponse> getSchedulesByDate(@PathVariable Long clubId,
+		@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+		List<ClubScheduleResponse> schedules = clubScheduleService.findSchedulesByDate(clubId, date);
+		return ResponseEntity.ok(ClubScheduleListResponse.from(schedules));
+	}
 
-    @GetMapping("/month")
-    public ResponseEntity<ClubScheduleListResponse> getSchedulesByMonth(@PathVariable Long clubId,
-                                                                        @RequestParam int year,
-                                                                        @RequestParam int month) {
-        List<ClubScheduleResponse> schedules = clubScheduleService.findSchedulesByYearMonth(clubId, year, month);
-        return ResponseEntity.ok(ClubScheduleListResponse.from(schedules));
-    }
+	@GetMapping("/month")
+	public ResponseEntity<ClubScheduleListResponse> getSchedulesByMonth(@PathVariable Long clubId,
+		@RequestParam int year,
+		@RequestParam int month) {
+		List<ClubScheduleResponse> schedules = clubScheduleService.findSchedulesByYearMonth(clubId, year, month);
+		return ResponseEntity.ok(ClubScheduleListResponse.from(schedules));
+	}
 
-    @PostMapping
-    @Operation(summary = "동아리 일정 단건 생성", description = "clubId와 일정에 대한 정보를 바탕으로 동아리 일정을 생성합니다")
-    public ResponseEntity<ClubScheduleResponse> createSchedule(@PathVariable Long clubId, @RequestBody ClubScheduleRequest scheduleRequest) {
-        ClubScheduleResponse schedule = clubScheduleService.createSchedule(clubId, scheduleRequest);
-        return ResponseEntity.ok(schedule);
-    }
+	@PostMapping
+	@Operation(summary = "동아리 일정 단건 생성", description = "clubId와 일정에 대한 정보를 바탕으로 동아리 일정을 생성합니다")
+	public ResponseEntity<ClubScheduleResponse> createSchedule(@PathVariable Long clubId,
+		@RequestBody ClubScheduleRequest scheduleRequest) {
+		ClubScheduleResponse schedule = clubScheduleService.createSchedule(clubId, scheduleRequest);
+		return ResponseEntity.ok(schedule);
+	}
 
-    @DeleteMapping("/{scheduleId}")
-    @Operation(summary = "동아리 일정 단건 삭제", description = "clubId와 scheduleId를 바탕으로 동아리 일정을 삭제합니다")
-    public ResponseEntity<Void> deleteSchedule(@PathVariable Long clubId, @PathVariable Long scheduleId, @RequestParam Long adminId) {
-        clubScheduleService.deleteSchedule(clubId, scheduleId, adminId);
-        return ResponseEntity.noContent().build();
-    }
+	@DeleteMapping("/{scheduleId}")
+	@Operation(summary = "동아리 일정 단건 삭제", description = "clubId와 scheduleId를 바탕으로 동아리 일정을 삭제합니다")
+	public ResponseEntity<Void> deleteSchedule(@PathVariable Long clubId, @PathVariable Long scheduleId,
+		@RequestParam Long adminId) {
+		clubScheduleService.deleteSchedule(clubId, scheduleId, adminId);
+		return ResponseEntity.noContent().build();
+	}
 
-    @PutMapping("/{scheduleId}")
-    @Operation(summary = "동아리 일정 수정", description = "clubId와 scheduleId와 일정에 대한 바뀐 정보를 바탕으로 동아리 일정을 수정합니다")
-    public ResponseEntity<ClubScheduleResponse> updateSchedule(@PathVariable Long clubId, @PathVariable Long scheduleId, @RequestBody ClubScheduleRequest scheduleRequest) {
-        ClubScheduleResponse schedule = clubScheduleService.updateSchedule(clubId, scheduleId, scheduleRequest);
-        return ResponseEntity.ok(schedule);
-    }
+	@PutMapping("/{scheduleId}")
+	@Operation(summary = "동아리 일정 수정", description = "clubId와 scheduleId와 일정에 대한 바뀐 정보를 바탕으로 동아리 일정을 수정합니다")
+	public ResponseEntity<ClubScheduleResponse> updateSchedule(@PathVariable Long clubId, @PathVariable Long scheduleId,
+		@RequestBody ClubScheduleRequest scheduleRequest) {
+		ClubScheduleResponse schedule = clubScheduleService.updateSchedule(clubId, scheduleId, scheduleRequest);
+		return ResponseEntity.ok(schedule);
+	}
 
-    @GetMapping("/upcoming")
-    @Operation(summary = "임박한 일정 조회", description = "clubId를 바탕으로 임박한 일정 3개(변경 가능)를 조회합니다")
-    public ResponseEntity<ClubScheduleListResponse> getUpcomingSchedules(@PathVariable Long clubId, @RequestParam(defaultValue = "3") int limit) {
-        List<ClubScheduleResponse> schedules = clubScheduleService.findTopUpcomingSchedules(clubId, limit);
-        return ResponseEntity.ok(ClubScheduleListResponse.from(schedules));
-    }
+	@GetMapping("/upcoming")
+	@Operation(summary = "임박한 일정 조회", description = "clubId를 바탕으로 임박한 일정 3개(변경 가능)를 조회합니다")
+	public ResponseEntity<ClubScheduleListResponse> getUpcomingSchedules(@PathVariable Long clubId,
+		@RequestParam(defaultValue = "3") int limit) {
+		List<ClubScheduleResponse> schedules = clubScheduleService.findTopUpcomingSchedules(clubId, limit);
+		return ResponseEntity.ok(ClubScheduleListResponse.from(schedules));
+	}
 
 }

@@ -1,12 +1,16 @@
 package com.cotato.squadus.domain.club.fee.entity;
 
+import java.time.LocalDate;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -14,25 +18,25 @@ import java.time.LocalDate;
 @Table(name = "fee_usage")
 public class FeeUsage {
 
-    @Id
-    @GeneratedValue
-    private Long feeUsageId;
+	@Id
+	@GeneratedValue
+	private Long feeUsageId;
 
-    private String description; // 사용 내역
+	private String description; // 사용 내역
 
-    private LocalDate usedAt;
+	private LocalDate usedAt;
 
-    private Long price;
+	private Long price;
 
-    @ManyToOne
-    @JoinColumn(name = "fee_type_id")
-    private FeeType feeType;
+	@ManyToOne
+	@JoinColumn(name = "fee_type_id")
+	private FeeType feeType;
 
-    @Builder
-    public FeeUsage(String description, LocalDate usedAt, Long price, FeeType feeType) {
-        this.feeType = feeType;
-        this.description = description;
-        this.usedAt = usedAt;
-        this.price = price;
-    }
+	@Builder
+	public FeeUsage(String description, LocalDate usedAt, Long price, FeeType feeType) {
+		this.feeType = feeType;
+		this.description = description;
+		this.usedAt = usedAt;
+		this.price = price;
+	}
 }

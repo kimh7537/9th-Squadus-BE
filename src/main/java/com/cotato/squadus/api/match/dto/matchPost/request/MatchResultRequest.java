@@ -6,7 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class MatchResultRequest {
-    private Long matchPostId;
-    private Integer homeScore;
-    private Integer awayScore;
+	private Long matchPostId;
+	private Integer homeScore;
+	private Integer awayScore;
 }

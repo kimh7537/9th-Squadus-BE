@@ -1,5 +1,11 @@
 package com.cotato.squadus.domain.club.match.service.match;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.cotato.squadus.api.match.dto.matchResult.request.MatchResultAddRequest;
 import com.cotato.squadus.api.match.dto.matchResult.response.MatchDetailResponse;
 import com.cotato.squadus.api.match.dto.matchResult.response.MatchFinalResultResponse;
@@ -15,205 +21,196 @@ import com.cotato.squadus.domain.club.match.entity.match.MatchResult;
 import com.cotato.squadus.domain.club.match.enums.MatchingStatus;
 import com.cotato.squadus.domain.club.match.repository.match.MatchPostRepository;
 import com.cotato.squadus.domain.club.match.repository.match.MatchResultRepository;
+
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class MatchResultService {
 
-    private final MatchResultRepository matchResultRepository;
-    private final MatchPostRepository matchPostRepository;
-    private final ClubAdminMemberRepository clubAdminMemberRepository;
-    private final ClubService clubService;
+	private final MatchResultRepository matchResultRepository;
+	private final MatchPostRepository matchPostRepository;
+	private final ClubAdminMemberRepository clubAdminMemberRepository;
+	private final ClubService clubService;
 
-    public MatchDetailResponse getMatchDetail(Long matchPostId) {
-        MatchPost matchPost = matchPostRepository.findById(matchPostId)
-                .orElseThrow(() -> new EntityNotFoundException("매칭 게시글을 찾을 수 없습니다."));
+	public MatchDetailResponse getMatchDetail(Long matchPostId) {
+		MatchPost matchPost = matchPostRepository.findById(matchPostId)
+			.orElseThrow(() -> new EntityNotFoundException("매칭 게시글을 찾을 수 없습니다."));
 
-        MatchRequest acceptedRequest = matchPost.getMatchRequests().stream()
-                .filter(request -> request.getStatus() == MatchingStatus.ACCEPTED)
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("승인된 매칭 요청이 없습니다."));
+		MatchRequest acceptedRequest = matchPost.getMatchRequests().stream()
+			.filter(request -> request.getStatus() == MatchingStatus.ACCEPTED)
+			.findFirst()
+			.orElseThrow(() -> new IllegalStateException("승인된 매칭 요청이 없습니다."));
 
-        //요청을 신청한 club
-        Club awayClub = acceptedRequest.getClub();
+		//요청을 신청한 club
+		Club awayClub = acceptedRequest.getClub();
 
-        //매치 결과도 함께 반환
-        List<MatchResultResponse> matchResults = matchResultRepository.findByMatchPost(matchPost).stream()
-                .map(MatchResultResponse::from)
-                .collect(Collectors.toList());
+		//매치 결과도 함께 반환
+		List<MatchResultResponse> matchResults = matchResultRepository.findByMatchPost(matchPost).stream()
+			.map(MatchResultResponse::from)
+			.collect(Collectors.toList());
 
-        return MatchDetailResponse.from(matchPost, awayClub, matchResults);
-    }
+		return MatchDetailResponse.from(matchPost, awayClub, matchResults);
+	}
 
-    public MatchFinalResultResponse getWinningMatchResult(Long matchPostId) {
-        MatchPost matchPost = matchPostRepository.findById(matchPostId)
-                .orElseThrow(() -> new EntityNotFoundException("매칭 게시글을 찾을 수 없습니다."));
-        return new MatchFinalResultResponse(matchPost.getHomeWins(), matchPost.getAwayWins());
-    }
+	public MatchFinalResultResponse getWinningMatchResult(Long matchPostId) {
+		MatchPost matchPost = matchPostRepository.findById(matchPostId)
+			.orElseThrow(() -> new EntityNotFoundException("매칭 게시글을 찾을 수 없습니다."));
+		return new MatchFinalResultResponse(matchPost.getHomeWins(), matchPost.getAwayWins());
+	}
 
+	@Transactional
+	public MatchResultResponse addMatchResult(Long matchPostId, MatchResultAddRequest matchResultAddRequest) {
+		MatchPost matchPost = matchPostRepository.findById(matchPostId)
+			.orElseThrow(() -> new EntityNotFoundException("매칭 게시글을 찾을 수 없습니다."));
 
-    @Transactional
-    public MatchResultResponse addMatchResult(Long matchPostId, MatchResultAddRequest matchResultAddRequest) {
-        MatchPost matchPost = matchPostRepository.findById(matchPostId)
-                .orElseThrow(() -> new EntityNotFoundException("매칭 게시글을 찾을 수 없습니다."));
+		// Home 팀의 Admin인지 확인
+		clubAdminMemberRepository.findActiveAdminByClubIdAndClubMemberId(matchPost.getHomeClub().getClubId(),
+				matchResultAddRequest.getClubMemberId())
+			.orElseThrow(() -> new AppException(ErrorCode.CLUB_ACCESS_DENIED));
 
-        // Home 팀의 Admin인지 확인
-        clubAdminMemberRepository.findActiveAdminByClubIdAndClubMemberId(matchPost.getHomeClub().getClubId(), matchResultAddRequest.getClubMemberId())
-                .orElseThrow(() ->  new AppException(ErrorCode.CLUB_ACCESS_DENIED));
+		MatchRequest acceptedRequest = matchPost.getMatchRequests().stream()
+			.filter(request -> request.getStatus() == MatchingStatus.ACCEPTED)
+			.findFirst()
+			.orElseThrow(() -> new IllegalStateException("승인된 매칭 요청이 없습니다."));
 
-        MatchRequest acceptedRequest = matchPost.getMatchRequests().stream()
-                .filter(request -> request.getStatus() == MatchingStatus.ACCEPTED)
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("승인된 매칭 요청이 없습니다."));
+		MatchResult matchResult = MatchResult.builder()
+			.matchPost(matchPost)
+			.homeClub(matchPost.getHomeClub())
+			.awayClub(acceptedRequest.getClub())
+			.homeScore(matchResultAddRequest.getHomeScore())
+			.awayScore(matchResultAddRequest.getAwayScore())
+			.build();
 
-        MatchResult matchResult = MatchResult.builder()
-                .matchPost(matchPost)
-                .homeClub(matchPost.getHomeClub())
-                .awayClub(acceptedRequest.getClub())
-                .homeScore(matchResultAddRequest.getHomeScore())
-                .awayScore(matchResultAddRequest.getAwayScore())
-                .build();
+		matchResultRepository.save(matchResult);
+		return MatchResultResponse.from(matchResult);
+	}
 
-        matchResultRepository.save(matchResult);
-        return MatchResultResponse.from(matchResult);
-    }
+	@Transactional
+	public MatchResultResponse updateMatchResult(Long matchResultId, MatchResultAddRequest matchResultAddRequest) {
+		MatchResult matchResult = matchResultRepository.findById(matchResultId)
+			.orElseThrow(() -> new EntityNotFoundException("매칭 결과를 찾을 수 없습니다."));
 
-    @Transactional
-    public MatchResultResponse updateMatchResult(Long matchResultId, MatchResultAddRequest matchResultAddRequest) {
-        MatchResult matchResult = matchResultRepository.findById(matchResultId)
-                .orElseThrow(() -> new EntityNotFoundException("매칭 결과를 찾을 수 없습니다."));
+		MatchPost matchPost = matchResult.getMatchPost();
 
-        MatchPost matchPost = matchResult.getMatchPost();
+		// Home 팀의 Admin인지 확인
+		clubAdminMemberRepository.findActiveAdminByClubIdAndClubMemberId(matchPost.getHomeClub().getClubId(),
+				matchResultAddRequest.getClubMemberId())
+			.orElseThrow(() -> new AppException(ErrorCode.CLUB_ACCESS_DENIED));
 
-        // Home 팀의 Admin인지 확인
-        clubAdminMemberRepository.findActiveAdminByClubIdAndClubMemberId(matchPost.getHomeClub().getClubId(), matchResultAddRequest.getClubMemberId())
-                .orElseThrow(() -> new AppException(ErrorCode.CLUB_ACCESS_DENIED));
+		// 기존 점수를 수정
+		matchResult.updateScores(matchResultAddRequest.getHomeScore(), matchResultAddRequest.getAwayScore());
 
-        // 기존 점수를 수정
-        matchResult.updateScores(matchResultAddRequest.getHomeScore(), matchResultAddRequest.getAwayScore());
+		matchResultRepository.save(matchResult);
+		return MatchResultResponse.from(matchResult);
+	}
 
-        matchResultRepository.save(matchResult);
-        return MatchResultResponse.from(matchResult);
-    }
+	@Transactional
+	public MatchFinalResultResponse getFinalMatchResult(Long matchPostId, Long memberId) {
+		MatchPost matchPost = matchPostRepository.findById(matchPostId)
+			.orElseThrow(() -> new EntityNotFoundException("매칭 게시글을 찾을 수 없습니다."));
 
+		clubAdminMemberRepository.findActiveAdminByClubIdAndClubMemberId(matchPost.getHomeClub().getClubId(), memberId)
+			.orElseThrow(() -> new AppException(ErrorCode.CLUB_ACCESS_DENIED));
 
+		int homeWins = 0;
+		int awayWins = 0;
+		List<MatchResult> matchResults = matchResultRepository.findByMatchPost(matchPost);
+		for (MatchResult result : matchResults) {
+			if (result.getHomeScore() > result.getAwayScore()) {
+				homeWins++;
+			} else if (result.getHomeScore() < result.getAwayScore()) {
+				awayWins++;
+			}
+		}
 
-    @Transactional
-    public MatchFinalResultResponse getFinalMatchResult(Long matchPostId, Long memberId) {
-        MatchPost matchPost = matchPostRepository.findById(matchPostId)
-                .orElseThrow(() -> new EntityNotFoundException("매칭 게시글을 찾을 수 없습니다."));
+		matchPost.updateWinCounts(homeWins, awayWins);
+		return new MatchFinalResultResponse(homeWins, awayWins);
+	}
 
-        clubAdminMemberRepository.findActiveAdminByClubIdAndClubMemberId(matchPost.getHomeClub().getClubId(), memberId)
-                .orElseThrow(() -> new AppException(ErrorCode.CLUB_ACCESS_DENIED));
+	@Transactional
+	public void finalizeHomeResult(Long matchPostId, Long memberId) {
 
-        int homeWins = 0;
-        int awayWins = 0;
-        List<MatchResult> matchResults = matchResultRepository.findByMatchPost(matchPost);
-        for (MatchResult result : matchResults) {
-            if (result.getHomeScore() > result.getAwayScore()) {
-                homeWins++;
-            } else if (result.getHomeScore() < result.getAwayScore()) {
-                awayWins++;
-            }
-        }
+		MatchPost matchPost = matchPostRepository.findById(matchPostId)
+			.orElseThrow(() -> new EntityNotFoundException("매칭 게시글을 찾을 수 없습니다."));
 
-        matchPost.updateWinCounts(homeWins, awayWins);
-        return new MatchFinalResultResponse(homeWins, awayWins);
-    }
+		clubAdminMemberRepository.findActiveAdminByClubIdAndClubMemberId(matchPost.getHomeClub().getClubId(), memberId)
+			.orElseThrow(() -> new AppException(ErrorCode.CLUB_ACCESS_DENIED));
 
+		List<MatchResult> matchResults = matchResultRepository.findByMatchPost(matchPost);
+		matchResults.forEach(MatchResult::finalizeHomeResult);
 
-    @Transactional
-    public void finalizeHomeResult(Long matchPostId, Long memberId){
+		matchResultRepository.saveAll(matchResults);
+	}
 
-        MatchPost matchPost = matchPostRepository.findById(matchPostId)
-                .orElseThrow(() -> new EntityNotFoundException("매칭 게시글을 찾을 수 없습니다."));
+	@Transactional
+	public void finalizeAwayResult(Long matchPostId, Long memberId) {
+		MatchPost matchPost = matchPostRepository.findById(matchPostId)
+			.orElseThrow(() -> new EntityNotFoundException("매칭 게시글을 찾을 수 없습니다."));
 
-        clubAdminMemberRepository.findActiveAdminByClubIdAndClubMemberId(matchPost.getHomeClub().getClubId(), memberId)
-                .orElseThrow(() -> new AppException(ErrorCode.CLUB_ACCESS_DENIED));
+		// Away 팀의 ClubId를 가져옴
+		MatchRequest acceptedRequest = matchPost.getMatchRequests().stream()
+			.filter(request -> request.getStatus() == MatchingStatus.ACCEPTED)
+			.findFirst()
+			.orElseThrow(() -> new IllegalStateException("승인된 매칭 요청이 없습니다."));
 
+		Club awayClub = acceptedRequest.getClub();
 
-        List<MatchResult> matchResults = matchResultRepository.findByMatchPost(matchPost);
-        matchResults.forEach(MatchResult::finalizeHomeResult);
+		// Away 팀의 Admin인지 확인
+		clubAdminMemberRepository.findActiveAdminByClubIdAndClubMemberId(awayClub.getClubId(), memberId)
+			.orElseThrow(() -> new AppException(ErrorCode.CLUB_ACCESS_DENIED));
 
-        matchResultRepository.saveAll(matchResults);
-    }
+		List<MatchResult> matchResults = matchResultRepository.findByMatchPost(matchPost);
 
-    @Transactional
-    public void finalizeAwayResult(Long matchPostId, Long memberId) {
-        MatchPost matchPost = matchPostRepository.findById(matchPostId)
-                .orElseThrow(() -> new EntityNotFoundException("매칭 게시글을 찾을 수 없습니다."));
+		// 결과 확정
+		matchResults.forEach(MatchResult::finalizeAwayResult);
 
-        // Away 팀의 ClubId를 가져옴
-        MatchRequest acceptedRequest = matchPost.getMatchRequests().stream()
-                .filter(request -> request.getStatus() == MatchingStatus.ACCEPTED)
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("승인된 매칭 요청이 없습니다."));
+		int homeWins = matchPost.getHomeWins();
+		int awayWins = matchPost.getAwayWins();
 
-        Club awayClub = acceptedRequest.getClub();
+		if (homeWins > awayWins) {
+			matchPost.getHomeClub().updateMatchScore(7);
+			awayClub.updateMatchScore(3);
+		} else if (homeWins < awayWins) {
+			matchPost.getHomeClub().updateMatchScore(3);
+			awayClub.updateMatchScore(7);
+		} else { // 비긴 경우
+			matchPost.getHomeClub().updateMatchScore(5);
+			awayClub.updateMatchScore(5);
+		}
 
-        // Away 팀의 Admin인지 확인
-        clubAdminMemberRepository.findActiveAdminByClubIdAndClubMemberId(awayClub.getClubId(), memberId)
-                .orElseThrow(() -> new AppException(ErrorCode.CLUB_ACCESS_DENIED));
+		clubService.updateClubMatchScore(matchPost.getHomeClub().getClubId());
+		clubService.updateClubMatchScore(awayClub.getClubId());
+		matchResultRepository.saveAll(matchResults);
+	}
 
-        List<MatchResult> matchResults = matchResultRepository.findByMatchPost(matchPost);
+	@Transactional
+	public void rejectFinalResult(Long matchPostId, Long memberId) {
+		MatchPost matchPost = matchPostRepository.findById(matchPostId)
+			.orElseThrow(() -> new EntityNotFoundException("매칭 게시글을 찾을 수 없습니다."));
 
-        // 결과 확정
-        matchResults.forEach(MatchResult::finalizeAwayResult);
+		// Away 팀의 ClubId를 가져옴
+		MatchRequest acceptedRequest = matchPost.getMatchRequests().stream()
+			.filter(request -> request.getStatus() == MatchingStatus.ACCEPTED)
+			.findFirst()
+			.orElseThrow(() -> new IllegalStateException("승인된 매칭 요청이 없습니다."));
 
-        int homeWins = matchPost.getHomeWins();
-        int awayWins = matchPost.getAwayWins();
+		Club awayClub = acceptedRequest.getClub();
 
-        if (homeWins > awayWins) {
-            matchPost.getHomeClub().updateMatchScore(7);
-            awayClub.updateMatchScore(3);
-        } else if (homeWins < awayWins) {
-            matchPost.getHomeClub().updateMatchScore(3);
-            awayClub.updateMatchScore(7);
-        } else { // 비긴 경우
-            matchPost.getHomeClub().updateMatchScore(5);
-            awayClub.updateMatchScore(5);
-        }
+		// Away 팀의 Admin인지 확인
+		clubAdminMemberRepository.findActiveAdminByClubIdAndClubMemberId(awayClub.getClubId(), memberId)
+			.orElseThrow(() -> new AppException(ErrorCode.CLUB_ACCESS_DENIED));
 
-        clubService.updateClubMatchScore(matchPost.getHomeClub().getClubId());
-        clubService.updateClubMatchScore(awayClub.getClubId());
-        matchResultRepository.saveAll(matchResults);
-    }
+		List<MatchResult> matchResults = matchResultRepository.findByMatchPost(matchPost);
+		matchResults.forEach(result -> {
+			result.setIsFinalizedHome(false);
+			result.setIsfinalizedAway(false);
+		});
 
-
-
-    @Transactional
-    public void rejectFinalResult(Long matchPostId, Long memberId) {
-        MatchPost matchPost = matchPostRepository.findById(matchPostId)
-                .orElseThrow(() -> new EntityNotFoundException("매칭 게시글을 찾을 수 없습니다."));
-
-        // Away 팀의 ClubId를 가져옴
-        MatchRequest acceptedRequest = matchPost.getMatchRequests().stream()
-                .filter(request -> request.getStatus() == MatchingStatus.ACCEPTED)
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("승인된 매칭 요청이 없습니다."));
-
-        Club awayClub = acceptedRequest.getClub();
-
-        // Away 팀의 Admin인지 확인
-        clubAdminMemberRepository.findActiveAdminByClubIdAndClubMemberId(awayClub.getClubId(), memberId)
-                .orElseThrow(() -> new AppException(ErrorCode.CLUB_ACCESS_DENIED));
-
-        List<MatchResult> matchResults = matchResultRepository.findByMatchPost(matchPost);
-        matchResults.forEach(result -> {
-            result.setIsFinalizedHome(false);
-            result.setIsfinalizedAway(false);
-        });
-
-        matchResultRepository.saveAll(matchResults);
-    }
+		matchResultRepository.saveAll(matchResults);
+	}
 }
 
 

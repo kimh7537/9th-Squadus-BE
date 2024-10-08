@@ -5,25 +5,25 @@ import com.cotato.squadus.domain.club.common.entity.ClubAdminMember;
 import com.cotato.squadus.domain.club.common.entity.ClubMember;
 
 public record MemberClubResponse(
-        Long clubId,
-        Long clubMemberIdx,
-        String clubName,
-        Boolean isAdmin
+	Long clubId,
+	Long clubMemberIdx,
+	String clubName,
+	Boolean isAdmin
 ) {
 
-    public static MemberClubResponse from(ClubMember clubMember) {
-        boolean isAdmin = false;
+	public static MemberClubResponse from(ClubMember clubMember) {
+		boolean isAdmin = false;
 
-        if (clubMember instanceof ClubAdminMember) {
-            ClubAdminMember adminMember = (ClubAdminMember) clubMember;
-            isAdmin = adminMember.getAdminStatus() == AdminStatus.CURRENT;
-        }
+		if (clubMember instanceof ClubAdminMember) {
+			ClubAdminMember adminMember = (ClubAdminMember)clubMember;
+			isAdmin = adminMember.getAdminStatus() == AdminStatus.CURRENT;
+		}
 
-        return new MemberClubResponse(
-                clubMember.getClub().getClubId(),
-                clubMember.getClubMemberIdx(),
-                clubMember.getClub().getClubName(),
-                isAdmin
-        );
-    }
+		return new MemberClubResponse(
+			clubMember.getClub().getClubId(),
+			clubMember.getClubMemberIdx(),
+			clubMember.getClub().getClubName(),
+			isAdmin
+		);
+	}
 }

@@ -6,5 +6,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SearchRequest {
-    private String keyword;
+	private String keyword;
 }

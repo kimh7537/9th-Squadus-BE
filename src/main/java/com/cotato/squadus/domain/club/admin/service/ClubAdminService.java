@@ -1,5 +1,10 @@
 package com.cotato.squadus.domain.club.admin.service;
 
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.cotato.squadus.api.admin.dto.ClubApplicationInfoResponse;
 import com.cotato.squadus.api.admin.dto.ClubApplicationListResponse;
 import com.cotato.squadus.api.admin.dto.ClubJoinApprovalResponse;
@@ -9,18 +14,19 @@ import com.cotato.squadus.common.error.exception.AppException;
 import com.cotato.squadus.domain.auth.enums.ApplicationStatus;
 import com.cotato.squadus.domain.auth.enums.Membership;
 import com.cotato.squadus.domain.auth.service.ClubMemberService;
-import com.cotato.squadus.domain.club.common.entity.*;
+import com.cotato.squadus.domain.club.common.entity.Club;
+import com.cotato.squadus.domain.club.common.entity.ClubAdminMember;
+import com.cotato.squadus.domain.club.common.entity.ClubApplication;
+import com.cotato.squadus.domain.club.common.entity.ClubMember;
+import com.cotato.squadus.domain.club.common.entity.RegularClubMember;
 import com.cotato.squadus.domain.club.common.enums.MemberType;
 import com.cotato.squadus.domain.club.common.repository.ClubApplicationRepository;
 import com.cotato.squadus.domain.club.common.repository.ClubMemberRepository;
 import com.cotato.squadus.domain.club.common.repository.ClubRepository;
+
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Slf4j
 @Service
@@ -28,75 +34,73 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ClubAdminService {
 
-    private final ClubApplicationRepository clubApplicationRepository;
-    private final ClubMemberService clubMemberService;
-    private final ClubMemberRepository clubMemberRepository;
-    private final ClubRepository clubRepository;
+	private final ClubApplicationRepository clubApplicationRepository;
+	private final ClubMemberService clubMemberService;
+	private final ClubMemberRepository clubMemberRepository;
+	private final ClubRepository clubRepository;
 
-    @Transactional
-    public ClubJoinApprovalResponse approveApply(Long clubId, Long applicationId) {
-        validateAdminMember(clubId);
+	@Transactional
+	public ClubJoinApprovalResponse approveApply(Long clubId, Long applicationId) {
+		validateAdminMember(clubId);
 
-        ClubApplication clubApplication = clubApplicationRepository.findById(applicationId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 고유번호를 가진 지원서를 찾을 수 없습니다."));
+		ClubApplication clubApplication = clubApplicationRepository.findById(applicationId)
+			.orElseThrow(() -> new EntityNotFoundException("해당 고유번호를 가진 지원서를 찾을 수 없습니다."));
 
-        ClubMember clubMember = RegularClubMember.builder()
-                .member(clubApplication.getMember())
-                .club(clubApplication.getClub())
-                .membership(Membership.JOINED)
-                .isPaid(false)
-                .build();
+		ClubMember clubMember = RegularClubMember.builder()
+			.member(clubApplication.getMember())
+			.club(clubApplication.getClub())
+			.membership(Membership.JOINED)
+			.isPaid(false)
+			.build();
 
-        ClubMember savedMember = clubMemberRepository.save(clubMember);
+		ClubMember savedMember = clubMemberRepository.save(clubMember);
 
-        updateClubInfo(clubId, savedMember);
-        clubApplication.updateApplicationState(ApplicationStatus.APPROVED);
-        clubApplicationRepository.save(clubApplication);
-        return new ClubJoinApprovalResponse(savedMember.getClubMemberIdx());
-    }
+		updateClubInfo(clubId, savedMember);
+		clubApplication.updateApplicationState(ApplicationStatus.APPROVED);
+		clubApplicationRepository.save(clubApplication);
+		return new ClubJoinApprovalResponse(savedMember.getClubMemberIdx());
+	}
 
-    @Transactional
-    public ClubJoinDenialResponse denyApply(Long clubId, Long applicationId) {
-        validateAdminMember(clubId);
+	@Transactional
+	public ClubJoinDenialResponse denyApply(Long clubId, Long applicationId) {
+		validateAdminMember(clubId);
 
-        ClubApplication clubApplication = clubApplicationRepository.findById(applicationId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 고유번호를 가진 지원서를 찾을 수 없습니다."));
+		ClubApplication clubApplication = clubApplicationRepository.findById(applicationId)
+			.orElseThrow(() -> new EntityNotFoundException("해당 고유번호를 가진 지원서를 찾을 수 없습니다."));
 
-        clubApplication.updateApplicationState(ApplicationStatus.REJECTED);
-        clubApplicationRepository.save(clubApplication);
+		clubApplication.updateApplicationState(ApplicationStatus.REJECTED);
+		clubApplicationRepository.save(clubApplication);
 
-        return new ClubJoinDenialResponse(clubApplication.getApplicationIdx());
-    }
+		return new ClubJoinDenialResponse(clubApplication.getApplicationIdx());
+	}
 
-    // 신규 가입한 동아리원에 대한 정보 반영
-    private void updateClubInfo(Long clubId, ClubMember clubMember) {
-        Club club = clubRepository.findById(clubId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 고유번호를 가진 동아리를 찾을 수 없습니다."));
+	// 신규 가입한 동아리원에 대한 정보 반영
+	private void updateClubInfo(Long clubId, ClubMember clubMember) {
+		Club club = clubRepository.findById(clubId)
+			.orElseThrow(() -> new EntityNotFoundException("해당 고유번호를 가진 동아리를 찾을 수 없습니다."));
 
-        club.addClubMember(clubMember);
-        club.addNumberOfMembers();
-        clubRepository.save(club);
-    }
+		club.addClubMember(clubMember);
+		club.addNumberOfMembers();
+		clubRepository.save(club);
+	}
 
-    public ClubAdminMember validateAdminMember(Long clubId) {
-        ClubMember clubMember = clubMemberService.findClubMemberBySecurityContextHolder(clubId);
-        if (!clubMember.getMemberType().equals(MemberType.ADMIN)) {
-            throw new AppException(ErrorCode.MEMBER_TYPE_IS_NOT_ADMIN);
-        }
+	public ClubAdminMember validateAdminMember(Long clubId) {
+		ClubMember clubMember = clubMemberService.findClubMemberBySecurityContextHolder(clubId);
+		if (!clubMember.getMemberType().equals(MemberType.ADMIN)) {
+			throw new AppException(ErrorCode.MEMBER_TYPE_IS_NOT_ADMIN);
+		}
 
-        return (ClubAdminMember) clubMember;
-    }
+		return (ClubAdminMember)clubMember;
+	}
 
+	public ClubApplicationListResponse findAllClubApplyByRecruitingPostId(Long clubId, Long recruitingPostId) {
 
-    public ClubApplicationListResponse findAllClubApplyByRecruitingPostId(Long clubId, Long recruitingPostId) {
+		List<ClubApplicationInfoResponse> list = clubApplicationRepository.findByRecruitingPost_PostId(recruitingPostId)
+			.stream()
+			.map(ClubApplicationInfoResponse::from)
+			.toList();
 
-        List<ClubApplicationInfoResponse> list = clubApplicationRepository.findByRecruitingPost_PostId(recruitingPostId)
-                .stream()
-                .map(ClubApplicationInfoResponse::from)
-                .toList();
+		return ClubApplicationListResponse.from(list);
 
-        return ClubApplicationListResponse.from(list);
-
-
-    }
+	}
 }

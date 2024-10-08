@@ -6,5 +6,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class MatchFinalizeRequest {
-    private Long matchPostId;
+	private Long matchPostId;
 }
